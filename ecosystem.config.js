@@ -1,7 +1,7 @@
 module.exports = {
   apps: [
     {
-      name: 'indian-pharmazee-client',
+      name: 'indian-client',
       cwd: '/root/indian-pharmazee/client',
       script: 'npm',
       args: 'start',
@@ -15,7 +15,7 @@ module.exports = {
       max_memory_restart: "500M"
     },
     {
-      name: 'indian-pharmazee-admin',
+      name: 'indian-admin',
       cwd: '/root/indian-pharmazee/front',
       script: 'npm',
       args: 'run preview',
@@ -30,7 +30,7 @@ module.exports = {
       max_memory_restart: "500M"
     },
     {
-      name: 'indian-pharmazee-server',
+      name: 'indian-server',
       cwd: '/root/indian-pharmazee/server',
       script: 'npm',
       args: 'start',
