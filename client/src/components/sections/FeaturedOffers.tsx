@@ -9,19 +9,19 @@ const OFFERS = [
     image: "/ivf-offer.png",
     title: "IVF Excellence",
     subtitle: "Advanced Fertility Solutions",
-    href: "/category/ivf-medicines",
+    href: "/products",
   },
   {
     image: "/womens-health-offer.png",
     title: "Women's Wellness",
     subtitle: "Specialized Healthcare",
-    href: "/category/gynaecology",
+    href: "/products",
   },
   {
     image: "/anti-cancer-offer.png",
     title: "Cancer Care",
     subtitle: "Oncology Solutions",
-    href: "/category/anti-cancer",
+    href: "/products",
   },
   {
     image: "/wellness-offer.png",

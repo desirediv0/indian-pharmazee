@@ -7,7 +7,7 @@ import { fetchApi, formatCurrency } from "@/lib/utils";
 import {
   Star, Minus, Plus, AlertCircle, ShoppingCart,
   Heart, ChevronRight, CheckCircle, Zap,
-  Truck, ShieldCheck, Thermometer, BadgeCheck, MessageCircle,
+  Truck, ShieldCheck, Thermometer, BadgeCheck,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
@@ -723,7 +723,7 @@ export default function ProductContent({ slug }) {
               className="w-full h-12 flex items-center justify-center gap-2.5 rounded-xl font-semibold text-sm mb-5 transition-all hover:opacity-90"
               style={{ background: "#25D366", color: "white" }}
             >
-              <MessageCircle className="h-5 w-5" />
+              <img src="/whatsapp.png" alt="WhatsApp" className="h-5 w-5 object-contain" />
               Enquire on WhatsApp
             </a>
 

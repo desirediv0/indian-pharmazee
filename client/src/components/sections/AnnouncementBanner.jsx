@@ -37,7 +37,7 @@ const AnnouncementBanner = () => {
           100% { transform: translateX(-50%); }
         }
         .animate-marquee {
-          animation: marquee 35s linear infinite;
+          animation: marquee 60s linear infinite;
           width: max-content;
         }
         .pause-marquee:hover {
