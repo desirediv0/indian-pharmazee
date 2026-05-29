@@ -1,0 +1,75 @@
+/** Shared Jodit config (same as single product form) */
+export const joditEditorConfig = {
+  height: 320,
+  placeholder:
+    "Enter product description. Use the toolbar to format text, add tables, colors, and more.",
+  toolbar: true,
+  toolbarButtonSize: "middle" as const,
+  toolbarAdaptive: false,
+  showCharsCounter: true,
+  showWordsCounter: true,
+  showXPathInStatusbar: false,
+  askBeforePasteHTML: false,
+  askBeforePasteFromWord: false,
+  defaultActionOnPaste: "insert_as_html" as const,
+  buttons: [
+    "bold",
+    "italic",
+    "underline",
+    "strikethrough",
+    "|",
+    "superscript",
+    "subscript",
+    "|",
+    "align",
+    "|",
+    "ul",
+    "ol",
+    "|",
+    "outdent",
+    "indent",
+    "|",
+    "font",
+    "fontsize",
+    "brush",
+    "paragraph",
+    "|",
+    "image",
+    "link",
+    "|",
+    "undo",
+    "redo",
+    "|",
+    "hr",
+    "eraser",
+    "copyformat",
+    "|",
+    "fullsize",
+    "selectall",
+    "|",
+    "table",
+    "|",
+    "find",
+    "|",
+    "symbol",
+  ],
+  zIndex: 0,
+  readonly: false,
+  toolbarSticky: false,
+  showPlaceholder: true,
+  language: "en",
+  direction: "ltr" as const,
+  spellcheck: true,
+  enter: "p" as const,
+  defaultMode: 1,
+  useSplitMode: false,
+};
+
+export function stripHtmlToPlain(html: string, maxLen = 160): string {
+  if (!html) return "";
+  const temp = document.createElement("div");
+  temp.innerHTML = html;
+  const plain = (temp.textContent || temp.innerText || "").replace(/\s+/g, " ").trim();
+  if (plain.length <= maxLen) return plain;
+  return plain.substring(0, maxLen) + "...";
+}

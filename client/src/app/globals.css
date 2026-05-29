@@ -1,0 +1,213 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap');
+
+@layer base {
+  :root {
+    /* Indian Pharmazee — Medical Premium Theme */
+    --background: 210 40% 98%;       /* #F7FAFC */
+    --foreground: 213 60% 15%;       /* ~#0A2540 */
+    --card: 0 0% 100%;
+    --card-foreground: 213 60% 15%;
+    --popover: 0 0% 100%;
+    --popover-foreground: 213 60% 15%;
+    --primary: 211 100% 36%;         /* #005EB8 */
+    --primary-foreground: 0 0% 100%;
+    --secondary: 187 80% 46%;        /* #16C7D9 */
+    --secondary-foreground: 0 0% 100%;
+    --muted: 210 30% 96%;
+    --muted-foreground: 213 25% 45%;
+    --accent: 187 80% 46%;           /* #16C7D9 cyan — NO orange */
+    --accent-foreground: 0 0% 100%;
+    --chart-1: 211 100% 36%;
+    --chart-2: 187 80% 46%;
+    --chart-3: 213 60% 25%;
+    --chart-4: 211 80% 60%;
+    --chart-5: 187 60% 70%;
+    --destructive: 0 84% 60%;
+    --destructive-foreground: 0 0% 100%;
+    --border: 213 30% 87%;           /* #DCE7F2 */
+    --input: 213 30% 87%;
+    --ring: 211 100% 36%;
+    --radius: 0.5rem;
+
+    /* Brand palette as CSS vars for direct use */
+    --pharma-blue: #005EB8;
+    --pharma-cyan: #16C7D9;
+    --pharma-navy: #0A2540;
+    --pharma-bg: #F7FAFC;
+    --pharma-border: #DCE7F2;
+  }
+}
+
+@layer base {
+  * {
+    @apply border-border;
+  }
+  html {
+    scroll-behavior: smooth;
+  }
+  body {
+    @apply bg-background text-foreground font-sans antialiased;
+  }
+}
+
+/* Premium Typography */
+@layer utilities {
+  .font-display {
+    font-family: 'Outfit', sans-serif;
+  }
+  .font-sans {
+    font-family: 'Inter', sans-serif;
+  }
+  .text-balance {
+    text-wrap: balance;
+  }
+}
+
+/* Premium Layout - Generous Spacing */
+@layer components {
+  .section-container {
+    @apply max-w-7xl mx-auto px-6 sm:px-8 lg:px-12;
+  }
+  
+  .section-padding {
+    @apply py-12 md:py-16;
+  }
+  
+  .section-padding-sm {
+    @apply py-12 md:py-16;
+  }
+}
+
+/* Premium Card Styles */
+@layer utilities {
+  .card-premium {
+    @apply bg-white rounded-2xl transition-all duration-300;
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  }
+  
+  .card-premium:hover {
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+    transform: translateY(-2px);
+  }
+  
+  .card-shadow {
+    box-shadow: 0 1px 3px rgba(0, 0, 0, 0.04);
+  }
+  
+  .card-shadow-lg {
+    box-shadow: 0 8px 30px rgba(0, 0, 0, 0.06);
+  }
+  
+  .card-hover {
+    @apply transition-all duration-300;
+  }
+  
+  .card-hover:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 20px 40px rgba(0, 0, 0, 0.08);
+  }
+}
+
+/* Premium Image Containers */
+@layer utilities {
+  .img-zoom {
+    @apply overflow-hidden;
+  }
+  .img-zoom img {
+    @apply transition-transform duration-500;
+  }
+  .img-zoom:hover img {
+    transform: scale(1.05);
+  }
+}
+
+/* Premium Animations */
+@layer utilities {
+  .animate-fade-in {
+    animation: fadeIn 0.5s ease-out forwards;
+    opacity: 0;
+  }
+  
+  @keyframes fadeIn {
+    from {
+      opacity: 0;
+      transform: translateY(10px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+  
+  .animate-slide-up {
+    animation: slideUp 0.4s ease-out forwards;
+  }
+  
+  @keyframes slideUp {
+    from {
+      opacity: 0;
+      transform: translateY(20px);
+    }
+    to {
+      opacity: 1;
+      transform: translateY(0);
+    }
+  }
+
+  /* Premium Background System */
+  .bg-page {
+    background-color: #ffffff;
+  }
+  
+  .bg-section-light {
+    background-color: #fcfcfc;
+  }
+  
+  .bg-section-white {
+    background-color: #ffffff;
+  }
+  
+  .bg-hero-gradient {
+    background: linear-gradient(135deg, #F7FAFC 0%, #EBF4FF 50%, #F0FAFC 100%);
+  }
+
+  .bg-hero-brand {
+    background: linear-gradient(135deg,
+      rgba(0, 94, 184, 0.04) 0%,
+      rgba(22, 199, 217, 0.06) 50%,
+      rgba(0, 94, 184, 0.03) 100%
+    );
+  }
+
+  .bg-hero-dark {
+    background: linear-gradient(135deg, #0A2540 0%, #0d2d4e 100%);
+  }
+
+  .bg-pharma-hero {
+    background: linear-gradient(135deg, #EBF4FF 0%, #F0FAFC 40%, #F7FAFC 100%);
+  }
+
+  .section-padding-sm {
+    @apply py-12 md:py-16;
+  }
+
+  /* Minimal Scrollbar */
+  ::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  ::-webkit-scrollbar-track {
+    background: hsl(var(--muted));
+  }
+  ::-webkit-scrollbar-thumb {
+    background: hsl(var(--muted-foreground) / 0.3);
+    border-radius: 4px;
+  }
+  ::-webkit-scrollbar-thumb:hover {
+    background: hsl(var(--muted-foreground) / 0.5);
+  }
+}

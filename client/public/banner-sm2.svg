@@ -1,0 +1,83 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 800 1000" width="800" height="1000">
+  <defs>
+    <linearGradient id="mbg2" x1="0%" y1="0%" x2="100%" y2="100%">
+      <stop offset="0%" style="stop-color:#F7FAFC" />
+      <stop offset="100%" style="stop-color:#EBF4FF" />
+    </linearGradient>
+    <linearGradient id="mblue2" x1="0%" y1="0%" x2="100%" y2="0%">
+      <stop offset="0%" style="stop-color:#005EB8" />
+      <stop offset="100%" style="stop-color:#0074e4" />
+    </linearGradient>
+    <filter id="mblur2">
+      <feGaussianBlur stdDeviation="45" />
+    </filter>
+    <filter id="mshadow">
+      <feDropShadow dx="0" dy="10" stdDeviation="20" flood-color="#005EB8" flood-opacity="0.2" />
+    </filter>
+  </defs>
+
+  <rect width="800" height="1000" fill="url(#mbg2)" />
+
+  <!-- Soft glows -->
+  <circle cx="700" cy="200" r="280" fill="#16C7D9" opacity="0.07" filter="url(#mblur2)" />
+  <circle cx="100" cy="800" r="250" fill="#005EB8" opacity="0.06" filter="url(#mblur2)" />
+
+  <!-- Dots -->
+  <pattern id="mdots2" width="30" height="30" patternUnits="userSpaceOnUse">
+    <circle cx="2" cy="2" r="1" fill="#005EB8" opacity="0.05" />
+  </pattern>
+  <rect width="800" height="1000" fill="url(#mdots2)" />
+
+  <!-- Top badge -->
+  <rect x="60" y="60" width="220" height="38" rx="19" fill="rgba(0,94,184,0.08)" stroke="#005EB8" stroke-width="1.2" />
+  <text x="170" y="84" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#005EB8" text-anchor="middle" letter-spacing="1">COLD CHAIN SPECIALIST</text>
+
+  <!-- Heading -->
+  <text x="60" y="175" font-family="Arial, sans-serif" font-size="58" font-weight="900" fill="#0A2540">Cold</text>
+  <text x="60" y="242" font-family="Arial, sans-serif" font-size="58" font-weight="900" fill="#005EB8">Chain</text>
+  <text x="60" y="305" font-family="Arial, sans-serif" font-size="40" font-weight="800" fill="#0A2540">Delivery Ready</text>
+
+  <!-- Sub -->
+  <text x="60" y="355" font-family="Arial, sans-serif" font-size="18" fill="#0A2540" opacity="0.6">Temperature-sensitive medicines</text>
+  <text x="60" y="380" font-family="Arial, sans-serif" font-size="18" fill="#0A2540" opacity="0.6">shipped safely at 2°C – 8°C</text>
+
+  <!-- Card stack illustration -->
+  <rect x="60" y="430" width="320" height="180" rx="20" fill="url(#mblue2)" opacity="0.12" transform="rotate(-5, 220, 520)" />
+  <rect x="60" y="430" width="320" height="180" rx="20" fill="url(#mblue2)" opacity="0.2" transform="rotate(-2, 220, 520)" />
+  <rect x="60" y="430" width="320" height="180" rx="20" fill="url(#mblue2)" filter="url(#mshadow)" />
+  <text x="100" y="480" font-family="Arial, sans-serif" font-size="12" font-weight="700" fill="#16C7D9" letter-spacing="1.5">SPECIALTY MEDICINES</text>
+  <text x="100" y="517" font-family="Arial, sans-serif" font-size="22" font-weight="900" fill="white">IVF · Oncology</text>
+  <text x="100" y="549" font-family="Arial, sans-serif" font-size="22" font-weight="900" fill="white">Transplants · HGH</text>
+  <text x="100" y="583" font-family="Arial, sans-serif" font-size="13" fill="white" opacity="0.55">Delivered safely across India</text>
+  <!-- thermometer on card -->
+  <circle cx="345" cy="520" r="35" fill="rgba(22,199,217,0.2)" />
+  <text x="345" y="530" font-family="Arial, sans-serif" font-size="22" text-anchor="middle">🌡</text>
+
+  <!-- Temperature gauge big -->
+  <circle cx="580" cy="600" r="160" fill="none" stroke="#DCE7F2" stroke-width="2" />
+  <circle cx="580" cy="600" r="110" fill="rgba(0,94,184,0.04)" stroke="#005EB8" stroke-width="1.5" opacity="0.4" />
+  <text x="580" y="575" font-family="Arial, sans-serif" font-size="38" font-weight="900" fill="#005EB8" text-anchor="middle">2°C</text>
+  <text x="580" y="608" font-family="Arial, sans-serif" font-size="14" fill="#0A2540" text-anchor="middle" opacity="0.4">to</text>
+  <text x="580" y="645" font-family="Arial, sans-serif" font-size="38" font-weight="900" fill="#16C7D9" text-anchor="middle">8°C</text>
+
+  <!-- Feature rows -->
+  <rect x="60" y="680" width="330" height="46" rx="12" fill="rgba(0,94,184,0.07)" stroke="#DCE7F2" stroke-width="1.2" />
+  <text x="225" y="709" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#005EB8" text-anchor="middle">❄ Cold Chain Certified Delivery</text>
+
+  <rect x="60" y="736" width="330" height="46" rx="12" fill="rgba(0,94,184,0.07)" stroke="#DCE7F2" stroke-width="1.2" />
+  <text x="225" y="765" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#005EB8" text-anchor="middle">✓ 100% Genuine Branded Medicines</text>
+
+  <rect x="60" y="792" width="330" height="46" rx="12" fill="rgba(0,94,184,0.07)" stroke="#DCE7F2" stroke-width="1.2" />
+  <text x="225" y="821" font-family="Arial, sans-serif" font-size="14" font-weight="600" fill="#005EB8" text-anchor="middle">🚚 Pan-India Express Delivery</text>
+
+  <!-- CTAs -->
+  <rect x="60" y="868" width="310" height="58" rx="16" fill="url(#mblue2)" />
+  <text x="215" y="903" font-family="Arial, sans-serif" font-size="18" font-weight="800" fill="white" text-anchor="middle">Enquire Now →</text>
+
+  <rect x="390" y="868" width="310" height="58" rx="16" fill="rgba(37,211,102,0.9)" />
+  <text x="545" y="903" font-family="Arial, sans-serif" font-size="17" font-weight="700" fill="white" text-anchor="middle">📱 WhatsApp</text>
+
+  <!-- Bottom -->
+  <rect x="0" y="968" width="800" height="32" fill="rgba(0,94,184,0.06)" />
+  <text x="400" y="989" font-family="Arial, sans-serif" font-size="11" fill="#005EB8" opacity="0.45" text-anchor="middle">indianpharmazee@gmail.com · +91 95602 47619</text>
+</svg>
