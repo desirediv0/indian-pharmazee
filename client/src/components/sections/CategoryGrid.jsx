@@ -10,8 +10,8 @@ import {
   FaCapsules,
   FaSeedling,
 } from "react-icons/fa";
-import { 
-  GiCheeseWedge, 
+import {
+  GiCheeseWedge,
   GiMasonJar,
   GiButter,
   GiCow,
@@ -19,18 +19,18 @@ import {
   GiSpoon,
   GiCupcake,
 } from "react-icons/gi";
-import { 
+import {
   LuMilk,
 } from "react-icons/lu";
-import { 
+import {
   MdOutlineIcecream,
   MdOutlineShoppingBasket,
   MdOutlineLocalDrink,
 } from "react-icons/md";
-import { 
-  BsTagFill 
+import {
+  BsTagFill
 } from "react-icons/bs";
-import { 
+import {
   TbMilk,
 } from "react-icons/tb";
 
@@ -53,7 +53,7 @@ const getCategoryIcon = (category) => {
   if (name.includes("curd") || slug.includes("curd") || name.includes("yogurt")) return <TbMilk size={size} className="text-blue-500/70" />;
   if (name.includes("ice cream") || slug.includes("ice-cream")) return <MdOutlineIcecream size={size} className="text-blue-500/70" />;
   if (name.includes("turmeric") || slug.includes("haldi")) return <GiSpoon size={size} className="text-blue-500/70" />;
-  
+
   // Animal Feed & Supplements
   if (name.includes("calf feed")) return <FaSeedling size={size} className="text-blue-500/70" />;
   if (name.includes("cow feed")) return <GiGrain size={size} className="text-blue-500/70" />;
@@ -73,7 +73,7 @@ const CategoryCard = ({ category }) => {
 
   return (
     <div className="flex flex-col items-center group cursor-pointer">
-      <div className="relative bg-white rounded p-1 mb-1  md:w-[200px] md:h-[200px] flex items-center justify-center shadow group-hover:shadow-md border border-gray-100 overflow-hidden transition-all duration-200">
+      <div className="relative bg-white rounded mb-1  md:w-[200px] md:h-[200px] flex items-center justify-center shadow group-hover:shadow-md border border-gray-100 overflow-hidden transition-all duration-200">
         {isOffers ? (
           <div className="relative">
             <div className="w-9 h-9 sm:w-11 sm:h-11 md:w-16 md:h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow">
