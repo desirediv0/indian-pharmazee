@@ -11,6 +11,9 @@ const nextConfig = {
                 hostname: "pub-67f953912205445f932ab892164f22e5.r2.dev",
             },
         ]
+    },
+    experimental: {
+        webpackBuildWorker: false,
     }
 };
 
