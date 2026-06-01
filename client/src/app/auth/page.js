@@ -60,7 +60,7 @@ function AuthForm() {
         {/* Logo */}
         <div className="relative z-10">
           <Link href="/">
-            <Image src="/logo.jpeg" alt="Indian Pharmazee" width={160} height={54} className="h-20 w-auto object-contain " />
+            <Image src="/logo.png" alt="Indian Pharmazee" width={160} height={54} className="h-20 w-auto object-contain " />
           </Link>
         </div>
 
@@ -102,7 +102,7 @@ function AuthForm() {
           {/* Mobile logo */}
           <div className="lg:hidden text-center mb-8">
             <Link href="/">
-              <Image src="/logo.jpeg" alt="Indian Pharmazee" width={140} height={48} className="h-12 w-auto object-contain mx-auto" />
+              <Image src="/logo.png" alt="Indian Pharmazee" width={140} height={48} className="h-12 w-auto object-contain mx-auto" />
             </Link>
           </div>
 

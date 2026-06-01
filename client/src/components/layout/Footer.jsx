@@ -88,11 +88,11 @@ export const Footer = () => {
           <div className="lg:col-span-4">
             <Link href="/" className="inline-block mb-6">
               <Image
-                src="/logo.jpeg"
+                src="/logo.png"
                 alt="Indian Pharmazee"
                 width={180}
                 height={60}
-                className="h-16 w-auto object-contain "
+                className="h-6 w-auto object-contain "
               />
             </Link>
 
