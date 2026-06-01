@@ -19,118 +19,126 @@ import {
   GiSpoon,
   GiCupcake,
 } from "react-icons/gi";
-import {
-  LuMilk,
-} from "react-icons/lu";
+import { LuMilk } from "react-icons/lu";
 import {
   MdOutlineIcecream,
   MdOutlineShoppingBasket,
   MdOutlineLocalDrink,
 } from "react-icons/md";
-import {
-  BsTagFill
-} from "react-icons/bs";
-import {
-  TbMilk,
-} from "react-icons/tb";
+import { BsTagFill } from "react-icons/bs";
+import { TbMilk } from "react-icons/tb";
 
+/* ─── fallback solid bg per category (when no image) ─────────────────── */
+const getCategoryBg = (category) => {
+  const n = category.name?.toLowerCase() || "";
+  const s = category.slug?.toLowerCase() || "";
 
+  if (n.includes("offer") || s.includes("offer"))   return "bg-gradient-to-br from-orange-400 to-red-500";
+  if (n.includes("milk") || s.includes("milk"))     return "bg-gradient-to-br from-sky-400 to-indigo-500";
+  if (n.includes("beverages") || s.includes("beverages")) return "bg-gradient-to-br from-cyan-400 to-emerald-500";
+  if (n.includes("sweets") || s.includes("sweets")) return "bg-gradient-to-br from-pink-400 to-purple-500";
+  if (n.includes("ghee") || s.includes("ghee"))     return "bg-gradient-to-br from-amber-300 to-orange-400";
+  if (n.includes("paneer") || s.includes("paneer") || n.includes("cheese")) return "bg-gradient-to-br from-lime-300 to-green-400";
+  if (n.includes("butter") || s.includes("butter")) return "bg-gradient-to-br from-yellow-300 to-amber-400";
+  if (n.includes("curd") || s.includes("curd") || n.includes("yogurt")) return "bg-gradient-to-br from-violet-400 to-indigo-500";
+  if (n.includes("ice cream") || s.includes("ice-cream")) return "bg-gradient-to-br from-rose-300 to-fuchsia-400";
+  if (n.includes("turmeric") || s.includes("haldi")) return "bg-gradient-to-br from-yellow-400 to-orange-500";
+  if (n.includes("calf") || n.includes("cow feed") || n.includes("supplement")) return "bg-gradient-to-br from-green-400 to-teal-500";
+  if (n.includes("cow") || s.includes("cow") || n.includes("dairy")) return "bg-gradient-to-br from-blue-400 to-violet-500";
 
-
-const getCategoryIcon = (category) => {
-  const name = category.name?.toLowerCase() || "";
-  const slug = category.slug?.toLowerCase() || "";
-  const size = 64; // Larger size for grid
-
-  // Dairy & Grocery specific mapping from images
-  if (name.includes("milk powder")) return <FaBoxOpen size={size} className="text-blue-500/70" />;
-  if (name.includes("milk") || slug.includes("milk")) return <LuMilk size={size} className="text-blue-500/70" />;
-  if (name.includes("beverages") || slug.includes("beverages")) return <MdOutlineLocalDrink size={size} className="text-blue-500/70" />;
-  if (name.includes("sweets") || slug.includes("sweets")) return <GiCupcake size={size} className="text-blue-500/70" />;
-  if (name.includes("ghee") || slug.includes("ghee")) return <GiMasonJar size={size} className="text-blue-500/70" />;
-  if (name.includes("paneer") || slug.includes("paneer") || name.includes("cheese")) return <GiCheeseWedge size={size} className="text-blue-500/70" />;
-  if (name.includes("butter") || slug.includes("butter")) return <GiButter size={size} className="text-blue-500/70" />;
-  if (name.includes("curd") || slug.includes("curd") || name.includes("yogurt")) return <TbMilk size={size} className="text-blue-500/70" />;
-  if (name.includes("ice cream") || slug.includes("ice-cream")) return <MdOutlineIcecream size={size} className="text-blue-500/70" />;
-  if (name.includes("turmeric") || slug.includes("haldi")) return <GiSpoon size={size} className="text-blue-500/70" />;
-
-  // Animal Feed & Supplements
-  if (name.includes("calf feed")) return <FaSeedling size={size} className="text-blue-500/70" />;
-  if (name.includes("cow feed")) return <GiGrain size={size} className="text-blue-500/70" />;
-  if (name.includes("supplement")) return <FaCapsules size={size} className="text-blue-500/70" />;
-  if (name.includes("cow") || slug.includes("cow") || name.includes("dairy")) return <MdOutlineShoppingBasket size={size} className="text-blue-500/70" />;
-
-  if (name.includes("offer") || slug.includes("offer")) return <BsTagFill size={size} className="text-orange-500/70" />;
-
-  return <MdOutlineShoppingBasket size={size} className="text-gray-400" />;
+  return "bg-gradient-to-br from-slate-500 to-indigo-600";
 };
 
-const CategoryCard = ({ category }) => {
+/* ─── fallback icon ───────────────────────────────────────────────────── */
+const getCategoryIcon = (category) => {
+  const n = category.name?.toLowerCase() || "";
+  const s = category.slug?.toLowerCase() || "";
+  const size = 64;
+  const cls = "text-white/80";
 
-  const isOffers =
-    category.name?.toLowerCase().includes("offer") ||
-    category.slug === "offers";
+  if (n.includes("milk powder")) return <FaBoxOpen size={size} className={cls} />;
+  if (n.includes("milk") || s.includes("milk")) return <LuMilk size={size} className={cls} />;
+  if (n.includes("beverages") || s.includes("beverages")) return <MdOutlineLocalDrink size={size} className={cls} />;
+  if (n.includes("sweets") || s.includes("sweets")) return <GiCupcake size={size} className={cls} />;
+  if (n.includes("ghee") || s.includes("ghee")) return <GiMasonJar size={size} className={cls} />;
+  if (n.includes("paneer") || s.includes("paneer") || n.includes("cheese")) return <GiCheeseWedge size={size} className={cls} />;
+  if (n.includes("butter") || s.includes("butter")) return <GiButter size={size} className={cls} />;
+  if (n.includes("curd") || s.includes("curd") || n.includes("yogurt")) return <TbMilk size={size} className={cls} />;
+  if (n.includes("ice cream") || s.includes("ice-cream")) return <MdOutlineIcecream size={size} className={cls} />;
+  if (n.includes("turmeric") || s.includes("haldi")) return <GiSpoon size={size} className={cls} />;
+  if (n.includes("calf feed")) return <FaSeedling size={size} className={cls} />;
+  if (n.includes("cow feed")) return <GiGrain size={size} className={cls} />;
+  if (n.includes("supplement")) return <FaCapsules size={size} className={cls} />;
+  if (n.includes("cow") || s.includes("cow") || n.includes("dairy")) return <GiCow size={size} className={cls} />;
+  if (n.includes("offer") || s.includes("offer")) return <BsTagFill size={size} className={cls} />;
+
+  return <MdOutlineShoppingBasket size={size} className={cls} />;
+};
+
+/* ─── card: full-bleed image + text overlay bottom-left ──────────────── */
+const CategoryCard = ({ category }) => {
+  const bgCls = getCategoryBg(category);
 
   return (
-    <div className="flex flex-col items-center group cursor-pointer">
-      <div className="relative bg-white rounded mb-1  md:w-[200px] md:h-[200px] flex items-center justify-center shadow group-hover:shadow-md border border-gray-100 overflow-hidden transition-all duration-200">
-        {isOffers ? (
-          <div className="relative">
-            <div className="w-9 h-9 sm:w-11 sm:h-11 md:w-16 md:h-16 bg-gradient-to-br from-yellow-400 to-orange-500 rounded-full flex items-center justify-center shadow">
-              <span className="text-white text-lg sm:text-xl md:text-2xl font-bold">
-                %
-              </span>
-            </div>
-            <div className="absolute -top-1 -right-1 w-3 h-3 sm:w-4 sm:h-4 md:w-5 md:h-5 bg-red-500 rounded-full flex items-center justify-center">
-              <span className="text-white text-[10px] sm:text-xs md:text-sm font-bold">
-                !
-              </span>
-            </div>
-          </div>
-        ) : (
-          <div className="relative w-full h-full overflow-hidden bg-blue-50/50 flex items-center justify-center group-hover:bg-blue-100/50 transition-colors duration-300">
-            {category.image ? (
-              <Image
-                src={category.image}
-                alt={category.name || "Category"}
-                width={300}
-                height={300}
-                className="object-contain w-full h-full group-hover:scale-110 transition-transform duration-300 drop-shadow-sm"
-                loading="lazy"
-              />
-            ) : (
-              <div className="group-hover:scale-110 transition-transform duration-300 flex flex-col items-center">
-                {getCategoryIcon(category)}
-              </div>
-            )}
-          </div>
-        )}
+    <div
+      className={`
+        relative w-full aspect-[4/3] rounded-2xl overflow-hidden cursor-pointer
+        group shadow-md hover:shadow-2xl
+        transition-all duration-300 ease-out
+        hover:-translate-y-1 hover:scale-[1.02]
+        ${bgCls}
+      `}
+    >
+      {/* full-bleed image */}
+      {category.image && (
+        <Image
+          src={category.image}
+          alt={category.name || "Category"}
+          fill
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          className="object-cover group-hover:scale-105 transition-transform duration-500"
+          loading="lazy"
+        />
+      )}
 
-      </div>
-      <div className="text-center px-1 mt-1">
-        <h3 className="text-[11px] sm:text-xs md:text-base font-medium text-gray-700 group-hover:text-blue-600 transition-colors duration-200 leading-tight max-w-[64px] sm:max-w-[110px] md:max-w-[140px] truncate">
+      {/* no image fallback — icon centered */}
+      {!category.image && (
+        <div className="absolute inset-0 flex items-center justify-center">
+          {getCategoryIcon(category)}
+        </div>
+      )}
+
+      {/* gradient scrim — bottom to transparent */}
+      <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent" />
+
+      {/* text bottom-left */}
+      <div className="absolute bottom-0 left-0 p-3 sm:p-4">
+        <h3 className="text-white font-bold text-sm sm:text-base md:text-lg leading-tight drop-shadow-sm">
           {category.name}
         </h3>
+        {category.count > 0 && (
+          <p className="text-white/75 text-xs sm:text-sm font-medium mt-0.5">
+            {category.count} Items
+          </p>
+        )}
       </div>
     </div>
   );
 };
 
+/* ─── skeleton ────────────────────────────────────────────────────────── */
 const SkeletonLoader = () => (
-  <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-4">
-    {[...Array(6)].map((_, index) => (
+  <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5">
+    {[...Array(8)].map((_, i) => (
       <div
-        key={index}
-        className="flex flex-col items-center animate-pulse flex-shrink-0"
-      >
-        <div className="bg-gray-200 rounded-2xl w-[100px] h-[100px] sm:w-[120px] sm:h-[120px] md:w-[140px] md:h-[140px] mb-3"></div>
-        <div className="h-3 bg-gray-200 rounded w-12 sm:w-16 md:w-20 mb-1"></div>
-        <div className="h-2 bg-gray-200 rounded w-8 sm:w-10 md:w-12"></div>
-      </div>
+        key={i}
+        className="w-full aspect-[4/3] rounded-2xl bg-gradient-to-br from-slate-200 to-slate-300 animate-pulse"
+      />
     ))}
   </div>
 );
 
+/* ─── main ────────────────────────────────────────────────────────────── */
 const CategoryGrid = () => {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -164,17 +172,22 @@ const CategoryGrid = () => {
     window.location.reload();
   };
 
+  const sectionCls = `relative py-8 md:py-12 my-3 md:my-4 bg-[#f4f6f9] overflow-hidden`;
+
+  const Header = () => (
+    <div className="text-center mb-8 sm:mb-10">
+      <Headtext text="SHOP BY CATEGORY" />
+      <p className="mt-5 text-slate-500 text-sm sm:text-[15px] font-medium tracking-wide">
+        Farm-fresh dairy &amp; nutritional products, delivered daily
+      </p>
+    </div>
+  );
+
   if (loading) {
     return (
-      <section className="py-5 md:py-6 my-3 md:my-4 bg-gradient-to-br from-slate-50 to-blue-50/30">
-        <div className="container mx-auto px-4">
-          <div className="text-center mb-6 sm:mb-8">
-            <Headtext text="SHOP BY CATEGORY" />
-            <p className="text-gray-600 text-sm sm:text-base">
-              Explore our premium range of farm-fresh nutritional products
-            </p>
-
-          </div>
+      <section className={sectionCls}>
+        <div className="container max-w-7xl mx-auto px-4">
+          <Header />
           <SkeletonLoader />
         </div>
       </section>
@@ -183,13 +196,13 @@ const CategoryGrid = () => {
 
   if (error) {
     return (
-      <section className="py-8 sm:py-12 bg-gradient-to-br from-slate-50 to-blue-50/30">
-        <div className="container mx-auto px-4">
-          <div className="text-center py-12">
-            <p className="text-red-500 mb-4">Error: {error}</p>
+      <section className={sectionCls}>
+        <div className="container max-w-7xl mx-auto px-4">
+          <div className="text-center py-14">
+            <p className="text-red-500 font-medium mb-4">Error: {error}</p>
             <button
               onClick={handleRetry}
-              className="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+              className="px-5 py-2.5 bg-[#175C98] text-white text-sm font-semibold rounded-xl hover:bg-[#134d82] transition-colors shadow-md"
             >
               Try Again
             </button>
@@ -201,10 +214,10 @@ const CategoryGrid = () => {
 
   if (!categories || categories.length === 0) {
     return (
-      <section className="py-8 sm:py-12 bg-gradient-to-br from-slate-50 to-blue-50/30">
-        <div className="container mx-auto px-4">
-          <div className="text-center py-12">
-            <p className="text-gray-500">
+      <section className={sectionCls}>
+        <div className="container max-w-7xl mx-auto px-4">
+          <div className="text-center py-14">
+            <p className="text-slate-400 font-medium">
               No categories available at the moment
             </p>
           </div>
@@ -214,23 +227,17 @@ const CategoryGrid = () => {
   }
 
   return (
-    <section className="py-5 md:py-6 my-3 md:my-4 bg-gradient-to-br from-slate-50 to-blue-50/30">
+    <section className={sectionCls}>
       <div className="container max-w-7xl mx-auto px-4">
-        <div className="text-center mb-6 sm:mb-8">
-          <Headtext text="SHOP BY CATEGORY" />
-          <p className="text-gray-600 text-sm sm:text-base my-6 ">
-            Explore our premium range of farm-fresh nutritional products
-          </p>
-
-        </div>
-        <div className="grid grid-cols-3 sm:grid-cols-4 lg:grid-cols-6 gap-4">
-          {categories.map((category, index) => (
+        <Header />
+        <div className="grid grid-cols-2 md:grid-cols-4 gap-4 sm:gap-5">
+          {categories.map((category) => (
             <Link
               href={`/category/${category.slug}`}
               key={category.id}
               className="block"
             >
-              <CategoryCard category={category} index={index} />
+              <CategoryCard category={category} />
             </Link>
           ))}
         </div>

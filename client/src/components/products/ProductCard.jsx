@@ -2,7 +2,7 @@
 
 import Link from "next/link";
 import Image from "next/image";
-import { Heart, Loader2, ShoppingCart, Zap, Star, Check } from "lucide-react";
+import { Heart, Loader2, ShoppingCart, Eye, Check, Star } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { fetchApi, formatCurrency, cn } from "@/lib/utils";
 import { toast } from "sonner";
@@ -131,6 +131,7 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
       : 0;
 
   const showPrice = !priceSettings?.hidePricesForGuests || isAuthenticated;
+  const isOutOfStock = product.stock === 0 || product.inStock === false;
   const inWishlist = wishlistItems[product.id];
 
   /* ── Handlers ── */
@@ -180,12 +181,11 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
   if (isList) {
     return (
       <div
-        className="group relative bg-white rounded-2xl overflow-hidden flex flex-row transition-all duration-300 hover:shadow-xl border"
-        style={{ borderColor: "#DCE7F2", minHeight: "140px" }}
+        className="group relative bg-white rounded-2xl overflow-hidden flex flex-row transition-all duration-300 hover:shadow-xl border border-gray-100"
+        style={{ minHeight: "140px" }}
         onMouseEnter={() => setIsHovered(true)}
         onMouseLeave={() => setIsHovered(false)}
       >
-        {/* Image — fixed size, no fill */}
         <Link
           href={`/products/${product.slug}`}
           className="flex-shrink-0 bg-gray-50 flex items-center justify-center overflow-hidden"
@@ -200,32 +200,30 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
             style={{ width: "100%", height: "auto", maxHeight: "120px", padding: "10px" }}
           />
         </Link>
-
-        {/* Content */}
         <div className="flex flex-col flex-1 p-4 justify-between min-w-0">
           <div>
             <span className="text-[10px] text-gray-400 uppercase tracking-widest mb-1 block">{product.category?.name || "Medicine"}</span>
             <Link href={`/products/${product.slug}`}>
-              <h3 className="text-base font-semibold mb-1 line-clamp-2 group-hover:text-primary transition-colors" style={{ color: "#0A2540" }}>{product.name}</h3>
+              <h3 className="text-base font-semibold mb-1 line-clamp-2 group-hover:text-[#175C98] transition-colors text-[#0A2540]">{product.name}</h3>
             </Link>
           </div>
           <div className="flex items-center gap-3 flex-wrap">
             {showPrice ? (
               <div className="flex items-center gap-2 flex-wrap">
-                <span className="text-lg font-bold" style={{ color: "#005EB8" }}>{formatCurrency(displayPrice)}</span>
+                <span className="text-lg font-bold text-[#175C98]">{formatCurrency(displayPrice)}</span>
                 {originalPrice && <span className="text-sm text-gray-400 line-through">{formatCurrency(originalPrice)}</span>}
                 {discountPercent > 0 && <span className="text-xs font-bold text-green-600 bg-green-50 px-2 py-0.5 rounded-full">{discountPercent}% off</span>}
               </div>
             ) : (
-              <Link href="/auth" className="text-sm font-bold text-primary">Login for Price</Link>
+              <Link href="/auth" className="text-sm font-bold text-[#175C98]">Login for Price</Link>
             )}
             <button
               onClick={handleAddToCart}
-              disabled={!showPrice || isAddingToCart}
-              className="ml-auto flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-sm font-semibold transition-all hover:opacity-90 whitespace-nowrap"
-              style={{ background: addedToCart ? "#16C7D9" : "linear-gradient(135deg, #005EB8, #0074e4)" }}
+              disabled={!showPrice || isAddingToCart || isOutOfStock}
+              className="ml-auto flex-shrink-0 flex items-center gap-2 px-4 py-2.5 rounded-xl text-white text-sm font-semibold transition-all hover:opacity-90 whitespace-nowrap disabled:opacity-50"
+              style={{ background: addedToCart ? "#16a34a" : isOutOfStock ? "#dc2626" : "#175C98" }}
             >
-              {isAddingToCart ? <Loader2 className="w-4 h-4 animate-spin" /> : addedToCart ? <><Check className="w-4 h-4" /><span>Added</span></> : <><ShoppingCart className="w-4 h-4" /><span>Add to Cart</span></>}
+              {isAddingToCart ? <Loader2 className="w-4 h-4 animate-spin" /> : addedToCart ? <><Check className="w-4 h-4" /><span>Added</span></> : isOutOfStock ? <span>Out Of Stock</span> : <><ShoppingCart className="w-4 h-4" /><span>Add to Cart</span></>}
             </button>
           </div>
         </div>
@@ -233,59 +231,53 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
     );
   }
 
-  /* ── GRID MODE — matches screenshot exactly ── */
+  /* ── GRID MODE ── */
   return (
     <div
-      className="group relative bg-white rounded-2xl overflow-hidden flex flex-col transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 border"
-      style={{ borderColor: "#e8f0fb" }}
+      className="group relative bg-white rounded-2xl overflow-hidden flex flex-col transition-all duration-300 hover:shadow-2xl hover:-translate-y-1 border border-gray-100"
       onMouseEnter={() => setIsHovered(true)}
       onMouseLeave={() => setIsHovered(false)}
     >
       {/* ── Image section ── */}
       <Link
         href={`/products/${product.slug}`}
-        className="relative block overflow-hidden bg-gray-50"
+        className="relative block overflow-hidden bg-[#f7f8fc]"
         style={{ aspectRatio: "1/1" }}
       >
-        {/* Top-left badge */}
-        <div className="absolute top-2.5 left-2.5 z-20 flex flex-col gap-1.5">
-          {showFlashSaleBadge && (
-            <span
-              className="px-2 py-0.5 rounded text-[10px] font-black text-white uppercase tracking-wide"
-              style={{ background: "linear-gradient(135deg, #005EB8, #16C7D9)" }}
-            >
-              FLASH {discountPercent}% OFF
-            </span>
-          )}
-          {!showFlashSaleBadge && discountPercent > 0 && (
-            <span className="px-2 py-0.5 rounded text-[10px] font-black text-white uppercase" style={{ background: "#005EB8" }}>
-              {discountPercent}% OFF
-            </span>
-          )}
-          {product.isNew && !discountPercent && (
-            <span className="px-2 py-0.5 rounded text-[10px] font-black text-white" style={{ background: "#16C7D9" }}>
-              NEW
-            </span>
-          )}
-        </div>
-
-        {/* Top-right % off chip (like screenshot "36% OFF") */}
-        {!showFlashSaleBadge && discountPercent > 0 && (
-          <span className="absolute top-2.5 right-2.5 z-20 px-2 py-0.5 rounded text-[10px] font-bold text-gray-600 bg-white border" style={{ borderColor: "#DCE7F2" }}>
-            {discountPercent}% OFF
+        {/* Discount badge — top left */}
+        {discountPercent > 0 && (
+          <span className={cn(
+            "absolute top-3 left-3 z-20 text-[11px] font-black text-white px-2 py-0.5 rounded-md",
+            showFlashSaleBadge ? "bg-gradient-to-r from-[#175C98] to-[#16C7D9]" : "bg-[#175C98]"
+          )}>
+            {showFlashSaleBadge ? `⚡ ${discountPercent}% OFF` : `${discountPercent}% OFF`}
           </span>
         )}
 
-        {/* Wishlist */}
+        {/* NEW badge */}
+        {product.isNew && !discountPercent && (
+          <span className="absolute top-3 left-3 z-20 text-[11px] font-black text-white px-2 py-0.5 rounded-md bg-emerald-500">
+            NEW
+          </span>
+        )}
+
+        {/* Brand name — top right (like reference screenshot) */}
+        {product.brand?.name && (
+          <span className="absolute top-3 right-10 z-20 text-[10px] font-semibold text-gray-400 tracking-wide">
+            {product.brand.name}
+          </span>
+        )}
+
+        {/* Wishlist button — top right */}
         <button
           onClick={handleAddToWishlist}
           disabled={isAddingToWishlist[product.id]}
           className={cn(
-            "absolute z-20 w-8 h-8 rounded-full flex items-center justify-center transition-all duration-300 shadow",
-            discountPercent > 0 ? "top-2.5 right-2.5" : "top-2.5 right-2.5",
-            inWishlist ? "bg-red-500 text-white" : "bg-white text-gray-400 hover:text-red-500"
+            "absolute top-2.5 right-2.5 z-20 w-7 h-7 rounded-full flex items-center justify-center transition-all duration-200 shadow-sm",
+            inWishlist
+              ? "bg-red-500 text-white"
+              : "bg-white/90 text-gray-300 hover:text-red-400 hover:bg-white"
           )}
-          style={discountPercent > 0 ? { top: "2.5rem", right: "0.625rem" } : {}}
         >
           {isAddingToWishlist[product.id]
             ? <Loader2 className="h-3.5 w-3.5 animate-spin" />
@@ -297,31 +289,29 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
           src={getAllProductImages[currentImageIndex] || "/placeholder.jpg"}
           alt={product.name}
           fill
-          className="object-contain p-4 transition-transform duration-500 group-hover:scale-105"
+          className="object-contain p-5 transition-transform duration-500 group-hover:scale-[1.07]"
           sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
         />
+
+        {/* Subtle drop shadow under product */}
+        <div className="absolute bottom-0 inset-x-0 h-8 bg-gradient-to-t from-black/[0.04] to-transparent pointer-events-none" />
 
         {/* Image dots */}
         {getAllProductImages.length > 1 && (
           <div className={cn("absolute bottom-2 inset-x-0 flex justify-center gap-1 transition-opacity duration-300", isHovered ? "opacity-100" : "opacity-0")}>
             {getAllProductImages.map((_, idx) => (
-              <div key={idx} className={cn("h-1 rounded-full transition-all duration-300", idx === currentImageIndex ? "w-4 bg-primary" : "w-1 bg-gray-300")} />
+              <div key={idx} className={cn("h-1 rounded-full transition-all duration-300", idx === currentImageIndex ? "w-4 bg-[#175C98]" : "w-1 bg-gray-300")} />
             ))}
           </div>
         )}
       </Link>
 
       {/* ── Info section ── */}
-      <div className="flex flex-col flex-1 px-3 pt-3 pb-0">
-
-        {/* Category */}
-        <span className="text-[10px] uppercase tracking-widest text-gray-400 mb-1">
-          {product.category?.name || "Medicine"}
-        </span>
+      <div className="flex flex-col flex-1 px-3.5 pt-3 pb-3">
 
         {/* Name */}
         <Link href={`/products/${product.slug}`} className="block mb-2">
-          <h3 className="text-sm font-semibold leading-snug line-clamp-2 transition-colors group-hover:text-primary" style={{ color: "#0A2540" }}>
+          <h3 className="text-[13px] font-semibold leading-snug line-clamp-2 text-[#1a2540] group-hover:text-[#175C98] transition-colors">
             {product.name}
           </h3>
         </Link>
@@ -332,52 +322,73 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
             {[1, 2, 3, 4, 5].map((s) => (
               <Star key={s} className={cn("w-3 h-3", s <= Math.round(product.avgRating) ? "fill-amber-400 text-amber-400" : "text-gray-200 fill-gray-200")} />
             ))}
-            <span className="text-[10px] text-gray-400 ml-1">({product.avgRating})</span>
+            <span className="text-[10px] text-gray-400 ml-0.5">({product.avgRating})</span>
           </div>
         )}
 
-        {/* Price row */}
+        {/* Price row — matches screenshot: strikethrough red + sale price */}
         {showPrice ? (
-          <div className="flex items-center gap-2 mb-3">
-            <span className="text-base font-bold" style={{ color: "#005EB8" }}>
+          <div className="flex items-center gap-2 flex-wrap mt-auto mb-3">
+            {originalPrice && (
+              <span className="text-[12px] text-red-400 line-through font-medium">
+                {formatCurrency(originalPrice)}
+              </span>
+            )}
+            <span className="text-[15px] font-bold text-[#175C98]">
               {formatCurrency(displayPrice)}
             </span>
-            {originalPrice && (
-              <span className="text-xs text-gray-400 line-through">{formatCurrency(originalPrice)}</span>
-            )}
-            {discountPercent > 0 && (
-              <span className="text-[10px] font-bold text-green-600">{discountPercent}% off</span>
-            )}
           </div>
         ) : (
-          <div className="mb-3">
-            <Link href="/auth" className="text-xs font-bold text-primary hover:underline">Login for Price</Link>
+          <div className="mt-auto mb-3">
+            <Link href="/auth" className="text-xs font-bold text-[#175C98] hover:underline">
+              Login for Price
+            </Link>
           </div>
         )}
       </div>
 
-      {/* ── Full-width Add to Cart button ── */}
-      <button
-        onClick={handleAddToCart}
-        disabled={!showPrice || isAddingToCart}
-        className="w-full py-3 text-sm font-bold text-white flex items-center justify-center gap-2 transition-all duration-300 disabled:opacity-50 mt-auto"
-        style={{
-          background: addedToCart
-            ? "#16C7D9"
-            : isHovered
-              ? "linear-gradient(135deg, #0052a3, #0068cc)"
-              : "linear-gradient(135deg, #005EB8, #0074e4)",
-          borderRadius: "0 0 1rem 1rem",
-        }}
-      >
-        {isAddingToCart ? (
-          <Loader2 className="w-4 h-4 animate-spin" />
-        ) : addedToCart ? (
-          <><Check className="w-4 h-4" /> Added!</>
-        ) : (
-          <>Add to Cart +</>
-        )}
-      </button>
+      {/* ── Full-width action button ── */}
+      {isOutOfStock ? (
+        <button
+          disabled
+          className="w-full py-2.5 text-[13px] font-bold text-white flex items-center justify-center gap-2 rounded-b-2xl bg-red-500 opacity-90"
+        >
+          Out Of Stock
+        </button>
+      ) : !showPrice ? (
+        <Link
+          href="/auth"
+          className="w-full py-2.5 text-[13px] font-bold text-white flex items-center justify-center gap-2 rounded-b-2xl bg-[#175C98] hover:bg-[#134d82] transition-colors"
+        >
+          Login to Buy
+        </Link>
+      ) : product.variants?.length === 0 ? (
+        <Link
+          href={`/products/${product.slug}`}
+          className="w-full py-2.5 text-[13px] font-bold flex items-center justify-center gap-1.5 rounded-b-2xl bg-gray-100 text-gray-600 hover:bg-gray-200 transition-colors"
+        >
+          <Eye className="w-3.5 h-3.5" /> View
+        </Link>
+      ) : addedToCart ? (
+        <button
+          className="w-full py-2.5 text-[13px] font-bold text-white flex items-center justify-center gap-2 rounded-b-2xl bg-green-500"
+        >
+          <Check className="w-4 h-4" /> Added!
+        </button>
+      ) : (
+        <button
+          onClick={handleAddToCart}
+          disabled={isAddingToCart}
+          className={cn(
+            "w-full py-2.5 text-[13px] font-bold text-white flex items-center justify-center gap-2 rounded-b-2xl transition-all duration-200 disabled:opacity-60",
+            isHovered ? "bg-[#134d82]" : "bg-[#175C98]"
+          )}
+        >
+          {isAddingToCart
+            ? <Loader2 className="w-4 h-4 animate-spin" />
+            : <><ShoppingCart className="w-3.5 h-3.5" /> Add to Cart</>}
+        </button>
+      )}
     </div>
   );
 };
