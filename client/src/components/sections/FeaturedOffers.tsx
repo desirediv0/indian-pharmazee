@@ -6,27 +6,27 @@ import { ArrowRight, Sparkles } from "lucide-react";
 
 const OFFERS = [
   {
-    image: "/ivf-offer.png",
-    title: "IVF Excellence",
+    image: "/IVF.png",
+    title: "IVF",
     subtitle: "Advanced Fertility Solutions",
     href: "/products",
   },
   {
-    image: "/womens-health-offer.png",
-    title: "Women's Wellness",
-    subtitle: "Specialized Healthcare",
+    image: "/osteoporosis.png",
+    title: "Osteoporosis",
+    subtitle: "Bone Health Support",
     href: "/products",
   },
   {
-    image: "/anti-cancer-offer.png",
-    title: "Cancer Care",
-    subtitle: "Oncology Solutions",
+    image: "/Anti-Cancer.png",
+    title: "Anti Cancer",
+    subtitle: "Targeted Cancer Therapies",
     href: "/products",
   },
   {
-    image: "/wellness-offer.png",
-    title: "Wellness Care",
-    subtitle: "Daily Health Essentials",
+    image: "/Arthritis.png",
+    title: "Arthritis",
+    subtitle: "Joint Health Solutions",
     href: "/products",
   },
 ];
