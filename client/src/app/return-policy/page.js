@@ -1,9 +1,9 @@
 import { PageHero } from "@/components/ui/PageHero";
-import { BadgeAlert, ShieldCheck, RefreshCw, Mail } from "lucide-react";
+import { BadgeAlert, RefreshCw, Landmark } from "lucide-react";
 
 export const metadata = {
     title: "Return & Cancellation Policy | Indian Pharmazee",
-    description: "Review Indian Pharmazee's pharmaceutical return guidelines, cold chain safety restrictions, refund approvals, and replacement terms.",
+    description: "Review Indian Pharmazee's pharmaceutical return guidelines, cold chain safety restrictions, Razorpay refund approvals, and replacement terms.",
 };
 
 const returnSteps = [
@@ -25,7 +25,7 @@ const returnSteps = [
     {
         step: 4,
         title: "Refund/Exchange",
-        description: "Credit processed to original payment method within 5–7 days."
+        description: "Credit processed back via Razorpay to the original source in 5–7 days."
     }
 ];
 
@@ -34,7 +34,7 @@ export default function ReturnPolicyPage() {
         <div className="bg-slate-50 min-h-screen font-sans">
             <PageHero
                 title="Return & Cancellation Policy"
-                description="Our strict commitment to product purity, thermal safety, and patient satisfaction"
+                description="Our strict commitment to product purity, thermal safety, and secure Razorpay refund processing"
                 breadcrumbs={[{ label: "Return Policy" }]}
                 variant="default"
                 size="sm"
@@ -108,16 +108,27 @@ export default function ReturnPolicyPage() {
                         <div>
                             <h2 className="font-display text-xl font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
                                 <span className="w-1.5 h-5 bg-[#005EB8] rounded-full" />
-                                Refund Disbursement Schedules
+                                Refund Disbursement via Razorpay
                             </h2>
                             <p className="text-slate-600 text-sm leading-relaxed mb-4">
                                 Once returned items are received at our warehouse and successfully audited by our clinical pharmacist:
                             </p>
                             <ul className="space-y-3 pl-5 list-disc text-xs md:text-sm text-slate-600">
                                 <li>Refund approvals are finalized within **2 business days** of receiving the return.</li>
-                                <li>Credit card, netbanking, or UPI payments are refunded to the original payment source within **5–7 business days**.</li>
+                                <li>All online transaction refunds are processed directly via **Razorpay** to your original payment source (Credit Card, Debit Card, Net Banking, or UPI Wallet).</li>
+                                <li>Approved refunds generally reflect in your account within **5–7 business days**, in line with card network and partner bank processing rules.</li>
                                 <li>For Cash on Delivery (COD) transactions, refunds will be credited via a secure NEFT bank transfer to an account matching the billing name.</li>
                             </ul>
+                        </div>
+
+                        <div>
+                            <h2 className="font-display text-xl font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
+                                <span className="w-1.5 h-5 bg-[#16C7D9] rounded-full" />
+                                Order Cancellation Terms
+                            </h2>
+                            <p className="text-slate-600 text-sm leading-relaxed">
+                                You can request an order cancellation before it is dispatched from our facility. Once dispatched (a tracking ID has been generated), orders cannot be cancelled. To cancel, please reach out to our customer support desk immediately. Upon successful cancellation, a 100% refund will be credited back via Razorpay to the payment source.
+                            </p>
                         </div>
 
                         <div className="pt-6 border-t border-slate-100 flex flex-col sm:flex-row items-center justify-between gap-6">

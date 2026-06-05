@@ -1,26 +1,26 @@
 import { PageHero } from "@/components/ui/PageHero";
-import { Gavel, CheckSquare, ShieldCheck, Mail } from "lucide-react";
+import { Gavel, CheckSquare, ShieldCheck, CreditCard } from "lucide-react";
 
 export const metadata = {
     title: "Terms & Conditions | Indian Pharmazee",
-    description: "Read Indian Pharmazee's Terms of Use, prescription guidelines, medical disclaimer, and patient purchasing agreements.",
+    description: "Read Indian Pharmazee's Terms of Use, prescription guidelines, medical disclaimer, and patient purchasing agreements in compliance with Razorpay standards.",
 };
 
 const provisions = [
     {
         icon: Gavel,
         title: "Compliance Guidelines",
-        description: "All transactions and sourcing enquries are conducted under drug administration laws and regional pharmaceutical guidelines."
+        description: "All transactions and sourcing enquiries are conducted under the Drugs and Cosmetics Act, 1940 and other applicable Indian pharmaceutical guidelines."
     },
     {
         icon: ShieldCheck,
         title: "Prescription Integrity",
-        description: "We require valid, physician-signed prescriptions for all scheduled medicines. Fake uploads are rejected."
+        description: "We require valid, physician-signed prescriptions for all scheduled medicines. Fake or tampered uploads will be immediately rejected."
     },
     {
-        icon: CheckSquare,
-        title: "Patient Responsibility",
-        description: "Patients must verify that the medication dosage and usage match instructions provided by their treating physician."
+        icon: CreditCard,
+        title: "Payment Security",
+        description: "All online transactions are securely routed through Razorpay's PCI-DSS compliant infrastructure with multiple checks."
     }
 ];
 
@@ -29,7 +29,7 @@ export default function TermsPage() {
         <div className="bg-slate-50 min-h-screen font-sans">
             <PageHero
                 title="Terms & Conditions"
-                description="Regulatory frameworks, user agreements, and medical sourcing terms of service"
+                description="Regulatory frameworks, user agreements, Razorpay payment processing terms, and medical sourcing terms of service"
                 breadcrumbs={[{ label: "Terms & Conditions" }]}
                 variant="default"
                 size="sm"
@@ -60,7 +60,7 @@ export default function TermsPage() {
                                 User Agreement & Acceptance
                             </h2>
                             <p className="text-slate-600 text-sm leading-relaxed">
-                                By visiting Indian Pharmazee, uploading a clinical prescription, submitting a specialty sourcing query, or completing a product purchase, you explicitly accept these terms and conditions. If you do not agree to these regulatory terms, please do not use the platform or place orders.
+                                By visiting Indian Pharmazee, registering an account, uploading a clinical prescription, submitting a specialty sourcing query, or completing a product purchase, you explicitly accept these Terms and Conditions. These terms govern your use of the website and constitute a binding legal agreement between you and Indian Pharmazee. If you do not agree to these terms, please do not access or use the platform.
                             </p>
                         </div>
 
@@ -73,10 +73,35 @@ export default function TermsPage() {
                                 For all scheduled medications (including oncology therapeutics, IVF hormones, and transplant drugs):
                             </p>
                             <ul className="space-y-2 pl-5 list-disc text-xs md:text-sm text-slate-600">
-                                <li>You must provide a clear scan of a valid prescription signed by a registered medical practitioner.</li>
+                                <li>You must provide a clear scan of a valid prescription signed by a registered medical practitioner (with registration number visible).</li>
                                 <li>All uploaded documents undergo rigorous clinical audit by our licensed partner pharmacists before dispatch approval.</li>
                                 <li>We reserve the right to cancel any order if the prescription is found to be expired, altered, or otherwise invalid.</li>
                             </ul>
+                        </div>
+
+                        <div>
+                            <h2 className="font-display text-xl font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
+                                <span className="w-1.5 h-5 bg-[#005EB8] rounded-full" />
+                                Payments, Fees & Secure Processing (Razorpay)
+                            </h2>
+                            <p className="text-slate-600 text-sm leading-relaxed mb-3">
+                                Online transactions on Indian Pharmazee are processed using the secure Razorpay payment gateway:
+                            </p>
+                            <ul className="space-y-2 pl-5 list-disc text-xs md:text-sm text-slate-600">
+                                <li>We accept major Credit Cards, Debit Cards, Net Banking, UPI, and authorized Wallets supported by Razorpay, as well as Cash on Delivery (COD) for select locations.</li>
+                                <li>All payments are billed in Indian Rupees (INR). You agree to pay the complete price listed at the time of checkout, including any applicable Goods and Services Tax (GST) and shipping fees.</li>
+                                <li>In the event of payment failure or technical error, the transaction may be rolled back, and any debited amount will be refunded directly via Razorpay to your original payment source within 5–7 business days.</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h2 className="font-display text-xl font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
+                                <span className="w-1.5 h-5 bg-[#16C7D9] rounded-full" />
+                                Pricing & Stock Availability
+                            </h2>
+                            <p className="text-slate-600 text-sm leading-relaxed">
+                                While we work hard to keep medicine pricing accurate, system errors can sometimes occur. If an incorrect price is listed due to a typographical or system glitch, we reserve the right to coordinate pricing updates or cancel the order before dispatch. If a payment has already been captured for a cancelled order, a full refund will be immediately issued back to the source account.
+                            </p>
                         </div>
 
                         <div>
@@ -92,20 +117,20 @@ export default function TermsPage() {
                         <div>
                             <h2 className="font-display text-xl font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
                                 <span className="w-1.5 h-5 bg-[#16C7D9] rounded-full" />
-                                Pricing, Taxes & Payment Settlements
+                                Limitation of Liability
                             </h2>
                             <p className="text-slate-600 text-sm leading-relaxed">
-                                While we work hard to keep medicine pricing accurate, system errors can sometimes occur. If an incorrect price is listed due to a technical glitch, we reserve the right to coordinate pricing updates or cancel the order before dispatch. Local taxes (GST) are included or itemized clearly at checkout before final payment.
+                                Indian Pharmazee facilitates direct-to-patient pharmacy sourcing through authorized, licensed retail and wholesale pharmacy partners. We are not the manufacturers of the medicines. Consequently, Indian Pharmazee shall not be held liable for any therapeutic side-effects, product recalls, or issues relating to manufacturer quality control.
                             </p>
                         </div>
 
                         <div>
                             <h2 className="font-display text-xl font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
                                 <span className="w-1.5 h-5 bg-[#005EB8] rounded-full" />
-                                Limitation of Liability
+                                Governing Law & Jurisdiction
                             </h2>
                             <p className="text-slate-600 text-sm leading-relaxed">
-                                Indian Pharmazee facilitates direct-to-patient pharmacy sourcing through authorized, licensed retail and wholesale pharmacy partners. We are not the manufacturers of the medicines. Consequently, Indian Pharmazee shall not be held liable for any therapeutic side-effects, product recalls, or issues relating to manufacturer quality control.
+                                These Terms and Conditions and any transactions executed on this platform shall be governed by and construed in accordance with the laws of India. Any disputes arising out of or in connection with these terms shall be subject to the exclusive jurisdiction of the courts in **New Delhi, India**.
                             </p>
                         </div>
 
