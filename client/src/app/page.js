@@ -3,10 +3,11 @@ import HeroSection from "@/components/sections/HeroSection";
 import AnnouncementBanner from "@/components/sections/AnnouncementBanner";
 import HomePageContent from "@/components/sections/HomePageContent";
 import { WhyBuySection } from "@/components/sections/WhyBuySection";
-import FeaturedOffers from "@/components/sections/FeaturedOffers";
+// import FeaturedOffers from "@/components/sections/FeaturedOffers";
 import {
   ColdChainBanner,
 } from "@/components/sections/PharmaHomeSections";
+import CategoryGrid from "@/components/sections/CategoryGrid";
 
 export const metadata = {
   title: "Indian Pharmazee | Trusted Specialty Medicines Across India",
@@ -25,7 +26,8 @@ export default function Home() {
         {/* Announcement */}
         <AnnouncementBanner />
         {/* Featured Healthcare Offers */}
-        <FeaturedOffers />
+        {/* <FeaturedOffers /> */}
+        <CategoryGrid />
 
         {/* Dynamic product sections */}
         <HomePageContent />
