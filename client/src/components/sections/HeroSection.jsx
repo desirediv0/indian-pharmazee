@@ -130,32 +130,38 @@ export default function HeroSection() {
   return (
     <div className="w-full flex justify-center py-3">
       <div className="w-[85%] relative overflow-hidden rounded-2xl">
-      <Carousel
-        setApi={setApi}
-        opts={{ loop: true, align: "start" }}
-        className="w-full"
-      >
-        <CarouselContent>
-          {slides.map((slide, index) => (
-            <CarouselItem key={index} className="p-0">
-              <div
-                className="relative w-full cursor-pointer overflow-hidden
-                            aspect-[20/9] md:aspect-[19/5]"
-
-                onClick={() => handleSlideClick(slide.ctaLink)}
-              >
-                <Image
-                  src={isMobile ? slide.smimg : slide.img}
-                  alt={slide.title || `Slide ${index + 1}`}
-                  fill
-                  className="object-cover object-center
+        <Carousel
+          setApi={setApi}
+          opts={{ loop: true, align: "start" }}
+          className="w-full"
+        >
+          <CarouselContent>
+            {slides.map((slide, index) => (
+              <CarouselItem key={index} className="p-0">
+                <div
+                  className="
+relative
+w-full
+cursor-pointer
+overflow-hidden
+h-[260px]
+sm:h-[320px]
+md:h-[420px]
+"
+                  onClick={() => handleSlideClick(slide.ctaLink)}
+                >
+                  <Image
+                    src={isMobile ? slide.smimg : slide.img}
+                    alt={slide.title || `Slide ${index + 1}`}
+                    fill
+                    className="object-cover object-center
                              transition-transform duration-[2000ms] group-hover:scale-110"
-                  priority={index === 0}
-                  sizes="(max-width: 767px) 1000px, 1900px"
-                />
-                
-                {/* Text Overlay */}
-                {/* <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent flex items-center">
+                    priority={index === 0}
+                    sizes="(max-width: 767px) 1000px, 1900px"
+                  />
+
+                  {/* Text Overlay */}
+                  {/* <div className="absolute inset-0 bg-gradient-to-r from-black/60 via-black/20 to-transparent flex items-center">
                   <div className="section-container w-full">
                     <div className="max-w-2xl text-white">
                       <div className="overflow-hidden mb-2">
@@ -182,57 +188,57 @@ export default function HeroSection() {
                     </div>
                   </div>
                 </div> */}
-              </div>
-            </CarouselItem>
-          ))}
-        </CarouselContent>
+                </div>
+              </CarouselItem>
+            ))}
+          </CarouselContent>
 
-        {/* ── Arrows (desktop only) ── */}
-        <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 hidden md:flex
+          {/* ── Arrows (desktop only) ── */}
+          <CarouselPrevious className="absolute left-4 top-1/2 -translate-y-1/2 hidden md:flex
                                      h-10 w-10 z-30
                                      bg-white/20 hover:bg-white/50 border-white/30
                                      text-white backdrop-blur-sm transition-all" />
-        <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 hidden md:flex
+          <CarouselNext className="absolute right-4 top-1/2 -translate-y-1/2 hidden md:flex
                                      h-10 w-10 z-30
                                      bg-white/20 hover:bg-white/50 border-white/30
                                      text-white backdrop-blur-sm transition-all" />
 
-        {/* ── Dot indicators ── */}
-        <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5">
-          {slides.map((_, index) => (
-            <button
-              key={index}
-              onClick={() => api?.scrollTo(index)}
-              aria-label={`Go to slide ${index + 1}`}
-              className={`rounded-full transition-all duration-300 ${index === currentSlide
-                ? "w-6 h-2 bg-white shadow-md"
-                : "w-2 h-2 bg-white/50 hover:bg-white/80"
-                }`}
-            />
-          ))}
-        </div>
+          {/* ── Dot indicators ── */}
+          <div className="absolute bottom-4 left-1/2 -translate-x-1/2 z-30 flex items-center gap-1.5">
+            {slides.map((_, index) => (
+              <button
+                key={index}
+                onClick={() => api?.scrollTo(index)}
+                aria-label={`Go to slide ${index + 1}`}
+                className={`rounded-full transition-all duration-300 ${index === currentSlide
+                  ? "w-6 h-2 bg-white shadow-md"
+                  : "w-2 h-2 bg-white/50 hover:bg-white/80"
+                  }`}
+              />
+            ))}
+          </div>
 
-        {/* ── Autoplay toggle (desktop only) ── */}
-        <button
-          onClick={() => setAutoplay((p) => !p)}
-          aria-label={autoplay ? "Pause slideshow" : "Play slideshow"}
-          className="absolute top-3 right-3 z-30 hidden md:flex
+          {/* ── Autoplay toggle (desktop only) ── */}
+          <button
+            onClick={() => setAutoplay((p) => !p)}
+            aria-label={autoplay ? "Pause slideshow" : "Play slideshow"}
+            className="absolute top-3 right-3 z-30 hidden md:flex
                      items-center justify-center h-8 w-8 rounded-full
                      bg-black/25 hover:bg-black/45 text-white
                      backdrop-blur-sm transition-all"
-        >
-          {autoplay ? (
-            <svg viewBox="0 0 16 16" fill="currentColor" className="h-3.5 w-3.5">
-              <rect x="3" y="2" width="4" height="12" rx="1" />
-              <rect x="9" y="2" width="4" height="12" rx="1" />
-            </svg>
-          ) : (
-            <svg viewBox="0 0 16 16" fill="currentColor" className="h-3.5 w-3.5">
-              <path d="M4 2.5l10 5.5-10 5.5V2.5z" />
-            </svg>
-          )}
-        </button>
-      </Carousel>
+          >
+            {autoplay ? (
+              <svg viewBox="0 0 16 16" fill="currentColor" className="h-3.5 w-3.5">
+                <rect x="3" y="2" width="4" height="12" rx="1" />
+                <rect x="9" y="2" width="4" height="12" rx="1" />
+              </svg>
+            ) : (
+              <svg viewBox="0 0 16 16" fill="currentColor" className="h-3.5 w-3.5">
+                <path d="M4 2.5l10 5.5-10 5.5V2.5z" />
+              </svg>
+            )}
+          </button>
+        </Carousel>
       </div>
     </div>
   );
