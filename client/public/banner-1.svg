@@ -47,7 +47,7 @@
   <text x="80" y="305" font-family="Arial, sans-serif" font-size="40" font-weight="700" fill="white" opacity="0.9">Across India</text>
 
   <!-- Subtext -->
-  <text x="80" y="355" font-family="Arial, sans-serif" font-size="17" fill="white" opacity="0.65">Genuine branded medicines · IVF · Oncology · Transplant · Cold Chain</text>
+  <text x="80" y="355" font-family="Arial, sans-serif" font-size="17" fill="white" opacity="0.65">Genuine branded medicines · IVF · Oncology · Transplant · Temp-Controlled</text>
 
   <!-- CTA Button -->
   <rect x="80" y="390" width="200" height="52" rx="14" fill="url(#cyan1)" />
@@ -76,7 +76,7 @@
 
   <!-- Float badges -->
   <rect x="1000" y="130" width="160" height="44" rx="10" fill="rgba(0,0,0,0.3)" stroke="rgba(22,199,217,0.4)" stroke-width="1" />
-  <text x="1080" y="158" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#16C7D9" text-anchor="middle">❄ Cold Chain 2°–8°C</text>
+  <text x="1080" y="158" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="#16C7D9" text-anchor="middle">❄ Temp-Controlled 2°–8°C</text>
 
   <rect x="1020" y="310" width="150" height="44" rx="10" fill="rgba(0,0,0,0.3)" stroke="rgba(255,255,255,0.2)" stroke-width="1" />
   <text x="1095" y="338" font-family="Arial, sans-serif" font-size="13" font-weight="700" fill="white" text-anchor="middle">✓ 100% Genuine</text>

@@ -147,7 +147,7 @@ export function ColdChainBanner() {
               </div>
               <div>
                 <h3 className="text-xl md:text-2xl font-bold text-white mb-2">
-                  Cold Chain Delivery Support
+                  Temp-Controlled Delivery Support
                 </h3>
                 <p className="text-slate-300 leading-relaxed max-w-xl text-sm">
                   Temperature-sensitive medicines shipped safely at{" "}
@@ -178,7 +178,7 @@ export function ColdChainBanner() {
 
           <div className="relative z-10 mt-8 pt-8 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-6">
             {[
-              { value: "2°C–8°C", label: "Cold Chain Temp" },
+              { value: "2°C–8°C", label: "Controlled Temp" },
               { value: "Pan-India", label: "Delivery Coverage" },
               { value: "Genuine", label: "Brand Sourcing" },
               { value: "24/7", label: "WhatsApp Support" },

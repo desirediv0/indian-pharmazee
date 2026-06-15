@@ -17,7 +17,7 @@ const TESTIMONIALS = [
     name: "Dr. Anita Sharma",
     role: "IVF Specialist",
     city: "Delhi",
-    text: "Reliable cold chain delivery for my patients' IVF medications. Never had a temperature excursion. Indian Pharmazee is the only platform I trust for specialty pharma.",
+    text: "Reliable temp-controlled delivery for my patients' IVF medications. Never had a temperature excursion. Indian Pharmazee is the only platform I trust for specialty pharma.",
     rating: 5,
     verified: true
   },
@@ -25,7 +25,7 @@ const TESTIMONIALS = [
     name: "Ramesh Iyer",
     role: "Cancer Patient",
     city: "Mumbai",
-    text: "Got my oncology medicines delivered overnight with proper cold packaging. Genuine products, transparent pricing. Indian Pharmazee saved me so much stress.",
+    text: "Got my oncology medicines delivered overnight with proper temp-controlled packaging. Genuine products, transparent pricing. Indian Pharmazee saved me so much stress.",
     rating: 5,
     verified: true
   },
@@ -33,7 +33,7 @@ const TESTIMONIALS = [
     name: "Priya Nair",
     role: "Caregiver",
     city: "Kochi",
-    text: "Transplant medicines delivered on time with proper cold chain. The WhatsApp support team is extremely responsive and helpful. Highly recommended.",
+    text: "Transplant medicines delivered on time with proper temperature control. The WhatsApp support team is extremely responsive and helpful. Highly recommended.",
     rating: 5,
     verified: true
   },
@@ -49,7 +49,7 @@ const TESTIMONIALS = [
     name: "Kavitha Reddy",
     role: "Patient",
     city: "Hyderabad",
-    text: "Ordered IVF medicines with same-day dispatch. Cold chain perfectly maintained. Pricing is very fair compared to local pharmacies. Will always order from here.",
+    text: "Ordered IVF medicines with same-day dispatch. Temperature perfectly maintained. Pricing is very fair compared to local pharmacies. Will always order from here.",
     rating: 5,
     verified: true
   },

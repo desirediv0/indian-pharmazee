@@ -42,7 +42,7 @@
   <!-- Card 3 (front) main card -->
   <rect x="60" y="80" width="340" height="200" rx="20" fill="url(#card2)" filter="url(#shadow2)" />
   <!-- Card content -->
-  <text x="100" y="130" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#16C7D9" letter-spacing="2">COLD CHAIN SPECIALIST</text>
+  <text x="100" y="130" font-family="Arial, sans-serif" font-size="11" font-weight="700" fill="#16C7D9" letter-spacing="2">TEMP-CONTROLLED</text>
   <text x="100" y="165" font-family="Arial, sans-serif" font-size="22" font-weight="900" fill="white">IVF · Oncology</text>
   <text x="100" y="195" font-family="Arial, sans-serif" font-size="22" font-weight="900" fill="white">Transplant Medicines</text>
   <text x="100" y="230" font-family="Arial, sans-serif" font-size="13" fill="white" opacity="0.6">Delivered at 2°C–8°C safely</text>
@@ -59,7 +59,7 @@
   <text x="550" y="120" font-family="Arial, sans-serif" font-size="14" font-weight="700" fill="#005EB8" letter-spacing="3">INDIAN PHARMAZEE</text>
 
   <!-- Heading -->
-  <text x="550" y="185" font-family="Arial, sans-serif" font-size="52" font-weight="900" fill="#0A2540" letter-spacing="-1">Cold Chain</text>
+  <text x="550" y="185" font-family="Arial, sans-serif" font-size="42" font-weight="900" fill="#0A2540" letter-spacing="-1">Temp-Controlled</text>
   <text x="550" y="248" font-family="Arial, sans-serif" font-size="52" font-weight="900" fill="#005EB8" letter-spacing="-1">Delivery Ready</text>
   <text x="550" y="300" font-family="Arial, sans-serif" font-size="26" font-weight="700" fill="#0A2540" opacity="0.7">2°C – 8°C · Pan-India Coverage</text>
 
@@ -87,7 +87,7 @@
   <text x="1400" y="230" font-family="Arial, sans-serif" font-size="44" font-weight="900" fill="#005EB8" text-anchor="middle">2°C</text>
   <text x="1400" y="262" font-family="Arial, sans-serif" font-size="18" font-weight="700" fill="#0A2540" text-anchor="middle" opacity="0.5">to</text>
   <text x="1400" y="296" font-family="Arial, sans-serif" font-size="44" font-weight="900" fill="#16C7D9" text-anchor="middle">8°C</text>
-  <text x="1400" y="340" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#0A2540" text-anchor="middle" opacity="0.45" letter-spacing="1">COLD CHAIN CERTIFIED</text>
+  <text x="1400" y="340" font-family="Arial, sans-serif" font-size="11" font-weight="600" fill="#0A2540" text-anchor="middle" opacity="0.45" letter-spacing="1">TEMP-CONTROLLED CERTIFIED</text>
 
   <!-- Bottom bar -->
   <rect x="0" y="472" width="1600" height="28" fill="rgba(0,94,184,0.06)" />

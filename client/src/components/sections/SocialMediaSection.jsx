@@ -28,7 +28,7 @@ const SOCIALS = [
     icon: Youtube,
     accent: "#FF0000",
     accentBg: "rgba(255, 0, 0, 0.08)",
-    desc: "Cold chain demos, medicine sourcing & health guides",
+    desc: "Temp-controlled packaging demos, medicine sourcing & health guides",
     stats: "8K+ Subscribers"
   },
 ];

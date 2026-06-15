@@ -89,7 +89,7 @@ const CategoryCardSkeleton = () => (
 const STATS = [
   { icon: Stethoscope, label: "Categories", dynamic: true, key: "categories", color: "#005EB8" },
   { icon: BadgeCheck, label: "Genuine Products", value: "100%", color: "#16C7D9" },
-  { icon: Thermometer, label: "Cold Chain Support", value: "2°C–8°C", color: "#005EB8" },
+  { icon: Thermometer, label: "Temp-Controlled Support", value: "2°C–8°C", color: "#005EB8" },
   { icon: Truck, label: "Pan-India Delivery", value: "Express", color: "#16C7D9" },
 ];
 

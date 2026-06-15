@@ -41,14 +41,14 @@
 
   <!-- Subtext -->
   <text x="60" y="405" font-family="Arial, sans-serif" font-size="16" fill="white" opacity="0.6">Genuine branded medicines</text>
-  <text x="60" y="428" font-family="Arial, sans-serif" font-size="16" fill="white" opacity="0.6">IVF · Oncology · Transplant · Cold Chain</text>
+  <text x="60" y="428" font-family="Arial, sans-serif" font-size="16" fill="white" opacity="0.6">IVF · Oncology · Transplant · Temp-Controlled</text>
 
   <!-- Trust badges row -->
-  <rect x="60" y="460" width="155" height="40" rx="10" fill="rgba(22,199,217,0.15)" stroke="#16C7D9" stroke-width="1" />
-  <text x="137" y="485" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#16C7D9" text-anchor="middle">❄ Cold Chain 2°–8°C</text>
+  <rect x="60" y="460" width="195" height="40" rx="10" fill="rgba(22,199,217,0.15)" stroke="#16C7D9" stroke-width="1" />
+  <text x="157.5" y="485" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="#16C7D9" text-anchor="middle">❄ Temp-Controlled 2°–8°C</text>
 
-  <rect x="228" y="460" width="130" height="40" rx="10" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)" stroke-width="1" />
-  <text x="293" y="485" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="white" text-anchor="middle">✓ Genuine</text>
+  <rect x="268" y="460" width="130" height="40" rx="10" fill="rgba(255,255,255,0.08)" stroke="rgba(255,255,255,0.2)" stroke-width="1" />
+  <text x="333" y="485" font-family="Arial, sans-serif" font-size="12" font-weight="600" fill="white" text-anchor="middle">✓ Genuine</text>
 
   <!-- Large central illustration -->
   <circle cx="400" cy="680" r="230" fill="rgba(22,199,217,0.05)" stroke="rgba(22,199,217,0.15)" stroke-width="1.5" />

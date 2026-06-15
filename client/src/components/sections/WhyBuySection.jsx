@@ -7,7 +7,7 @@ import Link from "next/link";
 const STATS = [
   { value: "100%", label: "Genuine Medicines" },
   { value: "Pan-India", label: "Delivery Network" },
-  { value: "2°C–8°C", label: "Cold Chain Support" },
+  { value: "2°C–8°C", label: "Temp-Controlled Support" },
   { value: "24/7", label: "WhatsApp Support" },
 ];
 
@@ -20,7 +20,7 @@ const PROMISES = [
   {
     icon: Package,
     title: "Secure & Safe Packaging",
-    body: "Temperature-controlled packaging for cold chain products. Tamper-proof sealing and professional logistics for safe, damage-free delivery.",
+    body: "Temperature-controlled packaging for temperature-sensitive products. Tamper-proof sealing and professional logistics for safe, damage-free delivery.",
   },
   {
     icon: Truck,
@@ -29,8 +29,8 @@ const PROMISES = [
   },
   {
     icon: Thermometer,
-    title: "Cold Chain Delivery (2°C–8°C)",
-    body: "Specialist handling for temperature-sensitive biologics, IVF medicines, and oncology products requiring cold chain maintenance.",
+    title: "Temp-Controlled Delivery (2°C–8°C)",
+    body: "Specialist handling for temperature-sensitive biologics, IVF medicines, and oncology products requiring temp-controlled maintenance.",
   },
   {
     icon: ShieldCheck,
@@ -180,7 +180,7 @@ export const WhyBuySection = () => {
           <div className="relative z-10 text-center md:text-left">
             <h3 className="text-xl md:text-2xl font-bold text-white mb-2">Need Medicine Help?</h3>
             <p className="text-slate-400 text-sm max-w-md">
-              Prescription queries, bulk orders, cold chain requirements — message us on WhatsApp for fast assistance.
+              Prescription queries, bulk orders, temp-controlled requirements — message us on WhatsApp for fast assistance.
             </p>
           </div>
           <div className="relative z-10 flex flex-col sm:flex-row gap-3 flex-shrink-0">

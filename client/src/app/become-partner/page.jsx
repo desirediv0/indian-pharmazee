@@ -117,7 +117,7 @@ export default function BecomePartnerPage() {
   };
 
   const benefits = [
-    { icon: Truck, title: t.b1_title, desc: t.b1_desc, accent: "#16A34A", num: "100", numSuffix: "%", label: "Cold Chain" },
+    { icon: Truck, title: t.b1_title, desc: t.b1_desc, accent: "#16A34A", num: "100", numSuffix: "%", label: "Temp-Controlled" },
     { icon: TrendingUp, title: t.b2_title, desc: t.b2_desc, accent: "#3b82f6", num: "24", numSuffix: "/7", label: "Inventory Tracking" },
     { icon: HandshakeIcon, title: t.b3_title, desc: t.b3_desc, accent: "#a855f7", num: "Brand", numSuffix: " Support", label: "Marketing Kit" },
     { icon: CheckCircle, title: t.b4_title, desc: t.b4_desc, accent: "#22c55e", num: "Purity", numSuffix: " First", label: "Ethical Sourcing" },

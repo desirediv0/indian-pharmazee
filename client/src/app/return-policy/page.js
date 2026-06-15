@@ -3,7 +3,7 @@ import { BadgeAlert, RefreshCw, Landmark } from "lucide-react";
 
 export const metadata = {
     title: "Return & Cancellation Policy | Indian Pharmazee",
-    description: "Review Indian Pharmazee's pharmaceutical return guidelines, cold chain safety restrictions, Razorpay refund approvals, and replacement terms.",
+    description: "Review Indian Pharmazee's pharmaceutical return guidelines, temp-controlled safety restrictions, Razorpay refund approvals, and replacement terms.",
 };
 
 const returnSteps = [
@@ -15,7 +15,7 @@ const returnSteps = [
     {
         step: 2,
         title: "Clinical Review",
-        description: "Our quality control team inspects packaging and cold chain logs."
+        description: "Our quality control team inspects packaging and temperature logs."
     },
     {
         step: 3,
@@ -68,9 +68,9 @@ export default function ReturnPolicyPage() {
                         <div className="p-5 rounded-2xl bg-amber-50 border border-amber-200/60 flex gap-4 items-start">
                             <BadgeAlert className="w-6 h-6 text-amber-600 flex-shrink-0 mt-0.5" />
                             <div>
-                                <h4 className="text-sm font-bold text-amber-900">Important Safety Notice: Cold Chain Restrictions</h4>
+                                <h4 className="text-sm font-bold text-amber-900">Important Safety Notice: Temp-Controlled Restrictions</h4>
                                 <p className="text-xs text-amber-800 leading-relaxed mt-1">
-                                    To protect clinical integrity and ensure patient safety, all **temperature-sensitive cold chain medications (2°C–8°C)**—such as IVF injections, oncology therapies, and biological immunoglobulins—are strictly **non-returnable and non-refundable** once dispatched. We cannot guarantee storage conditions once the package leaves our thermal transit systems.
+                                    To protect clinical integrity and ensure patient safety, all **temperature-sensitive temp-controlled medications (2°C–8°C)**—such as IVF injections, oncology therapies, and biological immunoglobulins—are strictly **non-returnable and non-refundable** once dispatched. We cannot guarantee storage conditions once the package leaves our thermal transit systems.
                                 </p>
                             </div>
                         </div>
@@ -81,7 +81,7 @@ export default function ReturnPolicyPage() {
                                 Return Eligibility Criteria
                             </h2>
                             <p className="text-slate-600 text-sm leading-relaxed mb-4">
-                                Non-cold-chain pharmaceuticals, OTC formulations, and general wellness items can be returned within **7 days of delivery** under the following strict conditions:
+                                Non-temp-controlled pharmaceuticals, OTC formulations, and general wellness items can be returned within **7 days of delivery** under the following strict conditions:
                             </p>
                             <ul className="space-y-3 pl-5 list-disc text-xs md:text-sm text-slate-600">
                                 <li>The outer security seals and therapeutic blister foil packs must remain 100% unopened and undamaged.</li>

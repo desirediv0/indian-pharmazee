@@ -8,7 +8,7 @@ import Link from "next/link";
 
 export const metadata = {
   title: "Why Choose Us | Indian Pharmazee — Trusted Specialty Medicines",
-  description: "Discover why patients and doctors across India trust Indian Pharmazee for genuine branded medicines, cold chain delivery, IVF, oncology, and specialty healthcare.",
+  description: "Discover why patients and doctors across India trust Indian Pharmazee for genuine branded medicines, temp-controlled delivery, IVF, oncology, and specialty healthcare.",
 };
 
 const REASONS = [
@@ -21,8 +21,8 @@ const REASONS = [
   {
     icon: Thermometer,
     color: "#16C7D9",
-    title: "Cold Chain 2°C–8°C Delivery",
-    description: "Specialist handling for temperature-sensitive biologics, IVF hormones, oncology injectables, and vaccines requiring continuous cold chain from warehouse to doorstep.",
+    title: "Temp-Controlled 2°C–8°C Delivery",
+    description: "Specialist handling for temperature-sensitive biologics, IVF hormones, oncology injectables, and vaccines requiring continuous temperature control from warehouse to doorstep.",
   },
   {
     icon: Truck,
@@ -51,12 +51,12 @@ const REASONS = [
 ];
 
 const REVIEWS = [
-  { name: "Dr. Anita Sharma", role: "IVF Specialist, Delhi", rating: 5, text: "Reliable cold chain delivery for my patients' IVF medications. Never had a temperature excursion issue. Highly recommended." },
+  { name: "Dr. Anita Sharma", role: "IVF Specialist, Delhi", rating: 5, text: "Reliable temp-controlled delivery for my patients' IVF medications. Never had a temperature excursion issue. Highly recommended." },
   { name: "Ramesh Iyer", role: "Cancer Patient, Mumbai", rating: 5, text: "Got my oncology medicines delivered overnight. Genuine products, proper packaging. Indian Pharmazee saved me a lot of stress." },
-  { name: "Priya Nair", role: "Caregiver, Kochi", rating: 5, text: "Transplant medicines delivered on time with proper cold chain. The WhatsApp support team is extremely helpful and responsive." },
+  { name: "Priya Nair", role: "Caregiver, Kochi", rating: 5, text: "Transplant medicines delivered on time with proper temperature control. The WhatsApp support team is extremely helpful and responsive." },
   { name: "Arun Gupta", role: "Patient, Jaipur", rating: 5, text: "Affordable pricing on specialty medicines I couldn't find elsewhere. Fast delivery and 100% genuine products." },
   { name: "Dr. Sunil Mehta", role: "Gynaecologist, Pune", rating: 5, text: "Trust Indian Pharmazee for my patients' specialty prescriptions. Consistent stock availability and professional service." },
-  { name: "Kavitha Reddy", role: "Patient, Hyderabad", rating: 5, text: "Ordered IVF medicines with same-day dispatch. Cold chain perfectly maintained. Will always order from here." },
+  { name: "Kavitha Reddy", role: "Patient, Hyderabad", rating: 5, text: "Ordered IVF medicines with same-day dispatch. Temperature perfectly maintained. Will always order from here." },
 ];
 
 const STATS = [
@@ -89,7 +89,7 @@ export default function WhyUsPage() {
             <span style={{ color: "#16C7D9" }}>Indian Pharmazee?</span>
           </h1>
           <p className="text-white/70 text-lg max-w-2xl mx-auto">
-            Genuine branded medicines, specialist cold chain delivery, and dedicated support — making specialty healthcare accessible for every patient.
+            Genuine branded medicines, specialist temp-controlled delivery, and dedicated support — making specialty healthcare accessible for every patient.
           </p>
         </div>
       </section>
@@ -155,7 +155,7 @@ export default function WhyUsPage() {
               </div>
             </div>
             <div className="flex flex-wrap gap-2">
-              {["IVF Medicines", "Anti-Cancer", "Transplants", "Cold Chain", "Biologics", "HGH"].map((tag) => (
+              {["IVF Medicines", "Anti-Cancer", "Transplants", "Temp-Controlled", "Biologics", "HGH"].map((tag) => (
                 <span
                   key={tag}
                   className="px-3 py-1.5 rounded-full text-xs font-semibold border"
@@ -214,7 +214,7 @@ export default function WhyUsPage() {
               Ready to Experience the Difference?
             </h2>
             <p className="text-slate-400 text-lg max-w-2xl mx-auto mb-8">
-              Shop genuine specialty medicines with cold chain delivery, transparent pricing, and 24/7 WhatsApp support.
+              Shop genuine specialty medicines with temp-controlled delivery, transparent pricing, and 24/7 WhatsApp support.
             </p>
             <div className="flex flex-col sm:flex-row gap-4 justify-center">
               <Link href="/products">

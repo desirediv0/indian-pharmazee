@@ -13,7 +13,7 @@ import { toast } from "sonner";
 
 const TRUST_POINTS = [
   { icon: BadgeCheck, text: "100% Genuine Medicines" },
-  { icon: Thermometer, text: "Cold Chain 2°C–8°C Delivery" },
+  { icon: Thermometer, text: "Temp-Controlled 2°C–8°C Delivery" },
   { icon: ShieldCheck, text: "Trusted Across India" },
 ];
 
@@ -71,7 +71,7 @@ function AuthForm() {
             <span style={{ color: "#16C7D9" }}>Pharma Platform</span>
           </h2>
           <p className="text-white/60 text-sm leading-relaxed mb-8 max-w-xs">
-            Access genuine branded medicines, track orders, and get cold chain delivery across India — all in one place.
+            Access genuine branded medicines, track orders, and get temp-controlled delivery across India — all in one place.
           </p>
 
           {/* Trust points */}

@@ -97,7 +97,7 @@ export default function ContactPage() {
                 <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-start gap-3">
                   <Thermometer className="w-5 h-5 text-[#16C7D9] flex-shrink-0 mt-0.5" />
                   <p className="text-xs text-slate-600 leading-normal">
-                    At Indian Pharmazee we deliver cold chain products <span className="text-[#005EB8] font-bold">(2°C – 8°C)</span> with our professional courier partners across India.
+                    At Indian Pharmazee we deliver temp-controlled products <span className="text-[#005EB8] font-bold">(2°C – 8°C)</span> with our professional courier partners across India.
                   </p>
                 </div>
                 <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-start gap-3">
@@ -281,7 +281,7 @@ export default function ContactPage() {
               Message us on WhatsApp to know more
             </h3>
             <p className="text-slate-400 text-sm">
-              Send your prescription for direct pricing quotes and cold chain shipping options.
+              Send your prescription for direct pricing quotes and temp-controlled shipping options.
             </p>
           </div>
           <a

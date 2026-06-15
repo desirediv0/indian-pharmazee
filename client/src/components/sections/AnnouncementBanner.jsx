@@ -4,7 +4,7 @@ import React from 'react';
 
 const MESSAGES = [
   "💊 Genuine Branded Medicines — Verified Sources",
-  "❄️ Cold Chain 2°C–8°C Delivery Available",
+  "❄️ Temp-Controlled 2°C–8°C Delivery Available",
   "🚚 Pan-India Delivery — Fast & Reliable",
   "💬 Message us on WhatsApp for Medicine Enquiries",
   "✅ IVF · Oncology · Transplant · Sexual Wellness · Ayurvedic",

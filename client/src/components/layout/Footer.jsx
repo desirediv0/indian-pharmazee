@@ -44,7 +44,7 @@ const SOCIALS = [
 const TRUST = [
   { icon: BadgeCheck, label: "100% Genuine" },
   { icon: ShieldCheck, label: "Verified Sources" },
-  { icon: Thermometer, label: "Cold Chain 2°C–8°C" },
+  { icon: Thermometer, label: "Temp-Controlled 2°C–8°C" },
   { icon: Truck, label: "Pan-India Delivery" },
 ];
 
@@ -97,7 +97,7 @@ export const Footer = () => {
             </Link>
 
             <p className="text-slate-600 text-sm leading-relaxed mb-6 max-w-[300px]">
-              India&apos;s trusted platform for genuine branded medicines and specialty healthcare products — with professional cold chain delivery across all states.
+              India&apos;s trusted platform for genuine branded medicines and specialty healthcare products — with professional temp-controlled delivery across all states.
             </p>
 
             {/* Contact */}
@@ -237,7 +237,7 @@ export const Footer = () => {
             >
               <Thermometer className="h-5 w-5 flex-shrink-0 mt-0.5" style={{ color: "#0074e4" }} />
               <div>
-                <p className="text-xs font-bold mb-1" style={{ color: "#0074e4" }}>Cold Chain Delivery</p>
+                <p className="text-xs font-bold mb-1" style={{ color: "#0074e4" }}>Temp-Controlled Delivery</p>
                 <p className="text-[11px] text-slate-600 leading-relaxed">
                   Temperature-sensitive products shipped at 2°C–8°C via professional courier partners.
                 </p>

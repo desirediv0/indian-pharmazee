@@ -3,14 +3,14 @@ import Link from "next/link";
 
 export const metadata = {
   title: "Shipping & Delivery Policy | Indian Pharmazee",
-  description: "Learn about Indian Pharmazee's cold chain delivery, temperature-controlled shipping, transit protocols, and pan-India coverage for specialty medicines.",
+  description: "Learn about Indian Pharmazee's temp-controlled delivery, temperature-controlled shipping, transit protocols, and pan-India coverage for specialty medicines.",
 };
 
 const SHIPPING_CARDS = [
   {
     icon: Thermometer,
     color: "#16C7D9",
-    title: "Cold Chain 2°C–8°C",
+    title: "Temp-Controlled 2°C–8°C",
     description: "Specialized thermal insulation for temperature-sensitive IVF medicines, vaccines, oncology injectables, and biologics.",
   },
   {
@@ -98,7 +98,7 @@ export default function ShippingPolicyPage() {
               <ul className="space-y-2.5 pl-5 list-disc text-sm text-gray-600">
                 <li><strong className="text-gray-800">Orders above ₹999:</strong> Free expedited shipping across all deliverable PIN codes in India.</li>
                 <li><strong className="text-gray-800">Orders below ₹999:</strong> Flat shipping charge of ₹99 applies.</li>
-                <li><strong className="text-gray-800">Cold Chain Surcharges:</strong> Highly sensitive biologics requiring dry ice replenishment during transit may incur minor custom packaging charges — notified before dispatch.</li>
+                <li><strong className="text-gray-800">Temp-Controlled Surcharges:</strong> Highly sensitive biologics requiring dry ice replenishment during transit may incur minor custom packaging charges — notified before dispatch.</li>
               </ul>
             </div>
 
@@ -106,7 +106,7 @@ export default function ShippingPolicyPage() {
             <div>
               <h2 className="text-xl font-bold mb-4 pb-2 border-b flex items-center gap-2.5" style={{ color: "#0A2540", borderColor: "#DCE7F2" }}>
                 <span className="w-1.5 h-6 rounded-full flex-shrink-0" style={{ background: "#16C7D9" }} />
-                Cold Chain Compliance Protocols
+                Temp-Controlled Compliance Protocols
               </h2>
               <div
                 className="p-5 rounded-2xl mb-4 border"
@@ -117,7 +117,7 @@ export default function ShippingPolicyPage() {
                   Keep Cool Guard (2°C – 8°C)
                 </p>
                 <p className="text-xs text-gray-600 leading-relaxed">
-                  We strictly enforce cold chain distribution guidelines. Products like IVF hormones, insulin, and oncology injections are maintained at 2°C–8°C from storage until handover — ensuring maximum therapeutic value.
+                  We strictly enforce temp-controlled distribution guidelines. Products like IVF hormones, insulin, and oncology injections are maintained at 2°C–8°C from storage until handover — ensuring maximum therapeutic value.
                 </p>
               </div>
               <p className="text-gray-600 text-sm leading-relaxed">
@@ -134,7 +134,7 @@ export default function ShippingPolicyPage() {
               <ul className="space-y-2.5 pl-5 list-disc text-sm text-gray-600">
                 <li>On dispatch, a secure tracking link is sent to your registered mobile via WhatsApp and SMS.</li>
                 <li>Real-time status updates — including package arrival at city hubs — viewable live.</li>
-                <li>For cold chain shipments, a delivery representative coordinates via phone before arrival to ensure someone is present to immediately refrigerate the package.</li>
+                <li>For temp-controlled shipments, a delivery representative coordinates via phone before arrival to ensure someone is present to immediately refrigerate the package.</li>
               </ul>
             </div>
 
@@ -145,7 +145,7 @@ export default function ShippingPolicyPage() {
                 Verification &amp; Delivery Delays
               </h2>
               <p className="text-gray-600 text-sm leading-relaxed">
-                In rare cases of transit delays due to atmospheric disruptions, natural disasters, or logistical holds — our support team actively tracks shipments and keeps you updated. If a cold chain parcel gets delayed beyond its thermal limit, Indian Pharmazee will immediately replace the consignment at no additional charge.
+                In rare cases of transit delays due to atmospheric disruptions, natural disasters, or logistical holds — our support team actively tracks shipments and keeps you updated. If a temp-controlled parcel gets delayed beyond its thermal limit, Indian Pharmazee will immediately replace the consignment at no additional charge.
               </p>
             </div>
 

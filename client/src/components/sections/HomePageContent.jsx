@@ -175,7 +175,7 @@ export default function HomePageContent() {
         "bg-white"
       )}
       <div className="max-w-7xl mx-auto px-4">
-        <Image src="/banner-1.svg" alt="Cold Chain Delivery" width={1200} height={400} className="w-full h-auto rounded-lg my-8 " />
+        <Image src="/banner-1.svg" alt="Temp-Controlled Delivery" width={1200} height={400} className="w-full h-auto rounded-lg my-8 " />
       </div>
 
 

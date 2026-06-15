@@ -444,7 +444,7 @@ function ProductsContent() {
                     </span>
                     <h1 className="text-2xl md:text-4xl font-bold text-white leading-tight mb-1.5">All Medicines</h1>
                     <p className="text-sm text-white/60 leading-relaxed hidden sm:block">
-                        IVF · Oncology · Transplant · Sexual Wellness · Cold Chain 2°C–8°C · Pan-India Delivery
+                        IVF · Oncology · Transplant · Sexual Wellness · Temp-Controlled 2°C–8°C · Pan-India Delivery
                     </p>
                 </div>
             </div>

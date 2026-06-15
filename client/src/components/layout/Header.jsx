@@ -191,7 +191,7 @@ export function Navbar() {
               {/* Center */}
               <div className="flex items-center gap-1.5 text-white/70">
                 <Thermometer className="h-3 w-3 text-cyan-400" />
-                <span>Cold Chain 2°C–8°C Delivery Available</span>
+                <span>Temp-Controlled 2°C–8°C Delivery Available</span>
                 <span className="mx-2 text-white/30">|</span>
                 <ShieldCheck className="h-3 w-3 text-cyan-400" />
                 <span>100% Genuine Medicines</span>
@@ -383,7 +383,7 @@ export function Navbar() {
                 </span>
                 <span className="flex items-center gap-1">
                   <Thermometer className="h-3.5 w-3.5 text-primary" />
-                  Cold Chain Support
+                  Temp-Controlled Support
                 </span>
                 <span className="flex items-center gap-1">
                   <Stethoscope className="h-3.5 w-3.5 text-primary" />

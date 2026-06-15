@@ -8,14 +8,14 @@ import { getPharmaIcon } from "@/lib/pharma-icons";
 
 export const metadata = {
   title: "About Us | Indian Pharmazee — Trusted Specialty Medicines",
-  description: "Indian Pharmazee is a trusted platform providing genuine branded medicines and specialty healthcare products across India with cold chain delivery support.",
+  description: "Indian Pharmazee is a trusted platform providing genuine branded medicines and specialty healthcare products across India with temp-controlled delivery support.",
 };
 
 const stats = [
   { value: "12+", label: "Specialty Categories", icon: <Stethoscope className="w-5 h-5" /> },
   { value: "Pan-India", label: "Delivery Network", icon: <Users className="w-5 h-5" /> },
   { value: "100%", label: "Genuine Products", icon: <BadgeCheck className="w-5 h-5" /> },
-  { value: "2°C–8°C", label: "Cold Chain Support", icon: <Thermometer className="w-5 h-5" /> },
+  { value: "2°C–8°C", label: "Temp-Controlled Support", icon: <Thermometer className="w-5 h-5" /> },
 ];
 
 const values = [
@@ -36,7 +36,7 @@ const values = [
   },
   {
     icon: ShieldCheck,
-    title: "Cold Chain Excellence",
+    title: "Temp-Controlled Excellence",
     description: "End-to-end temperature preservation (2°C–8°C) using validation-tested cold boxes for biologics, oncology, and fertility medicines.",
   },
 ];
@@ -60,7 +60,7 @@ const CATEGORIES = [
 
 const features = [
   "Genuine Branded Medicines",
-  "Cold Chain Delivery (2°C–8°C)",
+  "Temp-Controlled Delivery (2°C–8°C)",
   "Pan-India Coverage",
   "Authorized Suppliers Only",
   "Active WhatsApp Support",
@@ -146,7 +146,7 @@ export default function AboutPage() {
                   <span className="text-xs uppercase tracking-wider text-slate-500 font-bold">Transit Quality Control</span>
                   <span className="flex items-center gap-1.5 px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-50 text-emerald-600 border border-emerald-100">
                     <span className="w-2 h-2 rounded-full bg-emerald-500 animate-pulse" />
-                    Cold Chain Active
+                    Temp-Controlled Active
                   </span>
                 </div>
 
@@ -349,7 +349,7 @@ export default function AboutPage() {
                 Need Specialty Medicines?
               </h2>
               <p className="text-slate-300 max-w-xl mx-auto mb-8 leading-relaxed text-sm md:text-base">
-                Get real-time answers for specialized oncology drugs, IVF medication support, clinical imports, or secure cold chain shipment tracking anywhere in India.
+                Get real-time answers for specialized oncology drugs, IVF medication support, clinical imports, or secure temp-controlled shipment tracking anywhere in India.
               </p>
               
               <div className="flex flex-col sm:flex-row gap-4 justify-center items-center">

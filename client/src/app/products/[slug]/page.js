@@ -12,7 +12,7 @@ export async function generateMetadata({ params }) {
     const { slug } = params;
     let title = "Product Details | Indian Pharmazee";
     let description =
-        "Genuine branded medicines and specialty healthcare products. IVF, oncology, transplant, cold chain delivery across India. Trusted by patients and doctors.";
+        "Genuine branded medicines and specialty healthcare products. IVF, oncology, transplant, temp-controlled delivery across India. Trusted by patients and doctors.";
     let image = null;
 
     try {

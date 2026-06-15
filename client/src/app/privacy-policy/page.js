@@ -105,7 +105,7 @@ export default function PrivacyPolicyPage() {
                             </p>
                             <ul className="space-y-2 pl-5 list-disc text-xs md:text-sm text-slate-600">
                                 <li>To verify and confirm prescription validity via our licensed partner pharmacist desk.</li>
-                                <li>To share shipping logs (recipient name, address, phone number) with verified cold chain courier firms (e.g., Blue Dart, Delhivery).</li>
+                                <li>To share shipping logs (recipient name, address, phone number) with verified temp-controlled courier firms (e.g., Blue Dart, Delhivery).</li>
                                 <li>To dispatch order status notifications, payment receipts, or regulatory alerts via WhatsApp and email.</li>
                             </ul>
                         </div>

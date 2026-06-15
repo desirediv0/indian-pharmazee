@@ -27,7 +27,7 @@ const getImageUrl = (img) => {
 
 const TRUST = [
   { icon: BadgeCheck,   label: "100% Genuine Medicine" },
-  { icon: Thermometer,  label: "Cold Chain 2°C–8°C" },
+  { icon: Thermometer,  label: "Temp-Controlled 2°C–8°C" },
   { icon: ShieldCheck,  label: "Verified Supplier" },
   { icon: Truck,        label: "Pan-India Delivery" },
 ];
@@ -825,13 +825,13 @@ export default function ProductContent({ slug }) {
                   ],
                 },
                 {
-                  title: "Cold Chain Delivery",
+                  title: "Temp-Controlled Delivery",
                   icon: Thermometer,
                   rows: [
                     ["Temperature", "2°C – 8°C maintained throughout transit"],
                     ["Packaging", "Dual-walled EPS thermal box + gel packs"],
                     ["Tracking", "WhatsApp + SMS tracking link on dispatch"],
-                    ["Delay policy", "Replacement at no charge if cold chain broken"],
+                    ["Delay policy", "Replacement at no charge if temperature control broken"],
                   ],
                 },
               ].map(({ title, icon: Icon, rows }) => (
