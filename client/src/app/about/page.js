@@ -64,7 +64,6 @@ const features = [
   "Pan-India Coverage",
   "Authorized Suppliers Only",
   "Active WhatsApp Support",
-  "Cash on Delivery Available",
 ];
 
 export default function AboutPage() {

@@ -6,7 +6,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useCart } from "@/lib/cart-context";
 import { useState, useEffect, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { fetchApi, cn } from "@/lib/utils";
+import { fetchApi, cn, sortCategories } from "@/lib/utils";
 import { ClientOnly } from "@/components/client-only";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -130,7 +130,7 @@ export function Navbar() {
 
   useEffect(() => {
     fetchApi("/public/categories")
-      .then((res) => setCategories(res.data?.categories || []))
+      .then((res) => setCategories(sortCategories(res.data?.categories || [])))
       .catch(console.error);
   }, []);
 
@@ -458,7 +458,7 @@ function CategoriesDropdown({ categories, activeDropdown, setActiveDropdown, pat
           >
             {categories.length > 0 ? (
               <>
-                {categories.slice(0, 10).map((cat) => (
+                {categories.slice(0, 15).map((cat) => (
                   <Link
                     key={cat.id}
                     href={`/category/${cat.slug}`}
@@ -655,7 +655,7 @@ function SearchDialog({ open, onOpenChange, searchQuery, setSearchQuery, handleS
             <div className="mt-5">
               <p className="text-[10px] font-bold text-gray-400 uppercase tracking-widest mb-3">Browse Categories</p>
               <div className="flex flex-wrap gap-2">
-                {categories.slice(0, 8).map((cat) => (
+                {categories.slice(0, 15).map((cat) => (
                   <Link
                     key={cat.id}
                     href={`/category/${cat.slug}`}
@@ -754,7 +754,7 @@ function MobileMenu({ isOpen, onClose, user, isAuthenticated, categories, cartCo
 
           {categories.length > 0 && (
             <DrawerSection title="Medicine Categories">
-              {categories.slice(0, 6).map((cat) => (
+              {categories.slice(0, 15).map((cat) => (
                 <Link
                   key={cat.id}
                   href={`/category/${cat.slug}`}

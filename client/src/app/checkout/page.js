@@ -40,11 +40,11 @@ export default function CheckoutPage() {
     const [selectedAddressId, setSelectedAddressId] = useState("");
     const [loadingAddresses, setLoadingAddresses] = useState(true);
     const [paymentSettings, setPaymentSettings] = useState({
-        cashEnabled: true,
-        razorpayEnabled: false,
+        cashEnabled: false,
+        razorpayEnabled: true,
         codCharge: 0,
     });
-    const [paymentMethod, setPaymentMethod] = useState("CASH");
+    const [paymentMethod, setPaymentMethod] = useState("RAZORPAY");
     const [processing, setProcessing] = useState(false);
     const [orderCreated, setOrderCreated] = useState(false);
     const [orderId, setOrderId] = useState("");
@@ -82,21 +82,17 @@ export default function CheckoutPage() {
                 });
                 if (response.success) {
                     setPaymentSettings({
-                        cashEnabled: response.data.cashEnabled ?? true,
-                        razorpayEnabled: response.data.razorpayEnabled ?? false,
+                        cashEnabled: false,
+                        razorpayEnabled: response.data.razorpayEnabled ?? true,
                         codCharge: response.data.codCharge ?? 0,
                     });
-                    // Set default payment method based on settings (priority: Cash > Razorpay)
-                    if (response.data.cashEnabled) {
-                        setPaymentMethod("CASH");
-                    } else if (response.data.razorpayEnabled) {
+                    if (response.data.razorpayEnabled ?? true) {
                         setPaymentMethod("RAZORPAY");
                     }
                 }
             } catch (error) {
                 console.error("Error fetching payment settings:", error);
-                // Default to cash if fetch fails
-                setPaymentMethod("CASH");
+                setPaymentMethod("RAZORPAY");
             }
         };
         fetchPaymentSettings();

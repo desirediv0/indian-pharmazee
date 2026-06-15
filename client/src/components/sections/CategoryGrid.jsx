@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { fetchApi } from "@/lib/utils";
+import { fetchApi, sortCategories } from "@/lib/utils";
 import Headtext from "../layout/Headtext";
 import {
   FaBoxOpen,
@@ -151,7 +151,7 @@ const CategoryGrid = () => {
         setError(null);
         const response = await fetchApi("/public/categories");
         if (response.success && response.data?.categories) {
-          setCategories(response.data.categories);
+          setCategories(sortCategories(response.data.categories));
         } else {
           setError(response.message || "Failed to fetch categories");
         }
@@ -178,7 +178,7 @@ const CategoryGrid = () => {
     <div className="text-center mb-8 sm:mb-10">
       <Headtext text="SHOP BY CATEGORY" />
       <p className="mt-5 text-slate-500 text-sm sm:text-[15px] font-medium tracking-wide">
-        Farm-fresh dairy &amp; nutritional products, delivered daily
+        Genuine specialty medicines and healthcare products, delivered safely
       </p>
     </div>
   );

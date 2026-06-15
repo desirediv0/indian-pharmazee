@@ -205,3 +205,27 @@ export async function fetchProductsByType(productType, limit = 8) {
     throw error;
   }
 }
+
+// Sort categories according to requested order
+export function sortCategories(categoriesList) {
+  if (!Array.isArray(categoriesList)) return [];
+  
+  const getIndex = (name) => {
+    const n = (name || "").toLowerCase();
+    if (n.includes("ivf")) return 0;
+    if (n.includes("gynae")) return 1;
+    if (n.includes("cancer")) return 2;
+    if (n.includes("antibiotic") || n.includes("supplement")) return 3;
+    if (n.includes("transplant")) return 4;
+    if (n.includes("sexual") || n.includes("hgh") || n.includes("human growth")) return 5;
+    if (n.includes("osteoporosis")) return 6;
+    if (n.includes("paediatric") || n.includes("pediatric")) return 7;
+    if (n.includes("antifungal") || n.includes("anti-fungal")) return 8;
+    if (n.includes("anemia") || n.includes("anaemia")) return 9;
+    if (n.includes("arthritis")) return 10;
+    if (n.includes("ayurvedic")) return 11;
+    return 999;
+  };
+
+  return [...categoriesList].sort((a, b) => getIndex(a.name) - getIndex(b.name));
+}

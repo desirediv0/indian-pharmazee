@@ -88,7 +88,7 @@ export default function TermsPage() {
                                 Online transactions on Indian Pharmazee are processed using the secure Razorpay payment gateway:
                             </p>
                             <ul className="space-y-2 pl-5 list-disc text-xs md:text-sm text-slate-600">
-                                <li>We accept major Credit Cards, Debit Cards, Net Banking, UPI, and authorized Wallets supported by Razorpay, as well as Cash on Delivery (COD) for select locations.</li>
+                                <li>We accept major Credit Cards, Debit Cards, Net Banking, UPI, and authorized Wallets supported by Razorpay.</li>
                                 <li>All payments are billed in Indian Rupees (INR). You agree to pay the complete price listed at the time of checkout, including any applicable Goods and Services Tax (GST) and shipping fees.</li>
                                 <li>In the event of payment failure or technical error, the transaction may be rolled back, and any debited amount will be refunded directly via Razorpay to your original payment source within 5–7 business days.</li>
                             </ul>

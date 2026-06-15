@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import Image from "next/image";
-import { fetchApi } from "@/lib/utils";
+import { fetchApi, sortCategories } from "@/lib/utils";
 import { AlertCircle, ArrowRight, Stethoscope, BadgeCheck, Thermometer, Truck } from "lucide-react";
 import { getPharmaIcon } from "@/lib/pharma-icons";
 
@@ -100,7 +100,7 @@ export default function CategoriesPage() {
 
   useEffect(() => {
     fetchApi("/public/categories")
-      .then((res) => setCategories(res.data?.categories || []))
+      .then((res) => setCategories(sortCategories(res.data?.categories || [])))
       .catch((err) => setError(err.message || "Failed to load categories"))
       .finally(() => setLoading(false));
   }, []);

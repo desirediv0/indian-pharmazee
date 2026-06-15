@@ -3,7 +3,7 @@
 import { useState } from "react";
 import { 
   Phone, Mail, Send, Loader2, MessageSquare, 
-  ShieldCheck, Thermometer, ArrowRight, BadgeCheck, Stethoscope
+  ShieldCheck, Thermometer, ArrowRight, BadgeCheck, Stethoscope, Clock
 } from "lucide-react";
 import { FaWhatsapp } from "react-icons/fa";
 import { Button } from "@/components/ui/button";
@@ -93,11 +93,19 @@ export default function ContactPage() {
               <p className="text-xs md:text-sm text-slate-600 leading-relaxed mb-4">
                 At Indian Pharmazee, We provide a trusted platform offering genuine branded medicines and healthcare products at affordable prices, ensuring with reliable service. Our extensive range includes specialty medicines across categories such as IVF care, oncology (anti-cancer medicines), sexual wellness, orthopedic care, chronic care, and many more healthcare segments.
               </p>
-              <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-start gap-3">
-                <Thermometer className="w-5 h-5 text-[#16C7D9] flex-shrink-0 mt-0.5" />
-                <p className="text-xs text-slate-600 leading-normal">
-                  At Indian Pharmazee we deliver cold chain products <span className="text-[#005EB8] font-bold">(2°C – 8°C)</span> with our professional courier partners across India.
-                </p>
+              <div className="space-y-3">
+                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-start gap-3">
+                  <Thermometer className="w-5 h-5 text-[#16C7D9] flex-shrink-0 mt-0.5" />
+                  <p className="text-xs text-slate-600 leading-normal">
+                    At Indian Pharmazee we deliver cold chain products <span className="text-[#005EB8] font-bold">(2°C – 8°C)</span> with our professional courier partners across India.
+                  </p>
+                </div>
+                <div className="p-3.5 rounded-xl bg-slate-50 border border-slate-100 flex items-start gap-3">
+                  <Clock className="w-5 h-5 text-[#005EB8] flex-shrink-0 mt-0.5" />
+                  <p className="text-xs text-slate-600 leading-normal">
+                    <span className="font-bold text-slate-800">Office Hours:</span> 10:30 AM to 7:00 PM (Daily)
+                  </p>
+                </div>
               </div>
             </div>
 

@@ -117,7 +117,6 @@ export default function ReturnPolicyPage() {
                                 <li>Refund approvals are finalized within **2 business days** of receiving the return.</li>
                                 <li>All online transaction refunds are processed directly via **Razorpay** to your original payment source (Credit Card, Debit Card, Net Banking, or UPI Wallet).</li>
                                 <li>Approved refunds generally reflect in your account within **5–7 business days**, in line with card network and partner bank processing rules.</li>
-                                <li>For Cash on Delivery (COD) transactions, refunds will be credited via a secure NEFT bank transfer to an account matching the billing name.</li>
                             </ul>
                         </div>
 
