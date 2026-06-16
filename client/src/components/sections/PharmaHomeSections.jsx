@@ -131,36 +131,36 @@ export function ColdChainBanner() {
     <section className="py-12 md:py-14">
       <div className="max-w-7xl mx-auto px-6">
         <div
-          className="relative rounded-3xl overflow-hidden p-8 md:p-12"
-          style={{ background: "linear-gradient(135deg, #0A2540 0%, #0d3560 60%, #0e3d70 100%)" }}
+          className="relative rounded-3xl overflow-hidden p-8 md:p-12 border"
+          style={{ background: "#FFFFFF", borderColor: "#DCE7F2", boxShadow: "0 10px 30px rgba(0, 94, 184, 0.04)" }}
         >
-          <div className="absolute top-0 right-0 w-64 h-64 rounded-full opacity-10 -translate-y-1/2 translate-x-1/2"
+          <div className="absolute top-0 right-0 w-64 h-64 rounded-full opacity-5 -translate-y-1/2 translate-x-1/2"
             style={{ background: "radial-gradient(circle, #16C7D9, transparent)" }} />
 
           <div className="relative z-10 flex flex-col md:flex-row items-center justify-between gap-8">
-            <div className="flex items-start gap-5">
+            <div className="flex items-start gap-5 text-left">
               <div
                 className="w-16 h-16 rounded-2xl flex items-center justify-center flex-shrink-0"
-                style={{ background: "rgba(22,199,217,0.15)", border: "1px solid rgba(22,199,217,0.3)" }}
+                style={{ background: "rgba(22,199,217,0.08)", border: "1px solid rgba(22,199,217,0.2)" }}
               >
-                <Thermometer className="h-8 w-8" style={{ color: "#16C7D9" }} />
+                <Thermometer className="h-8 w-8" style={{ color: "#005EB8" }} />
               </div>
               <div>
-                <h3 className="text-xl md:text-2xl font-bold text-white mb-2">
+                <h3 className="text-xl md:text-2xl font-bold mb-2" style={{ color: "#0A2540" }}>
                   Temp-Controlled Delivery Support
                 </h3>
-                <p className="text-slate-300 leading-relaxed max-w-xl text-sm">
+                <p className="text-gray-500 leading-relaxed max-w-xl text-sm">
                   Temperature-sensitive medicines shipped safely at{" "}
-                  <span className="font-semibold" style={{ color: "#16C7D9" }}>2°C – 8°C</span>{" "}
+                  <span className="font-semibold" style={{ color: "#005EB8" }}>2°C – 8°C</span>{" "}
                   via professional courier partners. IVF medicines, biologics, and specialty products handled with care.
                 </p>
               </div>
             </div>
-            <div className="flex-shrink-0 flex flex-col sm:flex-row gap-3">
+            <div className="flex-shrink-0 flex flex-col sm:flex-row gap-3 w-full sm:w-auto">
               <Link
                 href="/products"
                 className="px-6 py-3 rounded-xl font-bold text-white text-sm text-center transition-all hover:opacity-90"
-                style={{ background: "#005EB8" }}
+                style={{ background: "#0A2540" }}
               >
                 Shop Medicines
               </Link>
@@ -168,15 +168,15 @@ export function ColdChainBanner() {
                 href={`https://wa.me/${WHATSAPP_NUMBER}`}
                 target="_blank"
                 rel="noopener noreferrer"
-                className="px-6 py-3 rounded-xl font-bold text-sm text-center transition-all hover:opacity-90 border"
-                style={{ borderColor: "#16C7D9", color: "#16C7D9" }}
+                className="px-6 py-3 rounded-xl font-bold text-sm text-center transition-all hover:bg-gray-50 border"
+                style={{ borderColor: "#16C7D9", color: "#005EB8" }}
               >
                 Enquire on WhatsApp
               </a>
             </div>
           </div>
 
-          <div className="relative z-10 mt-8 pt-8 border-t border-white/10 grid grid-cols-2 sm:grid-cols-4 gap-6">
+          <div className="relative z-10 mt-8 pt-8 border-t grid grid-cols-2 sm:grid-cols-4 gap-6" style={{ borderColor: "#E5E7EB" }}>
             {[
               { value: "2°C–8°C", label: "Controlled Temp" },
               { value: "Pan-India", label: "Delivery Coverage" },
@@ -184,8 +184,8 @@ export function ColdChainBanner() {
               { value: "24/7", label: "WhatsApp Support" },
             ].map(({ value, label }) => (
               <div key={label} className="text-center">
-                <p className="text-xl font-bold mb-1" style={{ color: "#16C7D9" }}>{value}</p>
-                <p className="text-xs text-slate-400 uppercase tracking-wider">{label}</p>
+                <p className="text-xl font-bold mb-1" style={{ color: "#005EB8" }}>{value}</p>
+                <p className="text-xs text-gray-400 uppercase tracking-wider">{label}</p>
               </div>
             ))}
           </div>

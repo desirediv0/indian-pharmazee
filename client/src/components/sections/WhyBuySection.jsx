@@ -170,25 +170,25 @@ export const WhyBuySection = () => {
 
         {/* ── Bottom CTA bar ── */}
         <div
-          className="mt-16 p-8 md:p-10 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden"
-          style={{ background: "#0A2540" }}
+          className="mt-16 p-8 md:p-10 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden border"
+          style={{ background: "#FFFFFF", borderColor: "#DCE7F2", boxShadow: "0 10px 30px rgba(0, 94, 184, 0.04)" }}
         >
           <div
             className="absolute inset-0 pointer-events-none"
-            style={{ background: "radial-gradient(circle at 20% 50%, rgba(22,199,217,0.1), transparent 60%)" }}
+            style={{ background: "radial-gradient(circle at 20% 50%, rgba(22,199,217,0.04), transparent 60%)" }}
           />
           <div className="relative z-10 text-center md:text-left">
-            <h3 className="text-xl md:text-2xl font-bold text-white mb-2">Need Medicine Help?</h3>
-            <p className="text-slate-400 text-sm max-w-md">
+            <h3 className="text-xl md:text-2xl font-bold mb-2" style={{ color: "#0A2540" }}>Need Medicine Help?</h3>
+            <p className="text-gray-500 text-sm max-w-md">
               Prescription queries, bulk orders, temp-controlled requirements — message us on WhatsApp for fast assistance.
             </p>
           </div>
-          <div className="relative z-10 flex flex-col sm:flex-row gap-3 flex-shrink-0">
+          <div className="relative z-10 flex flex-col sm:flex-row gap-3 flex-shrink-0 w-full sm:w-auto">
             <a
               href="https://wa.me/919560247619"
               target="_blank"
               rel="noopener noreferrer"
-              className="inline-flex items-center gap-2 px-6 py-3 rounded-xl font-bold text-white text-sm transition-all hover:opacity-90"
+              className="inline-flex items-center justify-center gap-2 px-6 py-3 rounded-xl font-bold text-white text-sm transition-all hover:opacity-90"
               style={{ background: "#25D366" }}
             >
               <svg className="h-4 w-4" viewBox="0 0 24 24" fill="currentColor">
@@ -198,8 +198,8 @@ export const WhyBuySection = () => {
             </a>
             <Link
               href="/contact"
-              className="inline-flex items-center justify-center px-6 py-3 rounded-xl font-bold text-sm border-2 transition-all hover:bg-white/10"
-              style={{ borderColor: "#16C7D9", color: "#16C7D9" }}
+              className="inline-flex items-center justify-center px-6 py-3 rounded-xl font-bold text-sm border-2 transition-all hover:bg-gray-50"
+              style={{ borderColor: "#DCE7F2", color: "#0A2540" }}
             >
               Contact Us
             </Link>
