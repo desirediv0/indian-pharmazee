@@ -80,8 +80,11 @@ export default function ReturnPolicyPage() {
                                 <span className="w-1.5 h-5 bg-[#005EB8] rounded-full" />
                                 Return Eligibility Criteria
                             </h2>
+                            <p className="text-slate-600 text-sm leading-relaxed mb-4 font-semibold text-amber-900 bg-amber-50/50 p-3 rounded-xl border border-amber-100/50">
+                                Note: Only non-cold chain products can be returned within our 7-day return policy. Temperature-sensitive / cold-chain products are strictly non-returnable and non-refundable.
+                            </p>
                             <p className="text-slate-600 text-sm leading-relaxed mb-4">
-                                Non-temp-controlled pharmaceuticals, OTC formulations, and general wellness items can be returned within **7 days of delivery** under the following strict conditions:
+                                Eligible non-cold chain pharmaceuticals, OTC formulations, and general wellness items can be returned within **7 days of delivery** under the following strict conditions:
                             </p>
                             <ul className="space-y-3 pl-5 list-disc text-xs md:text-sm text-slate-600">
                                 <li>The outer security seals and therapeutic blister foil packs must remain 100% unopened and undamaged.</li>

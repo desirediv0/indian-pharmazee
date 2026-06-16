@@ -58,7 +58,7 @@ export const Footer = () => {
   }, []);
 
   return (
-    <footer className="relative overflow-hidden" style={{ background: "#f8fafc" }}>
+    <footer className="relative overflow-hidden" style={{ background: "#e2e8f0" }}>
 
       {/* ── Top trust bar ── */}
       <div style={{ background: "linear-gradient(90deg, #005EB8 0%, #0074e4 50%, #005EB8 100%)" }}>

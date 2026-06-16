@@ -96,6 +96,21 @@ export default function TermsPage() {
 
                         <div>
                             <h2 className="font-display text-xl font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
+                                <span className="w-1.5 h-5 bg-[#9333EA] rounded-full" />
+                                Product Returns & 7-Day Refund Policy
+                            </h2>
+                            <p className="text-slate-600 text-sm leading-relaxed mb-3">
+                                Our return policy is structured to preserve clinical safety and drug efficacy:
+                            </p>
+                            <ul className="space-y-2 pl-5 list-disc text-xs md:text-sm text-slate-600">
+                                <li><strong>Only non-cold chain products</strong> can be returned within our standard <strong>7-day return policy</strong>.</li>
+                                <li>All temperature-sensitive, cold chain products (2°C–8°C) are strictly non-returnable and non-refundable once dispatched, as storage stability cannot be verified post-delivery.</li>
+                                <li>Returned items must be completely unopened, with original seals, packaging, and batch details intact.</li>
+                            </ul>
+                        </div>
+
+                        <div>
+                            <h2 className="font-display text-xl font-bold text-slate-900 mb-4 pb-2 border-b border-slate-100 flex items-center gap-2">
                                 <span className="w-1.5 h-5 bg-[#16C7D9] rounded-full" />
                                 Pricing & Stock Availability
                             </h2>

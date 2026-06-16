@@ -171,14 +171,14 @@ export const WhyBuySection = () => {
         {/* ── Bottom CTA bar ── */}
         <div
           className="mt-16 p-8 md:p-10 rounded-3xl flex flex-col md:flex-row items-center justify-between gap-6 relative overflow-hidden border"
-          style={{ background: "#FFFFFF", borderColor: "#DCE7F2", boxShadow: "0 10px 30px rgba(0, 94, 184, 0.04)" }}
+          style={{ background: "linear-gradient(135deg, #FFFFFF 0%, #F5F3FF 50%, #E9D5FF 100%)", borderColor: "#D8B4FE", boxShadow: "0 10px 30px rgba(126, 34, 206, 0.05)" }}
         >
           <div
             className="absolute inset-0 pointer-events-none"
-            style={{ background: "radial-gradient(circle at 20% 50%, rgba(22,199,217,0.04), transparent 60%)" }}
+            style={{ background: "radial-gradient(circle at 20% 50%, rgba(168, 85, 247, 0.04), transparent 60%)" }}
           />
           <div className="relative z-10 text-center md:text-left">
-            <h3 className="text-xl md:text-2xl font-bold mb-2" style={{ color: "#0A2540" }}>Need Medicine Help?</h3>
+            <h3 className="text-xl md:text-2xl font-bold mb-2" style={{ color: "#5B21B6" }}>Need Medicine Help?</h3>
             <p className="text-gray-500 text-sm max-w-md">
               Prescription queries, bulk orders, temp-controlled requirements — message us on WhatsApp for fast assistance.
             </p>
@@ -198,8 +198,8 @@ export const WhyBuySection = () => {
             </a>
             <Link
               href="/contact"
-              className="inline-flex items-center justify-center px-6 py-3 rounded-xl font-bold text-sm border-2 transition-all hover:bg-gray-50"
-              style={{ borderColor: "#DCE7F2", color: "#0A2540" }}
+              className="inline-flex items-center justify-center px-6 py-3 rounded-xl font-bold text-sm border-2 transition-all hover:bg-purple-50/50"
+              style={{ borderColor: "#C084FC", color: "#7E22CE" }}
             >
               Contact Us
             </Link>
