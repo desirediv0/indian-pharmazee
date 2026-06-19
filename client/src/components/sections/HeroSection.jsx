@@ -144,7 +144,7 @@ export default function HeroSection() {
 
                 <div className="relative aspect-[16/9] overflow-hidden rounded-2xl">
                   <Image
-                    src="/left-banner-1.jpeg"
+                    src="/left-banner-1.png"
                     alt="Medicine Banner"
                     fill
                     priority

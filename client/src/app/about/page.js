@@ -339,16 +339,29 @@ export default function AboutPage() {
       {/* Call to Action (CTA) Panel */}
       <section className="py-20 px-6 sm:px-8 lg:px-12 bg-slate-50">
         <div className="max-w-7xl mx-auto">
-          <div className="relative rounded-3xl overflow-hidden py-16 px-8 md:px-16 text-center shadow-2xl bg-[#0A2540]">
-            {/* Ambient medical blue & cyan glowing spheres */}
-            <div className="absolute top-0 right-0 w-80 h-80 rounded-full blur-3xl opacity-20 pointer-events-none" style={{ background: "radial-gradient(circle, #16C7D9, transparent)" }} />
-            <div className="absolute bottom-0 left-0 w-80 h-80 rounded-full blur-3xl opacity-20 pointer-events-none" style={{ background: "radial-gradient(circle, #005EB8, transparent)" }} />
+          <div
+            className="relative rounded-3xl overflow-hidden py-16 px-8 md:px-16 text-center border"
+            style={{
+              background: "linear-gradient(135deg, #FFFFFF 0%, #F5F3FF 50%, #E9D5FF 100%)",
+              borderColor: "#D8B4FE",
+              boxShadow: "0 10px 30px rgba(126, 34, 206, 0.05)"
+            }}
+          >
+            {/* Ambient purple glowing spheres */}
+            <div
+              className="absolute top-0 right-0 w-80 h-80 rounded-full opacity-10 -translate-y-1/2 translate-x-1/2 pointer-events-none"
+              style={{ background: "radial-gradient(circle, #C084FC, transparent)" }}
+            />
+            <div
+              className="absolute bottom-0 left-0 w-80 h-80 rounded-full opacity-10 translate-y-1/2 -translate-x-1/2 pointer-events-none"
+              style={{ background: "radial-gradient(circle, #C084FC, transparent)" }}
+            />
             
             <div className="relative z-10 max-w-2xl mx-auto">
-              <h2 className="text-3xl md:text-4xl font-extrabold text-white font-display mb-4">
+              <h2 className="text-3xl md:text-4xl font-extrabold text-slate-900 font-display mb-4" style={{ color: "#5B21B6" }}>
                 Need Specialty Medicines?
               </h2>
-              <p className="text-slate-300 max-w-xl mx-auto mb-8 leading-relaxed text-sm md:text-base">
+              <p className="text-gray-600 max-w-xl mx-auto mb-8 leading-relaxed text-sm md:text-base">
                 Get real-time answers for specialized oncology drugs, IVF medication support, clinical imports, or secure temp-controlled shipment tracking anywhere in India.
               </p>
               
@@ -356,7 +369,8 @@ export default function AboutPage() {
                 <Link href="/products" className="w-full sm:w-auto">
                   <Button
                     size="lg"
-                    className="w-full sm:w-auto text-white px-8 h-12 rounded-xl font-semibold bg-[#005EB8] hover:bg-[#004b93] transition-colors shadow-lg shadow-blue-500/20 border-0"
+                    className="w-full sm:w-auto text-white px-8 h-12 rounded-xl font-semibold transition-colors shadow-lg shadow-purple-200 border-0"
+                    style={{ background: "#7E22CE" }}
                   >
                     Browse Portfolio
                   </Button>
@@ -370,7 +384,8 @@ export default function AboutPage() {
                   <Button
                     size="lg"
                     variant="outline"
-                    className="w-full sm:w-auto px-8 h-12 rounded-xl font-semibold border-2 border-[#16C7D9] text-[#16C7D9] hover:bg-[#16C7D9]/10 hover:text-[#16C7D9] transition-all bg-transparent"
+                    className="w-full sm:w-auto px-8 h-12 rounded-xl font-semibold border-2 transition-all bg-transparent"
+                    style={{ borderColor: "#C084FC", color: "#7E22CE" }}
                   >
                     Message on WhatsApp
                   </Button>

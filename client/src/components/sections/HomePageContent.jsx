@@ -156,6 +156,11 @@ export default function HomePageContent() {
 
   return (
     <>
+
+      {/* BRANDS */}
+      <BrandCarousel tag="HOT" title="TRUSTED BRANDS" />
+
+
       {/* FEATURED MEDICINES */}
       {renderSection(
         "featured",
@@ -164,8 +169,7 @@ export default function HomePageContent() {
         "bg-white"
       )}
 
-      {/* BRANDS */}
-      <BrandCarousel tag="HOT" title="TRUSTED BRANDS" />
+
 
       {/* LATEST */}
       {renderSection(
@@ -174,9 +178,11 @@ export default function HomePageContent() {
         "Newly added specialty medicines and healthcare products",
         "bg-white"
       )}
-      <div className="max-w-7xl mx-auto px-4">
-        <Image src="/banner-1.svg" alt="Temp-Controlled Delivery" width={1200} height={400} className="w-full h-auto rounded-lg my-8 " />
-      </div>
+
+
+      {/* NEW BRANDS */}
+      <BrandCarousel tag="NEW" title="NEW BRANDS" />
+
 
 
       {/* BEST SELLERS */}
@@ -198,8 +204,10 @@ export default function HomePageContent() {
       )}
 
 
+
+
       {/* NEW BRANDS */}
-      <BrandCarousel tag="NEW" title="NEW BRANDS" />
+      <BrandCarousel tag="TOP" title="TOP BRANDS" />
 
       {/* NEW ARRIVALS */}
       {renderSection(

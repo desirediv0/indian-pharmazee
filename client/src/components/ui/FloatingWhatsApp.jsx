@@ -1,7 +1,7 @@
 "use client";
 
 import Image from "next/image";
-import { FaWhatsapp } from "react-icons/fa";
+
 
 export const FloatingWhatsApp = () => {
   const phoneNumber = "919560247619";
@@ -13,7 +13,7 @@ export const FloatingWhatsApp = () => {
       href={whatsappUrl}
       target="_blank"
       rel="noopener noreferrer"
-      className="fixed bottom-[76px] md:bottom-6 right-4 md:right-6 z-40 group flex items-center justify-center md:justify-start w-14 h-14 md:w-auto md:h-auto bg-gradient-to-r from-[#03360E] to-[#0A5618] hover:from-[#022409] hover:to-[#073c10] border border-white/20 md:px-4 md:py-2 rounded-full shadow-2xl hover:shadow-emerald-950/20 hover:scale-110 active:scale-95 transition-all duration-300 cursor-pointer"
+      className="fixed bottom-[76px] md:bottom-6 right-4 md:right-6 z-40 group flex items-center justify-center md:justify-start w-14 h-14 md:w-auto md:h-auto bg-gradient-to-r from-[#03360E] to-[#0A5618] hover:from-[#022409] hover:to-[#073c10] border border-white/20 md:pr-2 md:pl-4 md:py-1 rounded-full shadow-2xl hover:shadow-emerald-950/20 hover:scale-110 active:scale-95 transition-all duration-300 cursor-pointer gap-7"
       aria-label="Chat on WhatsApp"
     >
       {/* Pulse Glow Effect */}
@@ -21,7 +21,7 @@ export const FloatingWhatsApp = () => {
 
       {/* Text on Left */}
       <div className="hidden md:flex flex-col items-start leading-tight">
-        <span className="font-extrabold text-white text-base tracking-wider uppercase font-display">
+        <span className="font-extrabold text-white text-sm tracking-wider uppercase font-display">
           CHAT WITH US
         </span>
         <span className="text-xs text-white/95 font-medium tracking-widest italic uppercase mt-0.5">

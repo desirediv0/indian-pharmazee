@@ -3,7 +3,8 @@ import { Navbar } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { CartProvider } from "@/lib/cart-context";
 import { AuthProvider } from "@/lib/auth-context";
-import { FloatingWhatsApp } from "@/components/ui/FloatingWhatsApp";
+import FloatingWhatsApp from "@/components/ui/FloatingWhatsApp";
+
 
 export const metadata = {
   title: "Indian Pharmazee | Trusted Specialty Medicines Across India",
