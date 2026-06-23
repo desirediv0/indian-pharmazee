@@ -71,7 +71,7 @@ const CategoriesCarousel = () => {
                             alt={cat.name}
                             width={64}
                             height={64}
-                            className="w-10 h-10 object-contain group-hover:scale-110 transition-transform duration-300"
+                            className="w-16 h-16 object-cover group-hover:scale-110 transition-transform duration-300"
                           />
                         ) : (
                           <Icon size={28} style={{ color }} className="group-hover:scale-110 transition-transform duration-300" />

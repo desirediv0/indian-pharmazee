@@ -22,8 +22,8 @@ const FALLBACK_SLIDES = [
     ctaLink: "/products",
   },
   {
-    img: "/fallback.png",
-    smimg: "/fallback.png",
+    img: "/fallback-2.jpeg",
+    smimg: "/fallback-2.jpeg",
     ctaLink: "/products",
   },
 
@@ -140,11 +140,11 @@ export default function HeroSection() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
 
               {/* LEFT STATIC BANNERS */}
-              <div className="lg:col-span-4 flex flex-col gap-4">
+              <div className="lg:col-span-4 flex flex-col gap-4 md:h-[420px] lg:h-[516px]">
 
-                <div className="relative aspect-[16/9] overflow-hidden rounded-2xl">
+                <div className="relative aspect-[16/9] md:aspect-auto md:flex-1 w-full overflow-hidden rounded-2xl">
                   <Image
-                    src="/left-banner-1.png"
+                    src="/left-banner-1.jpeg"
                     alt="Medicine Banner"
                     fill
                     priority
@@ -152,7 +152,7 @@ export default function HeroSection() {
                   />
                 </div>
 
-                <div className="relative aspect-[16/9] overflow-hidden rounded-2xl">
+                <div className="relative aspect-[16/9] md:aspect-auto md:flex-1 w-full overflow-hidden rounded-2xl">
                   <Image
                     src="/left-banner-2.jpeg"
                     alt="Quality Banner"
@@ -173,23 +173,20 @@ export default function HeroSection() {
                     loop: true,
                     align: "start",
                   }}
-                  className="w-full"
+                  className="w-full relative aspect-[16/9] md:h-[420px] lg:h-[516px] rounded-2xl overflow-hidden"
                 >
-                  <CarouselContent>
+                  <CarouselContent className="h-full">
 
                     {slides.map((slide, index) => (
-                      <CarouselItem key={index}>
+                      <CarouselItem key={index} className="h-full">
                         <div
                           onClick={() =>
                             handleBannerClick(slide.ctaLink)
                           }
                           className="
                     relative
-                    aspect-[16/9]
-                    md:h-[420px]
-                    lg:h-[516px]
-                    overflow-hidden
-                    rounded-2xl
+                    w-full
+                    h-full
                     cursor-pointer
                   "
                         >
