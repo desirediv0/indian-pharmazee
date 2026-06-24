@@ -140,25 +140,25 @@ export default function HeroSection() {
             <div className="grid grid-cols-1 lg:grid-cols-12 gap-4">
 
               {/* LEFT STATIC BANNERS */}
-              <div className="lg:col-span-4 flex flex-col gap-4 md:h-[420px] lg:h-[516px]">
+              <div className="lg:col-span-4 flex flex-col gap-4">
 
-                <div className="relative aspect-[16/9] md:aspect-auto md:flex-1 w-full overflow-hidden rounded-2xl">
+                <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl">
                   <Image
                     src="/left-banner-1.jpeg"
                     alt="Medicine Banner"
                     fill
                     priority
-                    className="object-cover"
+                    className="object-fill"
                   />
                 </div>
 
-                <div className="relative aspect-[16/9] md:aspect-auto md:flex-1 w-full overflow-hidden rounded-2xl">
+                <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl">
                   <Image
                     src="/left-banner-2.jpeg"
                     alt="Quality Banner"
                     fill
                     priority
-                    className="object-cover"
+                    className="object-fill"
                   />
                 </div>
 
@@ -173,7 +173,7 @@ export default function HeroSection() {
                     loop: true,
                     align: "start",
                   }}
-                  className="w-full relative aspect-[16/9] md:h-[420px] lg:h-[516px] rounded-2xl overflow-hidden"
+                  className="w-full relative aspect-[16/9] rounded-2xl overflow-hidden"
                 >
                   <CarouselContent className="h-full">
 
@@ -200,7 +200,7 @@ export default function HeroSection() {
                             fill
                             priority={index === 0}
                             sizes="100vw"
-                            className="object-cover"
+                            className="object-fill"
                           />
                         </div>
                       </CarouselItem>
