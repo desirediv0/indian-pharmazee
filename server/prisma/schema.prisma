@@ -765,6 +765,7 @@ model Brand {
   slug      String        @unique
   image     String
   tags      String[]      @default([])
+  position  Int           @default(0)
   createdAt DateTime      @default(now())
   updatedAt DateTime      @updatedAt
   products  Product[]

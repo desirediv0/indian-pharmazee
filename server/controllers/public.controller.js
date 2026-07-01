@@ -10,6 +10,9 @@ export const getBrandsByTag = asyncHandler(async (req, res) => {
   const brands = await prisma.brand.findMany({
     where: { tags: { has: tag } },
     include: { products: true },
+    orderBy: {
+      position: "asc",
+    },
   });
   const data = brands.map((b) => ({
     id: b.id,

@@ -48,6 +48,7 @@ interface Brand {
   slug: string;
   image: string;
   tags: string[];
+  position?: number;
   createdAt: string;
   updatedAt: string;
   products: any[];
@@ -57,7 +58,7 @@ export default function BrandsPage() {
   const [brandsList, setBrandsList] = useState<Brand[]>([]);
   const [open, setOpen] = useState(false);
   const [editBrand, setEditBrand] = useState<Brand | null>(null);
-  const [form, setForm] = useState({ name: "", image: null as File | null });
+  const [form, setForm] = useState({ name: "", image: null as File | null, position: "" });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [creating, setCreating] = useState(false);
   const [assignModalBrand, setAssignModalBrand] = useState<Brand | null>(null);
@@ -121,11 +122,13 @@ export default function BrandsPage() {
     }
     setCreating(true);
     try {
+      const positionVal = form.position !== "" ? parseInt(form.position) : undefined;
       if (editBrand) {
         await brands.updateBrand(editBrand.id, {
           name: form.name,
           image: form.image || undefined,
           tags: brandTags,
+          position: positionVal,
         });
         toast.success(t("brands.messages.update_success"));
       } else {
@@ -133,10 +136,11 @@ export default function BrandsPage() {
           name: form.name,
           image: form.image!,
           tags: brandTags,
+          position: positionVal,
         });
         toast.success(t("brands.messages.create_success"));
       }
-      setForm({ name: "", image: null });
+      setForm({ name: "", image: null, position: "" });
       setImagePreview(null);
       setOpen(false);
       setEditBrand(null);
@@ -151,7 +155,7 @@ export default function BrandsPage() {
   const handleEdit = (brand: Brand) => {
     setEditBrand(brand);
     setBrandTags(brand.tags || []);
-    setForm({ name: brand.name, image: null });
+    setForm({ name: brand.name, image: null, position: brand.position !== undefined ? String(brand.position) : "" });
     setImagePreview(getImageUrl(brand.image));
     setOpen(true);
   };
@@ -178,7 +182,7 @@ export default function BrandsPage() {
   const handleDialogClose = () => {
     setOpen(false);
     setEditBrand(null);
-    setForm({ name: "", image: null });
+    setForm({ name: "", image: null, position: "" });
     setImagePreview(null);
     setBrandTags([]);
   };
@@ -219,7 +223,7 @@ export default function BrandsPage() {
                   className=""
                   onClick={() => {
                     setEditBrand(null);
-                    setForm({ name: "", image: null });
+                    setForm({ name: "", image: null, position: "" });
                     setImagePreview(null);
                     setBrandTags([]);
                   }}
@@ -248,6 +252,19 @@ export default function BrandsPage() {
                       value={form.name}
                       onChange={handleInputChange}
                       required
+                      className="border-[#E5E7EB] focus:border-primary"
+                    />
+                  </div>
+                  <div>
+                    <label className="text-sm font-medium text-[#4B5563] mb-1.5 block">
+                      Position / Order
+                    </label>
+                    <Input
+                      name="position"
+                      type="number"
+                      placeholder="Enter position (e.g. 0, 1, 2)"
+                      value={form.position}
+                      onChange={handleInputChange}
                       className="border-[#E5E7EB] focus:border-primary"
                     />
                   </div>
@@ -403,6 +420,9 @@ export default function BrandsPage() {
                   <div className="flex items-start justify-between gap-4">
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1.5">
+                        <Badge variant="outline" className="border-gray-300 text-gray-600 bg-gray-50 text-xs">
+                          Pos: {brand.position !== undefined ? brand.position : "N/A"}
+                        </Badge>
                         <h3 className="font-semibold text-[#1F2937] text-base">
                           {brand.name}
                         </h3>
