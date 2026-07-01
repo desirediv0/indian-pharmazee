@@ -6,6 +6,47 @@ import { prisma } from "../config/db.js";
 import { ApiResponsive } from "../utils/ApiResponsive.js";
 import { deleteFromS3 } from "../utils/deleteFromS3.js";
 
+// Helper function to insert a brand at a specific position and shift others
+const adjustPositions = async (targetId, targetNewPosition) => {
+  // 1. Get all brands excluding the target, sorted by current position
+  const otherBrands = await prisma.brand.findMany({
+    where: {
+      id: { not: targetId }
+    },
+    orderBy: { position: "asc" }
+  });
+
+  // 2. Determine index to insert at
+  let index = parseInt(targetNewPosition);
+  if (isNaN(index) || index < 0) index = 0;
+  if (index > otherBrands.length) index = otherBrands.length;
+
+  // 3. Insert target brand ID into the array at that index
+  const newOrder = [...otherBrands];
+  newOrder.splice(index, 0, { id: targetId });
+
+  // 4. Update all brands in the database with their new index as position
+  for (let i = 0; i < newOrder.length; i++) {
+    await prisma.brand.update({
+      where: { id: newOrder[i].id },
+      data: { position: i }
+    });
+  }
+};
+
+// Helper function to normalize positions (0, 1, 2...)
+const normalizePositions = async () => {
+  const allBrands = await prisma.brand.findMany({
+    orderBy: { position: "asc" }
+  });
+  for (let i = 0; i < allBrands.length; i++) {
+    await prisma.brand.update({
+      where: { id: allBrands[i].id },
+      data: { position: i }
+    });
+  }
+};
+
 // Create Brand
 export const createBrand = asyncHandler(async (req, res) => {
   const { name, tags, position } = req.body;
@@ -18,48 +59,38 @@ export const createBrand = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Brand image is required");
   }
 
-  // Auto-calculate position if not provided
-  let brandPosition = 0;
-  if (position !== undefined && position !== null && position !== "") {
-    brandPosition = parseInt(position) || 0;
-  } else {
-    // Get the highest position and add 1
-    const maxPositionBrand = await prisma.brand.findFirst({
-      orderBy: { position: "desc" },
-      select: { position: true },
-    });
-    brandPosition = maxPositionBrand ? maxPositionBrand.position + 1 : 0;
-  }
-
-  // Reorder existing brands if new position conflicts
-  // Shift all brands at or after the new position down by 1
-  const brandsToShift = await prisma.brand.findMany({
-    where: {
-      position: {
-        gte: brandPosition,
-      },
-    },
-  });
-
-  for (const existingBrand of brandsToShift) {
-    await prisma.brand.update({
-      where: { id: existingBrand.id },
-      data: {
-        position: existingBrand.position + 1,
-      },
-    });
-  }
-
+  // Create brand with a temporary position
   const brand = await prisma.brand.create({
     data: {
       name,
       slug,
       image,
-      position: brandPosition,
+      position: 999999, // Temp position
       tags: tags ? (Array.isArray(tags) ? tags : [tags]) : [],
     },
   });
-  res.status(201).json(new ApiResponsive(201, { brand }, "Brand created"));
+
+  // Determine target position
+  let targetPosition;
+  if (position !== undefined && position !== null && position !== "") {
+    targetPosition = parseInt(position);
+  } else {
+    // Default to the end of the list
+    const otherBrandsCount = await prisma.brand.count({
+      where: { id: { not: brand.id } }
+    });
+    targetPosition = otherBrandsCount;
+  }
+
+  // Adjust all brand positions
+  await adjustPositions(brand.id, targetPosition);
+
+  // Fetch the fully updated brand to return
+  const createdBrand = await prisma.brand.findUnique({
+    where: { id: brand.id }
+  });
+
+  res.status(201).json(new ApiResponsive(201, { brand: createdBrand }, "Brand created"));
 });
 
 // Update Brand
@@ -68,6 +99,7 @@ export const updateBrand = asyncHandler(async (req, res) => {
   const { name, tags, position } = req.body;
   const brand = await prisma.brand.findUnique({ where: { id: brandId } });
   if (!brand) throw new ApiError(404, "Brand not found");
+  
   let updateData = {};
   if (name) {
     updateData.name = name;
@@ -81,104 +113,28 @@ export const updateBrand = asyncHandler(async (req, res) => {
     updateData.image = await processAndUploadImage(req.file, "brands");
   }
 
-  let newPosition = null;
-  if (position !== undefined && position !== null && position !== "") {
-    newPosition = parseInt(position) || 0;
-    updateData.position = newPosition;
-  }
-
-  // Handle position reordering if position is being changed
-  if (newPosition !== null) {
-    const oldPosition = brand.position;
-
-    if (newPosition !== oldPosition) {
-      if (newPosition < oldPosition) {
-        // Shift all brands from newPosition to oldPosition-1 down by 1 (position + 1)
-        const brandsToShift = await prisma.brand.findMany({
-          where: {
-            position: {
-              gte: newPosition,
-              lt: oldPosition,
-            },
-            id: {
-              not: brandId,
-            },
-          },
-        });
-
-        for (const b of brandsToShift) {
-          await prisma.brand.update({
-            where: { id: b.id },
-            data: {
-              position: b.position + 1,
-            },
-          });
-        }
-      } else {
-        // Shift all brands from oldPosition+1 to newPosition up by 1 (position - 1)
-        const brandsToShift = await prisma.brand.findMany({
-          where: {
-            position: {
-              gt: oldPosition,
-              lte: newPosition,
-            },
-            id: {
-              not: brandId,
-            },
-          },
-        });
-
-        for (const b of brandsToShift) {
-          await prisma.brand.update({
-            where: { id: b.id },
-            data: {
-              position: b.position - 1,
-            },
-          });
-        }
-      }
-    } else {
-      // Position is same, check conflicts
-      const conflictingBrand = await prisma.brand.findFirst({
-        where: {
-          position: newPosition,
-          id: {
-            not: brandId,
-          },
-        },
-      });
-
-      if (conflictingBrand) {
-        const brandsToShift = await prisma.brand.findMany({
-          where: {
-            position: {
-              gte: newPosition,
-            },
-            id: {
-              not: brandId,
-            },
-          },
-        });
-
-        for (const b of brandsToShift) {
-          await prisma.brand.update({
-            where: { id: b.id },
-            data: {
-              position: b.position + 1,
-            },
-          });
-        }
-      }
-    }
-  }
-
-  const updatedBrand = await prisma.brand.update({
+  // Update base fields first
+  const updatedBrandBasic = await prisma.brand.update({
     where: { id: brandId },
     data: updateData,
   });
+
+  // If position was provided, adjust the positions list
+  if (position !== undefined && position !== null && position !== "") {
+    await adjustPositions(brandId, position);
+  } else {
+    await normalizePositions();
+  }
+
+  // Fetch the fully updated brand to return
+  const finalBrand = await prisma.brand.findUnique({
+    where: { id: brandId },
+    include: { products: true }
+  });
+
   res
     .status(200)
-    .json(new ApiResponsive(200, { brand: updatedBrand }, "Brand updated"));
+    .json(new ApiResponsive(200, { brand: finalBrand }, "Brand updated"));
 });
 
 // Delete Brand
@@ -189,8 +145,6 @@ export const deleteBrand = asyncHandler(async (req, res) => {
     include: { products: true },
   });
   if (!brand) throw new ApiError(404, "Brand not found");
-
-  const deletedPosition = brand.position;
 
   // Unlink all products from this brand
   await prisma.product.updateMany({
@@ -204,23 +158,8 @@ export const deleteBrand = asyncHandler(async (req, res) => {
   // Delete the brand
   await prisma.brand.delete({ where: { id: brandId } });
 
-  // Reorder remaining brands - decrease position of brands after deleted one
-  const brandsToUpdate = await prisma.brand.findMany({
-    where: {
-      position: {
-        gt: deletedPosition,
-      },
-    },
-  });
-
-  for (const b of brandsToUpdate) {
-    await prisma.brand.update({
-      where: { id: b.id },
-      data: {
-        position: b.position - 1,
-      },
-    });
-  }
+  // Reorder remaining brands to normalize their positions
+  await normalizePositions();
 
   res.status(200).json(new ApiResponsive(200, {}, "Brand deleted"));
 });
