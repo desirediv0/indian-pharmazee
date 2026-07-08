@@ -8,6 +8,7 @@ import {
   Star, Minus, Plus, AlertCircle, ShoppingCart,
   Heart, ChevronRight, CheckCircle, Zap,
   Truck, ShieldCheck, Thermometer, BadgeCheck,
+  X, ChevronLeft,
 } from "lucide-react";
 import { useAuth } from "@/lib/auth-context";
 import { useRouter } from "next/navigation";
@@ -54,9 +55,41 @@ export default function ProductContent({ slug }) {
   const [initialLoading, setInitialLoading] = useState(true);
   const [priceSettings, setPriceSettings] = useState(null);
 
+  // Zoom & Lightbox States
+  const [zoomPos, setZoomPos] = useState({ x: 0, y: 0 });
+  const [isZoomed, setIsZoomed] = useState(false);
+  const [isLightboxOpen, setIsLightboxOpen] = useState(false);
+  const [lightboxIndex, setLightboxIndex] = useState(0);
+
   const { isAuthenticated } = useAuth();
   const router = useRouter();
   const { addVariantToCart } = useAddVariantToCart();
+
+  // Prevent background scrolling when lightbox is open
+  useEffect(() => {
+    if (isLightboxOpen) {
+      document.body.style.overflow = "hidden";
+    } else {
+      document.body.style.overflow = "";
+    }
+    return () => {
+      document.body.style.overflow = "";
+    };
+  }, [isLightboxOpen]);
+
+  const handleMouseMove = (e) => {
+    const { left, top, width, height } = e.currentTarget.getBoundingClientRect();
+    const x = ((e.clientX - left) / width) * 100;
+    const y = ((e.clientY - top) / height) * 100;
+    setZoomPos({ x, y });
+  };
+
+  const openLightbox = () => {
+    if (!images?.length) return;
+    const index = images.findIndex((img) => img.url === primary?.url);
+    setLightboxIndex(index >= 0 ? index : 0);
+    setIsLightboxOpen(true);
+  };
 
   /* ── Slab pricing ── */
   const getEffectivePrice = (variant, qty) => {
@@ -431,19 +464,44 @@ export default function ProductContent({ slug }) {
               )}
 
               {/* Main image */}
-              <div className="relative flex-1 aspect-square rounded-2xl overflow-hidden bg-white border" style={{ borderColor: "#DCE7F2" }}>
+              <div
+                className="relative flex-1 aspect-square rounded-2xl overflow-hidden bg-white border cursor-zoom-in group"
+                style={{ borderColor: "#DCE7F2" }}
+                onMouseEnter={() => setIsZoomed(true)}
+                onMouseLeave={() => setIsZoomed(false)}
+                onMouseMove={handleMouseMove}
+                onClick={openLightbox}
+              >
                 {images.length > 0 ? (
-                  <Image src={getImageUrl(primary?.url)} alt={product.name} fill className="object-contain p-6 transition-all duration-300" priority sizes="(max-width: 1024px) 80vw, 45vw" />
+                  <Image
+                    src={getImageUrl(primary?.url)}
+                    alt={product.name}
+                    fill
+                    className="object-contain p-6 transition-transform duration-75 ease-out"
+                    priority
+                    sizes="(max-width: 1024px) 80vw, 45vw"
+                    style={{
+                      transform: isZoomed ? "scale(2.2)" : "scale(1)",
+                      transformOrigin: isZoomed ? `${zoomPos.x}% ${zoomPos.y}%` : "center",
+                    }}
+                  />
                 ) : (
                   <Image src="/images/product-placeholder.jpg" alt={product.name} fill className="object-contain" />
                 )}
                 {product.flashSale?.isActive && (
-                  <div className="absolute top-3 left-3 flex items-center gap-1 px-2.5 py-1 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-full text-[10px] font-extrabold uppercase tracking-widest">
+                  <div className="absolute top-3 left-3 flex items-center gap-1 px-2.5 py-1 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-full text-[10px] font-extrabold uppercase tracking-widest pointer-events-none">
                     <Zap className="h-3 w-3 fill-white animate-pulse" />
                     FLASH SALE — {product.flashSale.discountPercentage}% OFF
                   </div>
                 )}
-                <button onClick={handleWishlist} disabled={isAddingToWishlist} className={`absolute top-3 right-3 w-9 h-9 rounded-full shadow-sm flex items-center justify-center transition-all ${isInWishlist ? "bg-red-50 text-red-500" : "bg-white/90 text-gray-400 hover:text-red-400"}`}>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleWishlist();
+                  }}
+                  disabled={isAddingToWishlist}
+                  className={`absolute top-3 right-3 w-9 h-9 rounded-full shadow-sm flex items-center justify-center transition-all ${isInWishlist ? "bg-red-50 text-red-500" : "bg-white/90 text-gray-400 hover:text-red-400"}`}
+                >
                   <Heart className={`h-4 w-4 ${isInWishlist ? "fill-red-500" : ""}`} />
                 </button>
               </div>
@@ -451,19 +509,30 @@ export default function ProductContent({ slug }) {
 
             {/* Mobile: main image top + horizontal thumbnails below */}
             <div className="sm:hidden">
-              <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-white border mb-3" style={{ borderColor: "#DCE7F2" }}>
+              <div
+                className="relative aspect-square w-full rounded-2xl overflow-hidden bg-white border mb-3 cursor-pointer"
+                style={{ borderColor: "#DCE7F2" }}
+                onClick={openLightbox}
+              >
                 {images.length > 0 ? (
                   <Image src={getImageUrl(primary?.url)} alt={product.name} fill className="object-contain p-6 transition-all duration-300" priority sizes="95vw" />
                 ) : (
                   <Image src="/images/product-placeholder.jpg" alt={product.name} fill className="object-contain" />
                 )}
                 {product.flashSale?.isActive && (
-                  <div className="absolute top-3 left-3 flex items-center gap-1 px-2.5 py-1 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-full text-[10px] font-extrabold uppercase tracking-widest">
+                  <div className="absolute top-3 left-3 flex items-center gap-1 px-2.5 py-1 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-full text-[10px] font-extrabold uppercase tracking-widest pointer-events-none">
                     <Zap className="h-3 w-3 fill-white animate-pulse" />
                     {product.flashSale.discountPercentage}% OFF
                   </div>
                 )}
-                <button onClick={handleWishlist} disabled={isAddingToWishlist} className={`absolute top-3 right-3 w-9 h-9 rounded-full shadow-sm flex items-center justify-center transition-all ${isInWishlist ? "bg-red-50 text-red-500" : "bg-white/90 text-gray-400 hover:text-red-400"}`}>
+                <button
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    handleWishlist();
+                  }}
+                  disabled={isAddingToWishlist}
+                  className={`absolute top-3 right-3 w-9 h-9 rounded-full shadow-sm flex items-center justify-center transition-all ${isInWishlist ? "bg-red-50 text-red-500" : "bg-white/90 text-gray-400 hover:text-red-400"}`}
+                >
                   <Heart className={`h-4 w-4 ${isInWishlist ? "fill-red-500" : ""}`} />
                 </button>
               </div>
@@ -870,6 +939,83 @@ export default function ProductContent({ slug }) {
         )}
 
       </div>
+
+      {/* Fullscreen Lightbox Modal */}
+      {isLightboxOpen && images.length > 0 && (
+        <div className="fixed inset-0 z-50 flex flex-col justify-between bg-black/95 p-4 md:p-6 animate-fade-in">
+          {/* Header */}
+          <div className="flex items-center justify-between text-white w-full max-w-6xl mx-auto py-2">
+            <span className="text-sm font-semibold truncate pr-4">{product.name}</span>
+            <button
+              onClick={() => setIsLightboxOpen(false)}
+              className="w-10 h-10 rounded-full bg-white/10 hover:bg-white/20 flex items-center justify-center transition-all text-white"
+            >
+              <X className="h-5 w-5" />
+            </button>
+          </div>
+
+          {/* Main Visual Workspace */}
+          <div className="relative flex-1 flex items-center justify-center max-w-6xl w-full mx-auto my-4 group">
+            {/* Prev Button */}
+            {images.length > 1 && (
+              <button
+                onClick={() => setLightboxIndex((prev) => (prev === 0 ? images.length - 1 : prev - 1))}
+                className="absolute left-2 md:left-4 z-10 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all cursor-pointer"
+              >
+                <ChevronLeft className="h-6 w-6" />
+              </button>
+            )}
+
+            {/* Image Frame */}
+            <div className="relative w-full h-full max-h-[70vh] flex items-center justify-center">
+              <Image
+                src={getImageUrl(images[lightboxIndex]?.url)}
+                alt={product.name}
+                width={1200}
+                height={1200}
+                className="object-contain max-w-full max-h-full"
+                priority
+              />
+            </div>
+
+            {/* Next Button */}
+            {images.length > 1 && (
+              <button
+                onClick={() => setLightboxIndex((prev) => (prev === images.length - 1 ? 0 : prev + 1))}
+                className="absolute right-2 md:right-4 z-10 w-12 h-12 rounded-full bg-white/10 hover:bg-white/20 text-white flex items-center justify-center transition-all cursor-pointer"
+              >
+                <ChevronRight className="h-6 w-6" />
+              </button>
+            )}
+          </div>
+
+          {/* Bottom Controls & Thumbnails */}
+          <div className="w-full max-w-6xl mx-auto flex flex-col items-center gap-4 pb-4">
+            <span className="text-xs text-gray-400">
+              {lightboxIndex + 1} / {images.length}
+            </span>
+            
+            {images.length > 1 && (
+              <div className="flex gap-2 overflow-x-auto max-w-full pb-1">
+                {images.map((img, idx) => {
+                  const active = idx === lightboxIndex;
+                  return (
+                    <button
+                      key={idx}
+                      onClick={() => setLightboxIndex(idx)}
+                      className={`relative flex-shrink-0 w-14 h-14 rounded-lg overflow-hidden border-2 transition-all bg-gray-900 ${
+                        active ? "border-primary" : "border-transparent hover:border-gray-500"
+                      }`}
+                    >
+                      <Image src={getImageUrl(img.url)} alt="" fill className="object-contain p-0.5" sizes="56px" />
+                    </button>
+                  );
+                })}
+              </div>
+            )}
+          </div>
+        </div>
+      )}
     </div>
   );
 }
