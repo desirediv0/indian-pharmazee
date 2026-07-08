@@ -39,9 +39,42 @@ process.on("SIGTERM", gracefulShutdown);
 process.on("SIGINT", gracefulShutdown);
 
 // Connect to the database and start the server
+const seedExistingPositions = async () => {
+  try {
+    console.log("Seeding positions for categories and subcategories...");
+    const categories = await prisma.category.findMany({
+      orderBy: { name: "asc" }
+    });
+    for (let i = 0; i < categories.length; i++) {
+      await prisma.category.update({
+        where: { id: categories[i].id },
+        data: { position: i + 1 }
+      });
+    }
+    console.log(`Successfully seeded ${categories.length} categories.`);
+
+    for (const cat of categories) {
+      const subCats = await prisma.subCategory.findMany({
+        where: { categoryId: cat.id },
+        orderBy: { name: "asc" }
+      });
+      for (let j = 0; j < subCats.length; j++) {
+        await prisma.subCategory.update({
+          where: { id: subCats[j].id },
+          data: { position: j + 1 }
+        });
+      }
+    }
+    console.log("Successfully seeded subcategories.");
+  } catch (error) {
+    console.error("Error seeding positions:", error);
+  }
+};
+
 prisma
   .$connect()
-  .then(() => {
+  .then(async () => {
+    await seedExistingPositions();
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT} 🚀`);
     });
