@@ -6,6 +6,86 @@ import { processAndUploadImage } from "../middlewares/multer.middlerware.js";
 import { deleteFromS3, getFileUrl } from "../utils/deleteFromS3.js";
 import slugify from "slugify";
 
+// Resequence sub-category positions within a category to be contiguous 1..N
+const resequenceSubCategories = async (categoryId) => {
+  const subCategories = await prisma.subCategory.findMany({
+    where: { categoryId },
+    orderBy: [
+      { position: "asc" },
+      { name: "asc" }
+    ],
+  });
+  for (let i = 0; i < subCategories.length; i++) {
+    const targetPos = i + 1;
+    if (subCategories[i].position !== targetPos) {
+      await prisma.subCategory.update({
+        where: { id: subCategories[i].id },
+        data: { position: targetPos },
+      });
+    }
+  }
+};
+
+// Adjust positions when inserting or moving a subcategory
+const adjustSubCategoryPositions = async (subCategoryId, categoryId, newPosition) => {
+  if (subCategoryId) {
+    const subCategory = await prisma.subCategory.findUnique({
+      where: { id: subCategoryId },
+    });
+    if (!subCategory) return;
+    const oldPosition = subCategory.position;
+    if (oldPosition === newPosition) return;
+
+    if (oldPosition > 0) {
+      if (oldPosition < newPosition) {
+        await prisma.subCategory.updateMany({
+          where: {
+            categoryId,
+            position: {
+              gt: oldPosition,
+              lte: newPosition,
+            },
+          },
+          data: {
+            position: {
+              decrement: 1,
+            },
+          },
+        });
+      } else {
+        await prisma.subCategory.updateMany({
+          where: {
+            categoryId,
+            position: {
+              gte: newPosition,
+              lt: oldPosition,
+            },
+          },
+          data: {
+            position: {
+              increment: 1,
+            },
+          },
+        });
+      }
+    }
+  } else {
+    await prisma.subCategory.updateMany({
+      where: {
+        categoryId,
+        position: {
+          gte: newPosition,
+        },
+      },
+      data: {
+        position: {
+          increment: 1,
+        },
+      },
+    });
+  }
+};
+
 // Get all sub-categories for a category
 export const getSubCategoriesByCategory = asyncHandler(
   async (req, res, next) => {
@@ -22,7 +102,10 @@ export const getSubCategoriesByCategory = asyncHandler(
 
     const subCategories = await prisma.subCategory.findMany({
       where: { categoryId },
-      orderBy: { name: "asc" },
+      orderBy: [
+        { position: "asc" },
+        { name: "asc" }
+      ],
     });
 
     // Format with image URLs
@@ -89,7 +172,7 @@ export const getSubCategoryById = asyncHandler(async (req, res, next) => {
 // Create sub-category
 export const createSubCategory = asyncHandler(async (req, res, next) => {
   const { categoryId } = req.params;
-  const { name, description } = req.body;
+  const { name, description, position } = req.body;
 
   if (!name) {
     throw new ApiError(400, "Name is required");
@@ -132,6 +215,19 @@ export const createSubCategory = asyncHandler(async (req, res, next) => {
     }
   }
 
+  // Determine target position
+  let targetPosition = parseInt(position);
+  if (isNaN(targetPosition) || targetPosition < 1) {
+    const maxSubCategory = await prisma.subCategory.findFirst({
+      where: { categoryId },
+      orderBy: { position: "desc" },
+    });
+    targetPosition = maxSubCategory ? maxSubCategory.position + 1 : 1;
+  } else {
+    // Shift others to make room
+    await adjustSubCategoryPositions(null, categoryId, targetPosition);
+  }
+
   const subCategory = await prisma.subCategory.create({
     data: {
       categoryId,
@@ -139,16 +235,26 @@ export const createSubCategory = asyncHandler(async (req, res, next) => {
       description,
       slug,
       image: imageUrl,
+      position: targetPosition,
     },
     include: {
       category: true,
     },
   });
 
+  // Resequence subcategories to keep positions clean
+  await resequenceSubCategories(categoryId);
+
+  // Fetch created subcategory to get correct resequenced position
+  const finalSubCategory = await prisma.subCategory.findUnique({
+    where: { id: subCategory.id },
+    include: { category: true }
+  });
+
   // Format with image URL
   const formattedSubCategory = {
-    ...subCategory,
-    image: subCategory.image ? getFileUrl(subCategory.image) : null,
+    ...finalSubCategory,
+    image: finalSubCategory.image ? getFileUrl(finalSubCategory.image) : null,
   };
 
   res
@@ -165,7 +271,7 @@ export const createSubCategory = asyncHandler(async (req, res, next) => {
 // Update sub-category
 export const updateSubCategory = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
-  const { name, description, isActive } = req.body;
+  const { name, description, isActive, position } = req.body;
 
   const existingSubCategory = await prisma.subCategory.findUnique({
     where: { id },
@@ -210,24 +316,45 @@ export const updateSubCategory = asyncHandler(async (req, res, next) => {
     }
   }
 
+  // Prepare update data
+  const updateData = {
+    ...(name && { name }),
+    ...(description !== undefined && { description }),
+    ...(slug && { slug }),
+    ...(isActive !== undefined && { isActive }),
+    ...(imageUrl !== null && { image: imageUrl }),
+  };
+
+  // Handle position change
+  if (position !== undefined && position !== null) {
+    const targetPosition = parseInt(position);
+    if (!isNaN(targetPosition) && targetPosition > 0 && targetPosition !== existingSubCategory.position) {
+      await adjustSubCategoryPositions(id, existingSubCategory.categoryId, targetPosition);
+      updateData.position = targetPosition;
+    }
+  }
+
   const subCategory = await prisma.subCategory.update({
     where: { id },
-    data: {
-      ...(name && { name }),
-      ...(description !== undefined && { description }),
-      ...(slug && { slug }),
-      ...(isActive !== undefined && { isActive }),
-      ...(imageUrl !== null && { image: imageUrl }),
-    },
+    data: updateData,
     include: {
       category: true,
     },
   });
 
+  // Resequence subcategories to keep positions clean
+  await resequenceSubCategories(existingSubCategory.categoryId);
+
+  // Fetch updated subcategory to get correct resequenced position
+  const finalSubCategory = await prisma.subCategory.findUnique({
+    where: { id },
+    include: { category: true }
+  });
+
   // Format with image URL
   const formattedSubCategory = {
-    ...subCategory,
-    image: subCategory.image ? getFileUrl(subCategory.image) : null,
+    ...finalSubCategory,
+    image: finalSubCategory.image ? getFileUrl(finalSubCategory.image) : null,
   };
 
   res
@@ -272,6 +399,9 @@ export const deleteSubCategory = asyncHandler(async (req, res, next) => {
   await prisma.subCategory.delete({
     where: { id },
   });
+
+  // Resequence subcategories to fill the gap
+  await resequenceSubCategories(subCategory.categoryId);
 
   res
     .status(200)

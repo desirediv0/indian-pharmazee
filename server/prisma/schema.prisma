@@ -176,6 +176,7 @@ model Category {
   description   String?
   image         String?
   slug          String            @unique
+  position      Int               @default(0)
   isDefault     Boolean           @default(false)
   createdBy     String?
   createdAt     DateTime          @default(now())
@@ -192,6 +193,7 @@ model SubCategory {
   description String?
   image       String?
   slug        String
+  position    Int                  @default(0)
   isActive    Boolean              @default(true)
   createdAt   DateTime             @default(now())
   updatedAt   DateTime             @updatedAt

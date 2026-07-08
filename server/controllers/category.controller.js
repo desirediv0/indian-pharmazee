@@ -18,9 +18,10 @@ export const getAllCategories = asyncHandler(async (req, res) => {
         },
       },
     },
-    orderBy: {
-      name: "asc",
-    },
+    orderBy: [
+      { position: "asc" },
+      { name: "asc" }
+    ],
   });
 
   // Format the response with image URLs
@@ -48,9 +49,10 @@ export const getCategoriesWithSubCategories = asyncHandler(async (req, res) => {
         where: {
           isActive: true,
         },
-        orderBy: {
-          name: "asc",
-        },
+        orderBy: [
+          { position: "asc" },
+          { name: "asc" }
+        ],
       },
       _count: {
         select: {
@@ -58,9 +60,10 @@ export const getCategoriesWithSubCategories = asyncHandler(async (req, res) => {
         },
       },
     },
-    orderBy: {
-      name: "asc",
-    },
+    orderBy: [
+      { position: "asc" },
+      { name: "asc" }
+    ],
   });
 
   // Format the response with image URLs
@@ -409,6 +412,82 @@ export const getProductsBySubCategory = asyncHandler(async (req, res) => {
 
 // ---------------------- ADMIN ROUTES ---------------------- //
 
+// Resequence category positions to be contiguous 1..N
+const resequenceCategories = async () => {
+  const categories = await prisma.category.findMany({
+    orderBy: [
+      { position: "asc" },
+      { name: "asc" }
+    ],
+  });
+  for (let i = 0; i < categories.length; i++) {
+    const targetPos = i + 1;
+    if (categories[i].position !== targetPos) {
+      await prisma.category.update({
+        where: { id: categories[i].id },
+        data: { position: targetPos },
+      });
+    }
+  }
+};
+
+// Adjust positions when inserting or moving a category
+const adjustCategoryPositions = async (categoryId, newPosition) => {
+  if (categoryId) {
+    const category = await prisma.category.findUnique({
+      where: { id: categoryId },
+    });
+    if (!category) return;
+    const oldPosition = category.position;
+    if (oldPosition === newPosition) return;
+
+    if (oldPosition > 0) {
+      if (oldPosition < newPosition) {
+        await prisma.category.updateMany({
+          where: {
+            position: {
+              gt: oldPosition,
+              lte: newPosition,
+            },
+          },
+          data: {
+            position: {
+              decrement: 1,
+            },
+          },
+        });
+      } else {
+        await prisma.category.updateMany({
+          where: {
+            position: {
+              gte: newPosition,
+              lt: oldPosition,
+            },
+          },
+          data: {
+            position: {
+              increment: 1,
+            },
+          },
+        });
+      }
+    }
+  } else {
+    await prisma.category.updateMany({
+      where: {
+        position: {
+          gte: newPosition,
+        },
+      },
+      data: {
+        position: {
+          increment: 1,
+        },
+      },
+    });
+  }
+};
+
 // Get all categories for admin (including inactive ones)
 export const getAdminCategories = asyncHandler(async (req, res) => {
   const categories = await prisma.category.findMany({
@@ -419,9 +498,10 @@ export const getAdminCategories = asyncHandler(async (req, res) => {
         },
       },
     },
-    orderBy: {
-      name: "asc",
-    },
+    orderBy: [
+      { position: "asc" },
+      { name: "asc" }
+    ],
   });
 
   // Format the response with image URLs
@@ -479,7 +559,7 @@ export const getCategoryById = asyncHandler(async (req, res) => {
 
 // Create a new category
 export const createCategory = asyncHandler(async (req, res) => {
-  const { name, description } = req.body;
+  const { name, description, position } = req.body;
 
   if (!name) {
     throw new ApiError(400, "Category name is required");
@@ -497,12 +577,22 @@ export const createCategory = asyncHandler(async (req, res) => {
     throw new ApiError(409, "Category with this name already exists");
   }
 
-  // Parent-child relationships removed for simplicity
-
   // Process image if uploaded
   let imageUrl = null;
   if (req.file) {
     imageUrl = await processAndUploadImage(req.file);
+  }
+
+  // Determine target position
+  let targetPosition = parseInt(position);
+  if (isNaN(targetPosition) || targetPosition < 1) {
+    const maxCategory = await prisma.category.findFirst({
+      orderBy: { position: "desc" },
+    });
+    targetPosition = maxCategory ? maxCategory.position + 1 : 1;
+  } else {
+    // Shift others to make room
+    await adjustCategoryPositions(null, targetPosition);
   }
 
   // Create category
@@ -512,7 +602,16 @@ export const createCategory = asyncHandler(async (req, res) => {
       description,
       slug,
       image: imageUrl,
+      position: targetPosition,
     },
+  });
+
+  // Resequence to keep it clean
+  await resequenceCategories();
+
+  // Fetch created category to get correct resequenced position
+  const finalCategory = await prisma.category.findUnique({
+    where: { id: category.id }
   });
 
   res.status(201).json(
@@ -520,7 +619,7 @@ export const createCategory = asyncHandler(async (req, res) => {
       201,
       {
         category: {
-          ...category,
+          ...finalCategory,
           image: imageUrl ? getFileUrl(imageUrl) : null,
         },
       },
@@ -532,7 +631,7 @@ export const createCategory = asyncHandler(async (req, res) => {
 // Update category
 export const updateCategory = asyncHandler(async (req, res) => {
   const { categoryId } = req.params;
-  const { name, description } = req.body;
+  const { name, description, position } = req.body;
 
   // Check if category exists
   const category = await prisma.category.findUnique({
@@ -571,7 +670,14 @@ export const updateCategory = asyncHandler(async (req, res) => {
     updateData.description = description;
   }
 
-  // Parent-child relationships removed for simplicity
+  // Handle position change
+  if (position !== undefined && position !== null) {
+    const targetPosition = parseInt(position);
+    if (!isNaN(targetPosition) && targetPosition > 0 && targetPosition !== category.position) {
+      await adjustCategoryPositions(categoryId, targetPosition);
+      updateData.position = targetPosition;
+    }
+  }
 
   // Process new image if uploaded
   if (req.file) {
@@ -590,14 +696,22 @@ export const updateCategory = asyncHandler(async (req, res) => {
     data: updateData,
   });
 
+  // Resequence to keep it clean
+  await resequenceCategories();
+
+  // Fetch updated category to get correct resequenced position
+  const finalCategory = await prisma.category.findUnique({
+    where: { id: categoryId }
+  });
+
   res.status(200).json(
     new ApiResponsive(
       200,
       {
         category: {
-          ...updatedCategory,
-          image: updatedCategory.image
-            ? getFileUrl(updatedCategory.image)
+          ...finalCategory,
+          image: finalCategory.image
+            ? getFileUrl(finalCategory.image)
             : null,
         },
       },
@@ -695,6 +809,9 @@ export const deleteCategory = asyncHandler(async (req, res) => {
     res
       .status(200)
       .json(new ApiResponsive(200, {}, "Category deleted successfully"));
+
+    // Resequence category positions
+    await resequenceCategories();
   } catch (error) {
     console.error("Error deleting category:", error);
     throw new ApiError(500, `Failed to delete category: ${error.message}`);

@@ -994,12 +994,13 @@ export const subCategories = {
   },
   createSubCategory: (
     categoryId: string,
-    data: { name: string; description?: string; image?: File }
+    data: { name: string; description?: string; image?: File; position?: number }
   ) => {
     const formData = new FormData();
     formData.append("name", data.name);
     if (data.description) formData.append("description", data.description);
     if (data.image) formData.append("image", data.image);
+    if (data.position !== undefined) formData.append("position", data.position.toString());
 
     return api.post(
       `/api/admin/categories/${categoryId}/sub-categories`,
@@ -1013,7 +1014,7 @@ export const subCategories = {
   },
   updateSubCategory: (
     subCategoryId: string,
-    data: { name?: string; description?: string; image?: File; isActive?: boolean }
+    data: { name?: string; description?: string; image?: File; isActive?: boolean; position?: number }
   ) => {
     const formData = new FormData();
     if (data.name) formData.append("name", data.name);
@@ -1022,6 +1023,8 @@ export const subCategories = {
     if (data.image) formData.append("image", data.image);
     if (data.isActive !== undefined)
       formData.append("isActive", data.isActive.toString());
+    if (data.position !== undefined)
+      formData.append("position", data.position.toString());
 
     return api.put(`/api/admin/sub-categories/${subCategoryId}`, formData, {
       headers: {

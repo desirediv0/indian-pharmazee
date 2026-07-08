@@ -131,6 +131,11 @@ function CategoriesList() {
         setCategoriesList((prevCategories) =>
           prevCategories.filter((category) => category.id !== categoryId)
         );
+        // Resequence locally by fetching updated list
+        const res = await categories.getCategories();
+        if (res.data.success) {
+          setCategoriesList(res.data.data?.categories || []);
+        }
         // Close any open dialogs
         setIsDeleteDialogOpen(false);
         setIsForceDeleteDialogOpen(false);
@@ -156,6 +161,37 @@ function CategoriesList() {
       }
     } finally {
       setDeletingCategory(false);
+    }
+  };
+
+  // Move category position up or down
+  const handleMoveCategory = async (categoryItem: any, direction: 'up' | 'down') => {
+    try {
+      const newPosition = direction === 'up' ? categoryItem.position - 1 : categoryItem.position + 1;
+      if (newPosition < 1 || (direction === 'down' && categoryItem.position >= categoriesList.length)) {
+        return;
+      }
+
+      setIsLoading(true);
+      const formData = new FormData();
+      formData.append("position", newPosition.toString());
+      formData.append("name", categoryItem.name); // Send name to satisfy controller checks if needed
+
+      const response = await categories.updateCategory(categoryItem.id, formData);
+      if (response.data.success) {
+        const res = await categories.getCategories();
+        if (res.data.success) {
+          setCategoriesList(res.data.data?.categories || []);
+        }
+        toast.success("Order updated successfully");
+      } else {
+        toast.error(response.data.message || "Failed to update order");
+      }
+    } catch (error: any) {
+      console.error("Error updating category position:", error);
+      toast.error(error.response?.data?.message || "Failed to update category order");
+    } finally {
+      setIsLoading(false);
     }
   };
 
@@ -310,34 +346,63 @@ function CategoriesList() {
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <h3 className="font-semibold text-[#1F2937] truncate">
-                        {category.name}
-                      </h3>
+                      <div className="flex items-center gap-2">
+                        <span className="inline-flex items-center justify-center bg-gray-100 text-gray-800 text-xs font-semibold px-2 py-0.5 rounded-full">
+                          #{category.position || 0}
+                        </span>
+                        <h3 className="font-semibold text-[#1F2937] truncate">
+                          {category.name}
+                        </h3>
+                      </div>
                       <p className="text-xs text-[#9CA3AF] mt-0.5">
                         {t("categories.sub_categories_count").replace("{count}", String(subCategoriesCount[category.id] || 0))}
                       </p>
                     </div>
                   </div>
                 </div>
-                <div className="flex items-center justify-end gap-2 pt-4 border-t border-[#E5E7EB]">
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 hover:bg-[#F3F4F6]"
-                    asChild
-                  >
-                    <Link to={`/categories/${category.id}`}>
-                      <Edit className="h-4 w-4 text-[#4B5563]" />
-                    </Link>
-                  </Button>
-                  <Button
-                    variant="ghost"
-                    size="sm"
-                    className="h-8 hover:bg-[#FEF2F2]"
-                    onClick={() => openDeleteDialog(category.id)}
-                  >
-                    <Trash2 className="h-4 w-4 text-[#EF4444]" />
-                  </Button>
+                <div className="flex items-center justify-between gap-2 pt-4 border-t border-[#E5E7EB]">
+                  <div className="flex items-center gap-1">
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 hover:bg-[#F3F4F6]"
+                      onClick={() => handleMoveCategory(category, 'up')}
+                      disabled={category.position <= 1}
+                      title="Move Up"
+                    >
+                      <ChevronLeft className="h-4 w-4 rotate-90 text-[#4B5563]" />
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="icon"
+                      className="h-8 w-8 hover:bg-[#F3F4F6]"
+                      onClick={() => handleMoveCategory(category, 'down')}
+                      disabled={category.position >= categoriesList.length}
+                      title="Move Down"
+                    >
+                      <ChevronLeft className="h-4 w-4 -rotate-90 text-[#4B5563]" />
+                    </Button>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 hover:bg-[#F3F4F6]"
+                      asChild
+                    >
+                      <Link to={`/categories/${category.id}`}>
+                        <Edit className="h-4 w-4 text-[#4B5563]" />
+                      </Link>
+                    </Button>
+                    <Button
+                      variant="ghost"
+                      size="sm"
+                      className="h-8 hover:bg-[#FEF2F2]"
+                      onClick={() => openDeleteDialog(category.id)}
+                    >
+                      <Trash2 className="h-4 w-4 text-[#EF4444]" />
+                    </Button>
+                  </div>
                 </div>
               </CardContent>
             </Card>
@@ -582,6 +647,7 @@ function CategoryForm({
   const [category, setCategory] = useState<any>({
     name: "",
     description: "",
+    position: "",
   });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -596,6 +662,7 @@ function CategoryForm({
   const [subCategoryForm, setSubCategoryForm] = useState({
     name: "",
     description: "",
+    position: "",
   });
   const [subCategoryImageFile, setSubCategoryImageFile] = useState<File | null>(
     null
@@ -617,6 +684,7 @@ function CategoryForm({
             setCategory({
               name: categoryData.name || "",
               description: categoryData.description || "",
+              position: categoryData.position !== undefined ? String(categoryData.position) : "",
             });
             if (categoryData.image) {
               setImagePreview(categoryData.image);
@@ -677,17 +745,18 @@ function CategoryForm({
   };
 
   // Sub-category handlers
-  const openSubCategoryDialog = (subCategory?: any) => {
-    if (subCategory) {
-      setEditingSubCategory(subCategory);
+  const openSubCategoryDialog = (subCategoryItem?: any) => {
+    if (subCategoryItem) {
+      setEditingSubCategory(subCategoryItem);
       setSubCategoryForm({
-        name: subCategory.name || "",
-        description: subCategory.description || "",
+        name: subCategoryItem.name || "",
+        description: subCategoryItem.description || "",
+        position: subCategoryItem.position !== undefined ? String(subCategoryItem.position) : "",
       });
-      setSubCategoryImagePreview(subCategory.image || null);
+      setSubCategoryImagePreview(subCategoryItem.image || null);
     } else {
       setEditingSubCategory(null);
-      setSubCategoryForm({ name: "", description: "" });
+      setSubCategoryForm({ name: "", description: "", position: "" });
       setSubCategoryImagePreview(null);
     }
     setShowSubCategoryDialog(true);
@@ -719,6 +788,7 @@ function CategoryForm({
 
     try {
       setIsLoading(true);
+      const positionVal = subCategoryForm.position ? parseInt(subCategoryForm.position) : undefined;
       if (editingSubCategory) {
         // Update sub-category
         const response = await subCategories.updateSubCategory(
@@ -727,6 +797,7 @@ function CategoryForm({
             name: subCategoryForm.name,
             description: subCategoryForm.description,
             image: subCategoryImageFile || undefined,
+            position: positionVal,
           }
         );
         if (response.data?.success) {
@@ -741,6 +812,7 @@ function CategoryForm({
           name: subCategoryForm.name,
           description: subCategoryForm.description,
           image: subCategoryImageFile || undefined,
+          position: positionVal,
         });
         if (response.data?.success) {
           toast.success(t("categories.messages.subcategory_create_success"));
@@ -784,8 +856,35 @@ function CategoryForm({
     }
   };
 
+  // Add handleMoveSubCategory to allow quick reordering for subcategories
+  const handleMoveSubCategory = async (subCategoryItem: any, direction: 'up' | 'down') => {
+    try {
+      const newPosition = direction === 'up' ? subCategoryItem.position - 1 : subCategoryItem.position + 1;
+      if (newPosition < 1 || (direction === 'down' && subCategoryItem.position >= subCategoriesList.length)) {
+        return;
+      }
+
+      setIsLoading(true);
+      const response = await subCategories.updateSubCategory(subCategoryItem.id, {
+        name: subCategoryItem.name,
+        position: newPosition,
+      });
+      if (response.data.success) {
+        await fetchSubCategories();
+        toast.success("Sub-category order updated successfully");
+      } else {
+        toast.error(response.data.message || "Failed to update sub-category order");
+      }
+    } catch (error: any) {
+      console.error("Error updating subcategory position:", error);
+      toast.error(error.response?.data?.message || "Failed to update sub-category order");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
   const resetSubCategoryForm = () => {
-    setSubCategoryForm({ name: "", description: "" });
+    setSubCategoryForm({ name: "", description: "", position: "" });
     setSubCategoryImageFile(null);
     setSubCategoryImagePreview(null);
     setEditingSubCategory(null);
@@ -808,6 +907,10 @@ function CategoryForm({
 
       if (category.description) {
         formData.append("description", category.description);
+      }
+
+      if (category.position) {
+        formData.append("position", category.position);
       }
 
       if (imageFile) {
@@ -927,6 +1030,22 @@ function CategoryForm({
                 onChange={handleChange}
                 placeholder={t("categories.form.description_placeholder")}
                 rows={3}
+                className="border-[#E5E7EB] focus:border-primary"
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="position" className="text-sm font-medium text-[#4B5563]">
+                Position / Order (Optional)
+              </Label>
+              <Input
+                id="position"
+                name="position"
+                type="number"
+                min="1"
+                value={category.position}
+                onChange={handleChange}
+                placeholder="Leave blank to auto-assign at the end"
                 className="border-[#E5E7EB] focus:border-primary"
               />
             </div>
@@ -1060,9 +1179,14 @@ function CategoryForm({
                             />
                           )}
                           <div>
-                            <h3 className="font-semibold text-[#1F2937]">
-                              {subCategory.name}
-                            </h3>
+                            <div className="flex items-center gap-2">
+                              <span className="inline-flex items-center justify-center bg-gray-100 text-gray-800 text-xs font-semibold px-2 py-0.5 rounded-full">
+                                #{subCategory.position || 0}
+                              </span>
+                              <h3 className="font-semibold text-[#1F2937]">
+                                {subCategory.name}
+                              </h3>
+                            </div>
                             {subCategory.description && (
                               <p className="text-sm text-[#9CA3AF] line-clamp-2 mt-1">
                                 {subCategory.description}
@@ -1080,6 +1204,26 @@ function CategoryForm({
                           </Badge>
                         </div>
                         <div className="flex flex-col gap-1">
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 hover:bg-[#F3F4F6]"
+                            onClick={() => handleMoveSubCategory(subCategory, 'up')}
+                            disabled={subCategory.position <= 1 || isLoading}
+                            title="Move Up"
+                          >
+                            <ChevronLeft className="h-4 w-4 rotate-90 text-[#4B5563]" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 hover:bg-[#F3F4F6]"
+                            onClick={() => handleMoveSubCategory(subCategory, 'down')}
+                            disabled={subCategory.position >= subCategoriesList.length || isLoading}
+                            title="Move Down"
+                          >
+                            <ChevronLeft className="h-4 w-4 -rotate-90 text-[#4B5563]" />
+                          </Button>
                           <Button
                             variant="ghost"
                             size="icon"
@@ -1165,6 +1309,28 @@ function CategoryForm({
                 }
                 placeholder={t("categories.subcategories.dialog.description_placeholder")}
                 rows={3}
+                className="border-[#E5E7EB] focus:border-primary"
+              />
+            </div>
+            <div className="space-y-2">
+              <Label
+                htmlFor="subCategoryPosition"
+                className="text-sm font-medium text-[#4B5563]"
+              >
+                Position / Order (Optional)
+              </Label>
+              <Input
+                id="subCategoryPosition"
+                type="number"
+                min="1"
+                value={subCategoryForm.position}
+                onChange={(e) =>
+                  setSubCategoryForm({
+                    ...subCategoryForm,
+                    position: e.target.value,
+                  })
+                }
+                placeholder="Leave blank to auto-assign at the end"
                 className="border-[#E5E7EB] focus:border-primary"
               />
             </div>

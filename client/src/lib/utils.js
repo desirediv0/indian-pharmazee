@@ -210,22 +210,31 @@ export async function fetchProductsByType(productType, limit = 8) {
 export function sortCategories(categoriesList) {
   if (!Array.isArray(categoriesList)) return [];
   
-  const getIndex = (name) => {
-    const n = (name || "").toLowerCase();
-    if (n.includes("ivf")) return 0;
-    if (n.includes("gynae")) return 1;
-    if (n.includes("cancer")) return 2;
-    if (n.includes("antibiotic") || n.includes("supplement")) return 3;
-    if (n.includes("transplant")) return 4;
-    if (n.includes("sexual") || n.includes("hgh") || n.includes("human growth")) return 5;
-    if (n.includes("osteoporosis")) return 6;
-    if (n.includes("paediatric") || n.includes("pediatric")) return 7;
-    if (n.includes("antifungal") || n.includes("anti-fungal")) return 8;
-    if (n.includes("anemia") || n.includes("anaemia")) return 9;
-    if (n.includes("arthritis")) return 10;
-    if (n.includes("ayurvedic")) return 11;
-    return 999;
-  };
+  return [...categoriesList].sort((a, b) => {
+    const posA = a.position !== undefined && a.position !== null ? a.position : 9999;
+    const posB = b.position !== undefined && b.position !== null ? b.position : 9999;
+    
+    if (posA !== posB) {
+      return posA - posB;
+    }
 
-  return [...categoriesList].sort((a, b) => getIndex(a.name) - getIndex(b.name));
+    const getIndex = (name) => {
+      const n = (name || "").toLowerCase();
+      if (n.includes("ivf")) return 0;
+      if (n.includes("gynae")) return 1;
+      if (n.includes("cancer")) return 2;
+      if (n.includes("antibiotic") || n.includes("supplement")) return 3;
+      if (n.includes("transplant")) return 4;
+      if (n.includes("sexual") || n.includes("hgh") || n.includes("human growth")) return 5;
+      if (n.includes("osteoporosis")) return 6;
+      if (n.includes("paediatric") || n.includes("pediatric")) return 7;
+      if (n.includes("antifungal") || n.includes("anti-fungal")) return 8;
+      if (n.includes("anemia") || n.includes("anaemia")) return 9;
+      if (n.includes("arthritis")) return 10;
+      if (n.includes("ayurvedic")) return 11;
+      return 999;
+    };
+
+    return getIndex(a.name) - getIndex(b.name);
+  });
 }

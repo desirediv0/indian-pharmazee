@@ -99,7 +99,7 @@ export const updateBrand = asyncHandler(async (req, res) => {
   const { name, tags, position } = req.body;
   const brand = await prisma.brand.findUnique({ where: { id: brandId } });
   if (!brand) throw new ApiError(404, "Brand not found");
-  
+
   let updateData = {};
   if (name) {
     updateData.name = name;

@@ -3,7 +3,7 @@
 import { useState, useEffect, Suspense } from "react";
 import Image from "next/image";
 import { useSearchParams, useRouter } from "next/navigation";
-import { fetchApi } from "@/lib/utils";
+import { fetchApi, sortCategories } from "@/lib/utils";
 import { Input } from "@/components/ui/input";
 import {
     SlidersHorizontal, X, ChevronDown, ChevronUp,
@@ -210,7 +210,7 @@ function ProductsContent() {
             fetchApi("/public/categories"),
             fetchApi("/public/filter-attributes"),
         ]).then(([catRes, attrRes]) => {
-            setCategories(catRes.data.categories || []);
+            setCategories(sortCategories(catRes.data.categories || []));
             setColors(attrRes.data.colors || []);
             setSizes(attrRes.data.sizes || []);
             if (Array.isArray(attrRes.data.attributes)) {
