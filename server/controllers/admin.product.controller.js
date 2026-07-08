@@ -461,12 +461,19 @@ export const createProduct = asyncHandler(async (req, res, next) => {
   // Parse category IDs
   let parsedCategoryIds = [];
   try {
-    // Handle both string JSON and array formats
+    // Handle both string JSON, string comma-separated, single string, and array formats
     if (categoryIds) {
       if (Array.isArray(categoryIds)) {
         parsedCategoryIds = categoryIds;
-      } else {
-        parsedCategoryIds = JSON.parse(categoryIds);
+      } else if (typeof categoryIds === "string") {
+        const trimmed = categoryIds.trim();
+        if (trimmed.startsWith("[")) {
+          parsedCategoryIds = JSON.parse(trimmed);
+        } else if (trimmed.includes(",")) {
+          parsedCategoryIds = trimmed.split(",").map((id) => id.trim());
+        } else if (trimmed !== "") {
+          parsedCategoryIds = [trimmed];
+        }
       }
     }
 
@@ -1185,7 +1192,18 @@ export const updateProduct = asyncHandler(async (req, res, next) => {
   let parsedCategoryIds = [];
   if (categoryIds) {
     try {
-      parsedCategoryIds = JSON.parse(categoryIds);
+      if (Array.isArray(categoryIds)) {
+        parsedCategoryIds = categoryIds;
+      } else if (typeof categoryIds === "string") {
+        const trimmed = categoryIds.trim();
+        if (trimmed.startsWith("[")) {
+          parsedCategoryIds = JSON.parse(trimmed);
+        } else if (trimmed.includes(",")) {
+          parsedCategoryIds = trimmed.split(",").map((id) => id.trim());
+        } else if (trimmed !== "") {
+          parsedCategoryIds = [trimmed];
+        }
+      }
       if (!Array.isArray(parsedCategoryIds)) {
         throw new ApiError(400, "Invalid categories format");
       }
