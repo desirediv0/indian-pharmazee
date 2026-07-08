@@ -68,6 +68,22 @@ const adjustSubCategoryPositions = async (subCategoryId, categoryId, newPosition
           },
         });
       }
+    } else {
+      // If the old position was 0 or unassigned, treat it as a new insertion
+      // Shift everything at or after the new position to the right
+      await prisma.subCategory.updateMany({
+        where: {
+          categoryId,
+          position: {
+            gte: newPosition,
+          },
+        },
+        data: {
+          position: {
+            increment: 1,
+          },
+        },
+      });
     }
   } else {
     await prisma.subCategory.updateMany({

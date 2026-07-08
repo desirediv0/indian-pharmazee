@@ -24,6 +24,97 @@ const upload = multer({
   },
 });
 
+// Resequence category positions to be contiguous 1..N
+const resequenceCategories = async () => {
+  const categories = await prisma.category.findMany({
+    orderBy: [
+      { position: "asc" },
+      { name: "asc" }
+    ],
+  });
+  for (let i = 0; i < categories.length; i++) {
+    const targetPos = i + 1;
+    if (categories[i].position !== targetPos) {
+      await prisma.category.update({
+        where: { id: categories[i].id },
+        data: { position: targetPos },
+      });
+    }
+  }
+};
+
+// Adjust positions when inserting or moving a category
+const adjustCategoryPositions = async (categoryId, newPosition) => {
+  if (categoryId) {
+    const category = await prisma.category.findUnique({
+      where: { id: categoryId },
+    });
+    if (!category) return;
+    const oldPosition = category.position;
+    if (oldPosition === newPosition) return;
+
+    if (oldPosition > 0) {
+      if (oldPosition < newPosition) {
+        await prisma.category.updateMany({
+          where: {
+            position: {
+              gt: oldPosition,
+              lte: newPosition,
+            },
+          },
+          data: {
+            position: {
+              decrement: 1,
+            },
+          },
+        });
+      } else {
+        await prisma.category.updateMany({
+          where: {
+            position: {
+              gte: newPosition,
+              lt: oldPosition,
+            },
+          },
+          data: {
+            position: {
+              increment: 1,
+            },
+          },
+        });
+      }
+    } else {
+      // If the old position was 0 or unassigned, treat it as a new insertion
+      // Shift everything at or after the new position to the right
+      await prisma.category.updateMany({
+        where: {
+          position: {
+            gte: newPosition,
+          },
+        },
+        data: {
+          position: {
+            increment: 1,
+          },
+        },
+      });
+    }
+  } else {
+    await prisma.category.updateMany({
+      where: {
+        position: {
+          gte: newPosition,
+        },
+      },
+      data: {
+        position: {
+          increment: 1,
+        },
+      },
+    });
+  }
+};
+
 // Get all categories
 router.get("/categories", isAdmin, async (req, res) => {
   try {
@@ -35,7 +126,10 @@ router.get("/categories", isAdmin, async (req, res) => {
           },
         },
       },
-      orderBy: { name: "asc" },
+      orderBy: [
+        { position: "asc" },
+        { name: "asc" }
+      ],
     });
 
     // Add complete image URLs to categories
@@ -110,7 +204,7 @@ router.post(
   upload.single("image"),
   async (req, res) => {
     try {
-      const { name, description } = req.body;
+      const { name, description, position } = req.body;
 
       if (!name) {
         return res.status(400).json({
@@ -160,6 +254,18 @@ router.post(
         );
       }
 
+      // Determine target position
+      let targetPosition = parseInt(position);
+      if (isNaN(targetPosition) || targetPosition < 1) {
+        const maxCategory = await prisma.category.findFirst({
+          orderBy: { position: "desc" },
+        });
+        targetPosition = maxCategory ? maxCategory.position + 1 : 1;
+      } else {
+        // Shift others to make room
+        await adjustCategoryPositions(null, targetPosition);
+      }
+
       // Create category
       const newCategory = await prisma.category.create({
         data: {
@@ -167,7 +273,16 @@ router.post(
           description,
           slug,
           image: imageKey,
+          position: targetPosition,
         },
+      });
+
+      // Resequence to keep it clean
+      await resequenceCategories();
+
+      // Fetch created category to get correct resequenced position
+      const finalCategory = await prisma.category.findUnique({
+        where: { id: newCategory.id }
       });
 
       return res.status(201).json({
@@ -175,7 +290,7 @@ router.post(
         message: "Category created successfully",
         data: {
           category: {
-            ...newCategory,
+            ...finalCategory,
             image: imageKey ? getFileUrl(imageKey) : null,
           },
         },
@@ -199,7 +314,7 @@ router.patch(
   async (req, res) => {
     try {
       const { id } = req.params;
-      const { name, description } = req.body;
+      const { name, description, position } = req.body;
 
       // Check if category exists
       const existingCategory = await prisma.category.findUnique({
@@ -262,7 +377,14 @@ router.patch(
         updateData.description = description;
       }
 
-      // Parent-child relationships removed for simplicity
+      // Handle position change
+      if (position !== undefined && position !== null) {
+        const targetPosition = parseInt(position);
+        if (!isNaN(targetPosition) && targetPosition > 0 && targetPosition !== existingCategory.position) {
+          await adjustCategoryPositions(id, targetPosition);
+          updateData.position = targetPosition;
+        }
+      }
 
       // Handle image update
       let imageKey = existingCategory.image;
@@ -303,14 +425,22 @@ router.patch(
         },
       });
 
+      // Resequence to keep it clean
+      await resequenceCategories();
+
+      // Fetch updated category to get correct resequenced position
+      const finalCategory = await prisma.category.findUnique({
+        where: { id }
+      });
+
       return res.status(200).json({
         success: true,
         message: "Category updated successfully",
         data: {
           category: {
-            ...updatedCategory,
-            image: updatedCategory.image
-              ? getFileUrl(updatedCategory.image)
+            ...finalCategory,
+            image: finalCategory.image
+              ? getFileUrl(finalCategory.image)
               : null,
           },
         },
@@ -452,6 +582,9 @@ router.delete("/categories/:id", isAdmin, async (req, res) => {
     await prisma.category.delete({
       where: { id },
     });
+
+    // Resequence category positions
+    await resequenceCategories();
 
     return res.status(200).json({
       success: true,
