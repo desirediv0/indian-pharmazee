@@ -35,6 +35,8 @@ export default function HeroSection() {
   const [api, setApi] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0);
   const [slides, setSlides] = useState(FALLBACK_SLIDES);
+  const [side1, setSide1] = useState(null);
+  const [side2, setSide2] = useState(null);
   const [isLoading, setIsLoading] = useState(true);
   const [isMobile, setIsMobile] = useState(false);
   const [autoplay, setAutoplay] = useState(true);
@@ -60,17 +62,46 @@ export default function HeroSection() {
 
         const banners = response?.data?.banners;
 
-        if (Array.isArray(banners) && banners.length > 0) {
-          setSlides(
-            banners.map((banner) => ({
-              img: banner.desktopImage,
-              smimg:
-                banner.mobileImage ||
-                banner.desktopImage,
-              ctaLink:
-                banner.link || "/products",
-            }))
-          );
+        if (Array.isArray(banners)) {
+          // Filter main banners
+          const mainBanners = banners.filter(b => b.type === "MAIN" || !b.type);
+          if (mainBanners.length > 0) {
+            setSlides(
+              mainBanners.map((banner) => ({
+                img: banner.desktopImage,
+                smimg: banner.mobileImage || banner.desktopImage,
+                ctaLink: banner.link || "/products",
+              }))
+            );
+          } else {
+            setSlides(FALLBACK_SLIDES);
+          }
+
+          // Find side_1 and side_2
+          const side1Banner = banners.find(b => b.type === "SIDE_1");
+          const side2Banner = banners.find(b => b.type === "SIDE_2");
+
+          if (side1Banner) {
+            setSide1({
+              img: side1Banner.desktopImage,
+              smimg: side1Banner.mobileImage || side1Banner.desktopImage,
+              ctaLink: side1Banner.link || "/products",
+              showOnMobile: side1Banner.showOnMobile !== false,
+            });
+          } else {
+            setSide1(null);
+          }
+
+          if (side2Banner) {
+            setSide2({
+              img: side2Banner.desktopImage,
+              smimg: side2Banner.mobileImage || side2Banner.desktopImage,
+              ctaLink: side2Banner.link || "/products",
+              showOnMobile: side2Banner.showOnMobile !== false,
+            });
+          } else {
+            setSide2(null);
+          }
         }
       } catch (error) {
         console.error(error);
@@ -142,9 +173,12 @@ export default function HeroSection() {
               {/* LEFT STATIC BANNERS */}
               <div className="lg:col-span-4 flex flex-col gap-4">
 
-                <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl">
+                <div 
+                  className={`relative aspect-[16/9] w-full overflow-hidden rounded-2xl ${side1 ? 'cursor-pointer' : ''} ${side1 && !side1.showOnMobile ? 'hidden lg:block' : ''}`}
+                  onClick={() => side1 && handleBannerClick(side1.ctaLink)}
+                >
                   <Image
-                    src="/left-banner-1.jpeg"
+                    src={side1 ? (isMobile ? side1.smimg : side1.img) : "/left-banner-1.jpeg"}
                     alt="Medicine Banner"
                     fill
                     priority
@@ -152,9 +186,12 @@ export default function HeroSection() {
                   />
                 </div>
 
-                <div className="relative aspect-[16/9] w-full overflow-hidden rounded-2xl">
+                <div 
+                  className={`relative aspect-[16/9] w-full overflow-hidden rounded-2xl ${side2 ? 'cursor-pointer' : ''} ${side2 && !side2.showOnMobile ? 'hidden lg:block' : ''}`}
+                  onClick={() => side2 && handleBannerClick(side2.ctaLink)}
+                >
                   <Image
-                    src="/left-banner-2.jpeg"
+                    src={side2 ? (isMobile ? side2.smimg : side2.img) : "/left-banner-2.jpeg"}
                     alt="Quality Banner"
                     fill
                     priority

@@ -399,6 +399,12 @@ export default function ProductContent({ slug }) {
     ? mainImage : (images.find((i) => i.isPrimary) || images[0]);
   const stock = selectedVariant?.stock || selectedVariant?.quantity || 0;
   const outOfStock = selectedVariant && stock === 0;
+  const isPrescriptionRequired = product?.categories?.some(
+    c => c.name?.toLowerCase().includes("prescription") || 
+         c.slug?.toLowerCase().includes("prescription") ||
+         c.category?.name?.toLowerCase().includes("prescription") ||
+         c.category?.slug?.toLowerCase().includes("prescription")
+  ) || product?.tags?.some(t => t.toLowerCase().includes("prescription")) || false;
 
   /* ─────────────────────────────────────────
      RENDER
@@ -597,6 +603,59 @@ export default function ProductContent({ slug }) {
               <span className="text-sm text-gray-500">
                 {product.avgRating ? `${product.avgRating} (${product.reviewCount}k)` : "No reviews yet"}
               </span>
+            </div>
+
+            {/* Prescription & Similar Products Section */}
+            <div className="mb-6 p-4 rounded-xl border border-gray-200 bg-[#F8FAFC]">
+              {isPrescriptionRequired && (
+                <div className="flex items-center gap-2 text-sm font-medium text-gray-700 pb-3 border-b border-gray-200/60 mb-3">
+                  <span>Prescription Required:</span>
+                  <span className="text-green-600 font-bold">Yes</span>
+                </div>
+              )}
+              
+              <div>
+                <div className="flex items-center justify-between mb-3">
+                  <span className="text-xs font-bold text-red-500 uppercase tracking-wider">Similar Products</span>
+                  {(product.category || product.categories?.[0]) && (
+                    <Link 
+                      href={`/category/${product.category?.slug || product.categories[0].slug || product.categories[0].category?.slug}`} 
+                      className="text-xs text-primary hover:underline font-semibold"
+                    >
+                      See All
+                    </Link>
+                  )}
+                </div>
+                {relatedProducts.length > 0 ? (
+                  <div className="grid grid-cols-2 gap-3">
+                    {relatedProducts.slice(0, 2).map((p) => (
+                      <Link 
+                        key={p.id} 
+                        href={`/products/${p.slug}`} 
+                        className="group flex gap-2.5 p-2 rounded-lg border border-gray-150 hover:border-primary/20 transition-all bg-white"
+                      >
+                        <div className="relative w-12 h-12 flex-shrink-0 bg-white rounded border border-gray-100 p-0.5 flex items-center justify-center overflow-hidden">
+                          {p.image ? (
+                            <img src={p.image} alt={p.name} className="object-contain max-h-full max-w-full" />
+                          ) : (
+                            <div className="bg-gray-150 w-full h-full flex items-center justify-center text-[10px] text-gray-400">No Image</div>
+                          )}
+                        </div>
+                        <div className="flex-1 min-w-0 flex flex-col justify-center">
+                          <span className="text-[11px] font-semibold text-gray-800 line-clamp-1 group-hover:text-primary transition-colors leading-tight">{p.name}</span>
+                          {p.basePrice !== null && (
+                            <span className="text-xs font-bold text-gray-900 mt-0.5">
+                              {formatCurrency ? formatCurrency(p.basePrice) : `₹${p.basePrice}`}
+                            </span>
+                          )}
+                        </div>
+                      </Link>
+                    ))}
+                  </div>
+                ) : (
+                  <p className="text-xs text-gray-400 italic">No similar products found</p>
+                )}
+              </div>
             </div>
 
             {/* Flash sale banner */}

@@ -1129,8 +1129,10 @@ export const banners = {
     position?: number;
     isPublished?: boolean;
     isActive?: boolean;
+    type?: string;
+    showOnMobile?: boolean;
     desktopImage: File;
-    mobileImage: File;
+    mobileImage?: File | null;
   }) => {
     const formData = new FormData();
     if (data.title) formData.append("title", data.title);
@@ -1142,8 +1144,11 @@ export const banners = {
       formData.append("isPublished", data.isPublished.toString());
     if (data.isActive !== undefined)
       formData.append("isActive", data.isActive.toString());
+    if (data.type) formData.append("type", data.type);
+    if (data.showOnMobile !== undefined)
+      formData.append("showOnMobile", data.showOnMobile.toString());
     formData.append("desktopImage", data.desktopImage);
-    formData.append("mobileImage", data.mobileImage);
+    if (data.mobileImage) formData.append("mobileImage", data.mobileImage);
 
     return api.post("/api/admin/banners", formData, {
       headers: {
@@ -1160,6 +1165,8 @@ export const banners = {
       position?: number;
       isPublished?: boolean;
       isActive?: boolean;
+      type?: string;
+      showOnMobile?: boolean;
       desktopImage?: File | null;
       mobileImage?: File | null;
     }
@@ -1176,6 +1183,10 @@ export const banners = {
       formData.append("isPublished", data.isPublished.toString());
     if (data.isActive !== undefined)
       formData.append("isActive", data.isActive.toString());
+    if (data.type !== undefined)
+      formData.append("type", data.type || "MAIN");
+    if (data.showOnMobile !== undefined)
+      formData.append("showOnMobile", data.showOnMobile.toString());
     if (data.desktopImage) formData.append("desktopImage", data.desktopImage);
     if (data.mobileImage) formData.append("mobileImage", data.mobileImage);
 

@@ -53,6 +53,8 @@ function BannerForm({
     position: 0,
     isPublished: true,
     isActive: true,
+    type: "MAIN",
+    showOnMobile: true,
   });
   const [desktopImage, setDesktopImage] = useState<File | null>(null);
   const [mobileImage, setMobileImage] = useState<File | null>(null);
@@ -105,6 +107,8 @@ function BannerForm({
               position: banner.position || 0,
               isPublished: banner.isPublished !== false,
               isActive: banner.isActive !== false,
+              type: banner.type || "MAIN",
+              showOnMobile: banner.showOnMobile !== false,
             });
             setDesktopPreview(banner.desktopImage);
             setMobilePreview(banner.mobileImage);
@@ -159,8 +163,10 @@ function BannerForm({
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
 
-    if (mode === "create" && (!desktopImage || !mobileImage)) {
-      toast.error(t("banners.messages.images_required"));
+    const isMain = !formData.type || formData.type === "MAIN";
+
+    if (mode === "create" && (!desktopImage || (isMain && !mobileImage))) {
+      toast.error(isMain ? t("banners.messages.images_required") : "Desktop image is required");
       return;
     }
 
@@ -179,11 +185,13 @@ function BannerForm({
         position: parseInt(formData.position.toString()) || 0,
         isPublished: formData.isPublished,
         isActive: formData.isActive,
+        type: formData.type || "MAIN",
+        showOnMobile: formData.showOnMobile,
       };
 
       if (mode === "create") {
         submitData.desktopImage = desktopImage!;
-        submitData.mobileImage = mobileImage!;
+        if (mobileImage) submitData.mobileImage = mobileImage;
         const response = await banners.createBanner(submitData);
         if (response.data.success) {
           toast.success(t("banners.messages.create_success"));
@@ -350,6 +358,27 @@ function BannerForm({
                 {t("banners.form.link_hint")}
               </p>
             </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="type" className="text-sm font-medium text-[#4B5563]">
+                Banner Type / Position
+              </Label>
+              <select
+                id="type"
+                value={formData.type}
+                onChange={(e) =>
+                  setFormData({ ...formData, type: e.target.value })
+                }
+                className="w-full rounded-md border border-[#E5E7EB] bg-white px-3 py-2 text-sm focus:border-primary focus:outline-none"
+              >
+                <option value="MAIN">Main Carousel Slider</option>
+                <option value="SIDE_1">Left Banner 1 (Top)</option>
+                <option value="SIDE_2">Left Banner 2 (Bottom)</option>
+              </select>
+              <p className="text-xs text-[#9CA3AF]">
+                Select where this banner will be displayed on the homepage.
+              </p>
+            </div>
           </CardContent>
         </Card>
 
@@ -440,6 +469,29 @@ function BannerForm({
                 }
               />
             </div>
+
+            {(formData.type === "SIDE_1" || formData.type === "SIDE_2") && (
+              <div className="flex items-center justify-between py-2 border-t border-[#E5E7EB] pt-4">
+                <div className="space-y-0.5">
+                  <Label
+                    htmlFor="showOnMobile"
+                    className="text-sm font-medium text-[#4B5563]"
+                  >
+                    Show on Mobile Screens
+                  </Label>
+                  <p className="text-xs text-[#9CA3AF]">
+                    Choose whether this side banner should be visible on mobile screen sizes.
+                  </p>
+                </div>
+                <Switch
+                  id="showOnMobile"
+                  checked={formData.showOnMobile}
+                  onCheckedChange={(checked) =>
+                    setFormData({ ...formData, showOnMobile: checked })
+                  }
+                />
+              </div>
+            )}
           </CardContent>
         </Card>
 
@@ -498,58 +550,60 @@ function BannerForm({
         </Card>
 
         {/* Mobile Image Card */}
-        <Card className="bg-[#FFFFFF] border-[#E5E7EB] shadow-[0_1px_2px_rgba(0,0,0,0.04)] rounded-xl">
-          <CardHeader className="px-6 pt-6 pb-4">
-            <div className="flex items-center gap-2">
-              <Smartphone className="h-5 w-5 text-[#4CAF50]" />
-              <CardTitle className="text-lg font-semibold text-[#1F2937]">
-                {t("banners.mobile_image.title")}
-              </CardTitle>
-            </div>
-            <p className="text-sm text-[#9CA3AF] mt-1">
-              {t("banners.mobile_image.description")}
-            </p>
-          </CardHeader>
-          <CardContent className="px-6 pb-6">
-            <div
-              {...getMobileRootProps()}
-              className={cn(
-                "border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all",
-                isMobileDragActive
-                  ? "border-[#4CAF50] bg-[#E8F5E9]/30"
-                  : "border-[#E5E7EB] hover:border-[#4CAF50] hover:bg-[#F3F7F6]"
-              )}
-            >
-              <input {...getMobileInputProps()} />
-              {mobilePreview ? (
-                <div className="space-y-4">
-                  <img
-                    src={mobilePreview}
-                    alt={t("banners.mobile_image.preview_alt")}
-                    className="max-h-80 mx-auto rounded-lg border border-[#E5E7EB] shadow-sm"
-                  />
-                  <p className="text-sm text-[#9CA3AF]">
-                    {t("banners.mobile_image.replace_hint")}
-                  </p>
-                </div>
-              ) : (
-                <div className="space-y-4">
-                  <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#F3F4F6]">
-                    <ImageIcon className="h-8 w-8 text-[#9CA3AF]" />
-                  </div>
-                  <div>
-                    <p className="text-sm font-medium text-[#1F2937]">
-                      {t("banners.mobile_image.upload_title")}
-                    </p>
-                    <p className="text-xs text-[#9CA3AF] mt-2">
-                      {t("banners.mobile_image.upload_hint")}
+        {(!formData.type || formData.type === "MAIN") && (
+          <Card className="bg-[#FFFFFF] border-[#E5E7EB] shadow-[0_1px_2px_rgba(0,0,0,0.04)] rounded-xl">
+            <CardHeader className="px-6 pt-6 pb-4">
+              <div className="flex items-center gap-2">
+                <Smartphone className="h-5 w-5 text-[#4CAF50]" />
+                <CardTitle className="text-lg font-semibold text-[#1F2937]">
+                  {t("banners.mobile_image.title")}
+                </CardTitle>
+              </div>
+              <p className="text-sm text-[#9CA3AF] mt-1">
+                {t("banners.mobile_image.description")}
+              </p>
+            </CardHeader>
+            <CardContent className="px-6 pb-6">
+              <div
+                {...getMobileRootProps()}
+                className={cn(
+                  "border-2 border-dashed rounded-xl p-8 text-center cursor-pointer transition-all",
+                  isMobileDragActive
+                    ? "border-[#4CAF50] bg-[#E8F5E9]/30"
+                    : "border-[#E5E7EB] hover:border-[#4CAF50] hover:bg-[#F3F7F6]"
+                )}
+              >
+                <input {...getMobileInputProps()} />
+                {mobilePreview ? (
+                  <div className="space-y-4">
+                    <img
+                      src={mobilePreview}
+                      alt={t("banners.mobile_image.preview_alt")}
+                      className="max-h-80 mx-auto rounded-lg border border-[#E5E7EB] shadow-sm"
+                    />
+                    <p className="text-sm text-[#9CA3AF]">
+                      {t("banners.mobile_image.replace_hint")}
                     </p>
                   </div>
-                </div>
-              )}
-            </div>
-          </CardContent>
-        </Card>
+                ) : (
+                  <div className="space-y-4">
+                    <div className="inline-flex items-center justify-center w-16 h-16 rounded-full bg-[#F3F4F6]">
+                      <ImageIcon className="h-8 w-8 text-[#9CA3AF]" />
+                    </div>
+                    <div>
+                      <p className="text-sm font-medium text-[#1F2937]">
+                        {t("banners.mobile_image.upload_title")}
+                      </p>
+                      <p className="text-xs text-[#9CA3AF] mt-2">
+                        {t("banners.mobile_image.upload_hint")}
+                      </p>
+                    </div>
+                  </div>
+                )}
+              </div>
+            </CardContent>
+          </Card>
+        )}
 
         {/* Danger Zone for Edit Mode */}
         {mode === "edit" && (
@@ -826,10 +880,26 @@ function BannersList() {
                   {/* Banner Info */}
                   <div className="flex-1 min-w-0">
                     <div className="flex items-start justify-between gap-4 mb-3">
-                      <div className="flex-1 min-w-0">
-                        <h3 className="text-lg font-semibold text-[#1F2937] mb-1">
-                          {banner.title || t("banners.list.untitled")}
-                        </h3>
+                      <div className="flex-grow min-w-0">
+                        <div className="flex flex-wrap gap-2 items-center mb-1">
+                          <h3 className="text-lg font-semibold text-[#1F2937]">
+                            {banner.title || t("banners.list.untitled")}
+                          </h3>
+                          <Badge className={cn(
+                            "text-[10px] py-0.5 px-2 font-normal",
+                            banner.type === "SIDE_1"
+                              ? "bg-purple-100 text-purple-700 border-purple-200"
+                              : banner.type === "SIDE_2"
+                              ? "bg-blue-100 text-blue-700 border-blue-200"
+                              : "bg-green-100 text-green-700 border-green-200"
+                          )}>
+                            {banner.type === "SIDE_1"
+                              ? "Left Banner 1 (Top)"
+                              : banner.type === "SIDE_2"
+                              ? "Left Banner 2 (Bottom)"
+                              : "Main Carousel Slider"}
+                          </Badge>
+                        </div>
                         {banner.subtitle && (
                           <p className="text-sm text-[#9CA3AF] line-clamp-2">
                             {banner.subtitle}

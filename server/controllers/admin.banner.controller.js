@@ -15,6 +15,7 @@ export const getBanners = asyncHandler(async (req, res, next) => {
     isActive,
     sort = "position",
     order = "asc",
+    type,
   } = req.query;
 
   const skip = (parseInt(page) - 1) * parseInt(limit);
@@ -32,6 +33,9 @@ export const getBanners = asyncHandler(async (req, res, next) => {
     }),
     ...(isActive !== undefined && {
       isActive: isActive === "true",
+    }),
+    ...(type && {
+      type: type,
     }),
   };
 
@@ -105,11 +109,17 @@ export const getBannerById = asyncHandler(async (req, res, next) => {
 
 // Create banner (admin)
 export const createBanner = asyncHandler(async (req, res, next) => {
-  const { title, subtitle, link, position, isPublished, isActive } = req.body;
+  const { title, subtitle, link, position, isPublished, isActive, type, showOnMobile } = req.body;
+  const isMain = !type || type === "MAIN";
 
   // Validate required fields
-  if (!req.files || !req.files.desktopImage || !req.files.mobileImage) {
-    throw new ApiError(400, "Desktop and mobile images are required");
+  if (!req.files || !req.files.desktopImage || (isMain && !req.files.mobileImage)) {
+    throw new ApiError(
+      400,
+      isMain
+        ? "Desktop and mobile images are required"
+        : "Desktop image is required"
+    );
   }
 
   // Upload images
@@ -117,13 +127,17 @@ export const createBanner = asyncHandler(async (req, res, next) => {
 
   try {
     desktopImageUrl = await processAndUploadImage(req.files.desktopImage[0]);
-    mobileImageUrl = await processAndUploadImage(req.files.mobileImage[0]);
+    if (req.files.mobileImage && req.files.mobileImage[0]) {
+      mobileImageUrl = await processAndUploadImage(req.files.mobileImage[0]);
+    } else {
+      mobileImageUrl = desktopImageUrl;
+    }
   } catch (error) {
     // Clean up uploaded images if one fails
     if (desktopImageUrl) {
       await deleteFromS3(desktopImageUrl);
     }
-    if (mobileImageUrl) {
+    if (mobileImageUrl && mobileImageUrl !== desktopImageUrl) {
       await deleteFromS3(mobileImageUrl);
     }
     throw new ApiError(400, "Failed to upload images: " + error.message);
@@ -173,6 +187,8 @@ export const createBanner = asyncHandler(async (req, res, next) => {
       position: bannerPosition,
       isPublished: isPublished !== "false" && isPublished !== false, // Default true
       isActive: isActive !== "false" && isActive !== false,
+      type: type || "MAIN",
+      showOnMobile: showOnMobile !== "false" && showOnMobile !== false,
     },
   });
 
@@ -194,7 +210,7 @@ export const createBanner = asyncHandler(async (req, res, next) => {
 // Update banner (admin)
 export const updateBanner = asyncHandler(async (req, res, next) => {
   const { bannerId } = req.params;
-  const { title, subtitle, link, position, isPublished, isActive } = req.body;
+  const { title, subtitle, link, position, isPublished, isActive, type, showOnMobile } = req.body;
 
   // Check if banner exists
   const existingBanner = await prisma.banner.findUnique({
@@ -220,6 +236,9 @@ export const updateBanner = asyncHandler(async (req, res, next) => {
     updateData.isPublished = isPublished === "true" || isPublished === true;
   if (isActive !== undefined)
     updateData.isActive = isActive !== "false" && isActive !== false;
+  if (type !== undefined) updateData.type = type || "MAIN";
+  if (showOnMobile !== undefined)
+    updateData.showOnMobile = showOnMobile === "true" || showOnMobile === true;
 
   // Handle position reordering if position is being changed
   if (newPosition !== null) {
@@ -475,6 +494,8 @@ export const getPublishedBanners = asyncHandler(async (req, res, next) => {
     title: banner.title,
     subtitle: banner.subtitle,
     link: banner.link,
+    type: banner.type,
+    showOnMobile: banner.showOnMobile,
     desktopImage: banner.desktopImage ? getFileUrl(banner.desktopImage) : null,
     mobileImage: banner.mobileImage ? getFileUrl(banner.mobileImage) : null,
   }));
