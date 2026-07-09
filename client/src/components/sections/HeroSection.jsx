@@ -138,7 +138,15 @@ export default function HeroSection() {
   }, [api]);
 
   const handleBannerClick = (link) => {
-    router.push(link || "/products");
+    if (!link) {
+      router.push("/products");
+      return;
+    }
+    if (link.startsWith("http://") || link.startsWith("https://")) {
+      window.location.href = link;
+    } else {
+      router.push(link);
+    }
   };
 
   if (isLoading) {
