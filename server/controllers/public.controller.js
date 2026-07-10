@@ -443,7 +443,7 @@ export const getActiveProductSections = asyncHandler(async (req, res) => {
           product: {
             include: {
               images: {
-                where: { isPrimary: true },
+                orderBy: { isPrimary: "desc" },
                 take: 1,
               },
               variants: {

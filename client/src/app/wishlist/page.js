@@ -33,7 +33,7 @@ export default function WishlistPage() {
   const removeFromWishlist = async (wishlistItemId) => {
     try {
       await fetchApi(`/users/wishlist/${wishlistItemId}`, { method: "DELETE", credentials: "include" });
-      setWishlistItems((cur) => cur.filter((item) => item.id !== wishlistItemId));
+      setWishlistItems((cur) => cur.filter((item) => item.wishlistItemId !== wishlistItemId));
     } catch {
       setError("Failed to remove item. Please try again.");
     }
@@ -133,7 +133,7 @@ export default function WishlistPage() {
                 <div key={product.id} className="relative group">
                   <ProductCard product={product} />
                   <button
-                    onClick={(e) => { e.preventDefault(); removeFromWishlist(product.id); }}
+                    onClick={(e) => { e.preventDefault(); removeFromWishlist(product.wishlistItemId); }}
                     className="absolute top-10 right-2 z-30 w-7 h-7 bg-white rounded-full flex items-center justify-center text-red-500 hover:bg-red-50 shadow border border-red-100 opacity-0 group-hover:opacity-100 transition-all duration-200 hover:scale-110"
                     title="Remove from wishlist"
                   >

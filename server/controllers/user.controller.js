@@ -1086,7 +1086,8 @@ export const getUserWishlist = asyncHandler(async (req, res, next) => {
       }
 
       return {
-        id: item.id,
+        id: product.id,
+        wishlistItemId: item.id,
         productId: product.id,
         name: product.name,
         description: product.description,

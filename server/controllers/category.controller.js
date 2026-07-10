@@ -144,7 +144,7 @@ export const getProductsByCategory = asyncHandler(async (req, res) => {
     },
     include: {
       images: {
-        where: { isPrimary: true },
+        orderBy: { isPrimary: "desc" },
         take: 1,
       },
       categories: {
@@ -321,7 +321,7 @@ export const getProductsBySubCategory = asyncHandler(async (req, res) => {
   const products = await prisma.product.findMany({
     where,
     include: {
-      images: { where: { isPrimary: true }, take: 1 },
+      images: { orderBy: { isPrimary: "desc" }, take: 1 },
       categories: { include: { category: true }, take: 1 },
       variants: {
         where: { isActive: true },

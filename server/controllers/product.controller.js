@@ -190,7 +190,7 @@ export const getAllProducts = asyncHandler(async (req, res) => {
         },
       },
       images: {
-        where: { isPrimary: true },
+        orderBy: { isPrimary: "desc" },
         take: 1,
       },
       variants: {
@@ -685,7 +685,7 @@ export const getProductBySlug = asyncHandler(async (req, res) => {
       },
       include: {
         images: {
-          where: { isPrimary: true },
+          orderBy: { isPrimary: "desc" },
           take: 1,
         },
         variants: {
@@ -855,7 +855,7 @@ export const getProductVariantById = asyncHandler(async (req, res) => {
       product: {
         include: {
           images: {
-            where: { isPrimary: true },
+            orderBy: { isPrimary: "desc" },
             take: 1,
           },
         },
@@ -955,7 +955,7 @@ export const getProductsByType = asyncHandler(async (req, res) => {
         },
       },
       images: {
-        where: { isPrimary: true },
+        orderBy: { isPrimary: "desc" },
         take: 1,
       },
       variants: {
