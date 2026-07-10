@@ -179,6 +179,8 @@ export default function HomePageContent() {
         "bg-white"
       )}
 
+      {/* NEW BRANDS */}
+      <BrandCarousel tag="TOP" title="TOP BRANDS" />
 
       {/* NEW BRANDS */}
       <BrandCarousel tag="NEW" title="NEW BRANDS" />
@@ -206,8 +208,7 @@ export default function HomePageContent() {
 
 
 
-      {/* NEW BRANDS */}
-      <BrandCarousel tag="TOP" title="TOP BRANDS" />
+
 
       {/* NEW ARRIVALS */}
       {renderSection(

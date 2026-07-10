@@ -788,7 +788,7 @@ function CategoryForm({
 
     try {
       setIsLoading(true);
-      const positionVal = subCategoryForm.position ? parseInt(subCategoryForm.position) : undefined;
+      const positionVal = subCategoryForm.position ? Math.max(1, parseInt(subCategoryForm.position)) : undefined;
       if (editingSubCategory) {
         // Update sub-category
         const response = await subCategories.updateSubCategory(
@@ -1163,7 +1163,7 @@ function CategoryForm({
               </div>
             ) : (
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
-                {subCategoriesList.map((subCategory) => (
+                {subCategoriesList.map((subCategory, index) => (
                   <Card
                     key={subCategory.id}
                     className="bg-[#F3F7F6] border-[#E5E7EB] hover:shadow-md transition-shadow"
@@ -1181,7 +1181,7 @@ function CategoryForm({
                           <div>
                             <div className="flex items-center gap-2">
                               <span className="inline-flex items-center justify-center bg-gray-100 text-gray-800 text-xs font-semibold px-2 py-0.5 rounded-full">
-                                #{subCategory.position || 0}
+                                #{subCategory.position || (index + 1)}
                               </span>
                               <h3 className="font-semibold text-[#1F2937]">
                                 {subCategory.name}

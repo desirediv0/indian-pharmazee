@@ -129,7 +129,7 @@ export function Navbar() {
   }, [isSearchOpen]);
 
   useEffect(() => {
-    fetchApi("/public/categories")
+    fetchApi("/public/categories-with-subcategories")
       .then((res) => setCategories(sortCategories(res.data?.categories || [])))
       .catch(console.error);
   }, []);
@@ -429,7 +429,6 @@ export function Navbar() {
   );
 }
 
-/* ── Categories Dropdown ────────────────────── */
 function CategoriesDropdown({ categories, activeDropdown, setActiveDropdown, pathname }) {
   return (
     <div
@@ -451,39 +450,69 @@ function CategoriesDropdown({ categories, activeDropdown, setActiveDropdown, pat
       </button>
 
       {activeDropdown === "categories" && (
-        <div className="absolute left-0 top-full pt-2 z-50">
+        <div className="absolute right-1/2 translate-x-1/2 top-full pt-2 z-50">
           <div
-            className="bg-white rounded-2xl shadow-2xl border py-3 min-w-[240px] animate-in fade-in slide-in-from-top-2 duration-150"
-            style={{ borderColor: "#DCE7F2", boxShadow: "0 20px 60px rgba(0,94,184,0.15)" }}
+            className="bg-white rounded-2xl shadow-[0_20px_70px_rgba(0,94,184,0.18)] border p-6 w-[860px] max-h-[580px] overflow-y-auto animate-in fade-in slide-in-from-top-2 duration-200"
+            style={{ borderColor: "#E5EBEF" }}
           >
             {categories.length > 0 ? (
-              <>
-                {categories.slice(0, 15).map((cat) => (
-                  <Link
-                    key={cat.id}
-                    href={`/category/${cat.slug}`}
-                    className="flex items-center gap-3 px-4 py-2.5 text-sm text-gray-700 hover:text-primary hover:bg-blue-50/70 transition-colors"
-                  >
-                    <span
-                      className="w-1.5 h-1.5 rounded-full flex-shrink-0"
-                      style={{ background: "#16C7D9" }}
-                    />
-                    {cat.name}
-                  </Link>
-                ))}
-                <div className="border-t mt-2 pt-2 px-3" style={{ borderColor: "#DCE7F2" }}>
+              <div className="space-y-6">
+                <div className="grid grid-cols-4 gap-x-8 gap-y-6">
+                  {categories.slice(0, 16).map((cat) => (
+                    <div key={cat.id} className="space-y-2.5">
+                      <Link
+                        href={`/category/${cat.slug}`}
+                        className="font-bold text-sm text-gray-900 hover:text-primary transition-colors flex items-center gap-1.5 group"
+                        onClick={() => setActiveDropdown(null)}
+                      >
+                        <span className="w-1.5 h-1.5 rounded-full bg-cyan-400 group-hover:bg-primary transition-colors" />
+                        {cat.name}
+                      </Link>
+
+                      {cat.subCategories && cat.subCategories.length > 0 && (
+                        <div className="flex flex-col gap-2 pl-3 border-l border-gray-100">
+                          {cat.subCategories.slice(0, 4).map((sub) => (
+                            <Link
+                              key={sub.id}
+                              href={`/subcategory/${sub.slug}`}
+                              className="text-[12px] text-gray-500 hover:text-primary transition-all duration-150 hover:pl-1 truncate"
+                              onClick={() => setActiveDropdown(null)}
+                            >
+                              {sub.name}
+                            </Link>
+                          ))}
+                          {cat.subCategories.length > 4 && (
+                            <Link
+                              href={`/category/${cat.slug}`}
+                              className="text-[11px] font-semibold text-gray-400 hover:text-primary transition-colors"
+                              onClick={() => setActiveDropdown(null)}
+                            >
+                              + {cat.subCategories.length - 4} more
+                            </Link>
+                          )}
+                        </div>
+                      )}
+                    </div>
+                  ))}
+                </div>
+
+                <div className="border-t pt-4 flex items-center justify-between" style={{ borderColor: "#E5EBEF" }}>
+                  <p className="text-[12px] text-gray-400 font-medium">Explore all healthcare categories and products</p>
                   <Link
                     href="/categories"
-                    className="flex items-center gap-2 px-2 py-2 text-sm font-semibold rounded-lg transition-colors hover:bg-blue-50"
-                    style={{ color: "#005EB8" }}
+                    className="flex items-center gap-1.5 px-4 py-2 text-xs font-bold rounded-full transition-all bg-blue-50 text-primary hover:bg-primary hover:text-white"
+                    onClick={() => setActiveDropdown(null)}
                   >
                     View All Categories
-                    <FiChevronRight className="h-4 w-4" />
+                    <FiChevronRight className="h-3.5 w-3.5" />
                   </Link>
                 </div>
-              </>
+              </div>
             ) : (
-              <div className="px-4 py-6 text-center text-sm text-gray-400">Loading categories...</div>
+              <div className="flex flex-col items-center justify-center py-12 gap-3">
+                <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary" />
+                <p className="text-sm text-gray-400">Loading categories...</p>
+              </div>
             )}
           </div>
         </div>
