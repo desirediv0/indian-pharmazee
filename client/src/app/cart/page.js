@@ -20,7 +20,7 @@ import { toast } from "sonner";
 
 // Helper function to format image URLs correctly
 const getImageUrl = (image) => {
-    if (!image) return "/placeholder.jpg";
+    if (!image) return "/fallback.png";
     if (image.startsWith("http")) return image;
     return `https://desirediv-storage.blr1.digitaloceanspaces.com/${image}`;
 };
@@ -52,7 +52,7 @@ const CartItem = React.memo(
             }
 
             // Fallback to placeholder
-            return "/placeholder.jpg";
+            return "/fallback.png";
         };
 
         // Get variant display name - handle both guest cart and server cart structures

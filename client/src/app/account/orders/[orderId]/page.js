@@ -11,7 +11,7 @@ import { fetchApi, formatCurrency, formatDate } from "@/lib/utils";
 import { toast } from "sonner";
 
 const getImageUrl = (image) => {
-    if (!image) return "/placeholder.jpg";
+    if (!image) return "/fallback.png";
     if (typeof image === "string") {
         if (image.startsWith("http")) return image;
         return `https://desirediv-storage.blr1.digitaloceanspaces.com/${image}`;
@@ -20,7 +20,7 @@ const getImageUrl = (image) => {
         if (image.url.startsWith("http")) return image.url;
         return `https://desirediv-storage.blr1.digitaloceanspaces.com/${image.url}`;
     }
-    return "/placeholder.jpg";
+    return "/fallback.png";
 };
 
 export default function OrderDetailPage() {

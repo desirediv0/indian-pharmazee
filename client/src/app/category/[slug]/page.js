@@ -10,7 +10,7 @@ import { getPharmaIcon } from "@/lib/pharma-icons";
 import { ProductCard } from "@/components/products/ProductCard";
 
 const getImageUrl = (image) => {
-    if (!image) return "/placeholder.jpg";
+    if (!image) return "/fallback.png";
     if (image.startsWith("http")) return image;
     return `https://desirediv-storage.blr1.digitaloceanspaces.com/${image}`;
 };

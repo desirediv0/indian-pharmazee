@@ -20,7 +20,7 @@ import { ProductCard } from "@/components/products/ProductCard";
    UTIL
 ───────────────────────────────────────────── */
 const getImageUrl = (img) => {
-  if (!img) return "/images/product-placeholder.jpg";
+  if (!img) return "/fallback.png";
   if (img.startsWith("http")) return img;
   return `https://desirediv-storage.blr1.cdn.digitaloceanspaces.com/${img}`;
 };
@@ -492,7 +492,7 @@ export default function ProductContent({ slug }) {
                     }}
                   />
                 ) : (
-                  <Image src="/images/product-placeholder.jpg" alt={product.name} fill className="object-contain" />
+                  <Image src="/fallback.png" alt={product.name} fill className="object-contain" />
                 )}
                 {product.flashSale?.isActive && (
                   <div className="absolute top-3 left-3 flex items-center gap-1 px-2.5 py-1 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-full text-[10px] font-extrabold uppercase tracking-widest pointer-events-none">
@@ -523,7 +523,7 @@ export default function ProductContent({ slug }) {
                 {images.length > 0 ? (
                   <Image src={getImageUrl(primary?.url)} alt={product.name} fill className="object-contain p-6 transition-all duration-300" priority sizes="95vw" />
                 ) : (
-                  <Image src="/images/product-placeholder.jpg" alt={product.name} fill className="object-contain" />
+                  <Image src="/fallback.png" alt={product.name} fill className="object-contain" />
                 )}
                 {product.flashSale?.isActive && (
                   <div className="absolute top-3 left-3 flex items-center gap-1 px-2.5 py-1 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-full text-[10px] font-extrabold uppercase tracking-widest pointer-events-none">

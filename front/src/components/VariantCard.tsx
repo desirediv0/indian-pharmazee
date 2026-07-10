@@ -332,13 +332,14 @@ export default function VariantCard({
 
         const newImages: ImageData[] = [];
 
-        // If we're in edit mode and have a REAL variant ID (not UUID), upload directly to server
-        // Check if variant.id exists and is not a temporary UUID (UUIDs are 36 characters with hyphens)
+        // If we're in edit mode and have a REAL variant ID (not temporary), upload directly to server
+        // Real variant IDs are UUIDs (36 chars with hyphens), temporary IDs start with "new-" or "field-"
         const isRealVariantId =
           variant.id &&
           typeof variant.id === "string" &&
-          !variant.id.includes("-") &&
-          variant.id.length > 10;
+          variant.id.length > 10 &&
+          !variant.id.startsWith("new-") &&
+          !variant.id.startsWith("field-");
         if (isEditMode && isRealVariantId) {
           for (let i = 0; i < validFiles.length; i++) {
             const file = validFiles[i];

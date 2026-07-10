@@ -12,7 +12,7 @@ import { useRouter } from "next/navigation";
 
 /* ── utils ── */
 const getImageUrl = (image) => {
-  if (!image) return "/placeholder.jpg";
+  if (!image) return "/fallback.png";
   if (image.startsWith("http")) return image;
   return `https://desirediv-storage.blr1.digitaloceanspaces.com/${image}`;
 };
@@ -77,7 +77,7 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
     product.variants?.forEach((v) => v.images?.forEach(push));
     product.images?.forEach(push);
     if (images.length === 0 && product.image) push(product.image);
-    if (images.length === 0) images.push("/placeholder.jpg");
+    if (images.length === 0) images.push("/fallback.png");
     return images;
   }, [product]);
 
@@ -192,7 +192,7 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
           style={{ width: "140px", minHeight: "140px" }}
         >
           <Image
-            src={getAllProductImages[currentImageIndex] || "/placeholder.jpg"}
+            src={getAllProductImages[currentImageIndex] || "/fallback.png"}
             alt={product.name}
             width={120}
             height={120}
@@ -286,7 +286,7 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
 
         {/* Product image */}
         <Image
-          src={getAllProductImages[currentImageIndex] || "/placeholder.jpg"}
+          src={getAllProductImages[currentImageIndex] || "/fallback.png"}
           alt={product.name}
           fill
           className="object-contain p-5 transition-transform duration-500 group-hover:scale-[1.07]"

@@ -14,7 +14,7 @@ import { toast } from "sonner";
    UTIL
 ───────────────────────────────────────────── */
 const getImageUrl = (image) => {
-  if (!image) return "/placeholder.jpg";
+  if (!image) return "/fallback.png";
   if (typeof image === "string" && image.startsWith("http")) return image;
   return `https://desirediv-storage.blr1.digitaloceanspaces.com/${image}`;
 };
@@ -121,7 +121,7 @@ export default function ProductQuickView({ product, open, onOpenChange }) {
     product?.images?.forEach(push);
     variants.forEach((v) => v.images?.forEach(push));
     if (!list.length && product?.image) push(product.image);
-    if (!list.length) list.push("/placeholder.jpg");
+    if (!list.length) list.push("/fallback.png");
     return list;
   }, [activeVariant, product, variants]);
 

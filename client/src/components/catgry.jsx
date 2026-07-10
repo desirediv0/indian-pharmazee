@@ -7,7 +7,7 @@ import { fetchApi } from "@/lib/utils";
 import { ChevronLeft, ChevronRight, Zap } from "lucide-react";
 
 const getImageUrl = (image) => {
-  if (!image) return "/placeholder.jpg";
+  if (!image) return "/fallback.png";
   if (image.startsWith("http")) return image;
   return `https://desirediv-storage.blr1.digitaloceanspaces.com/${image}`;
 };

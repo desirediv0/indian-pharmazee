@@ -182,7 +182,7 @@ export default function HeroSection() {
               <div className="lg:col-span-4 flex flex-col gap-4">
 
                 <div 
-                  className={`relative aspect-[16/9] w-full overflow-hidden rounded-2xl ${side1 ? 'cursor-pointer' : ''} ${side1 && !side1.showOnMobile ? 'hidden lg:block' : ''}`}
+                  className={`relative aspect-[16/9] w-full overflow-hidden rounded-2xl ${side1 ? 'cursor-pointer' : ''} ${(!side1 || !side1.showOnMobile) ? 'hidden lg:block' : ''}`}
                   onClick={() => side1 && handleBannerClick(side1.ctaLink)}
                 >
                   <Image
@@ -195,7 +195,7 @@ export default function HeroSection() {
                 </div>
 
                 <div 
-                  className={`relative aspect-[16/9] w-full overflow-hidden rounded-2xl ${side2 ? 'cursor-pointer' : ''} ${side2 && !side2.showOnMobile ? 'hidden lg:block' : ''}`}
+                  className={`relative aspect-[16/9] w-full overflow-hidden rounded-2xl ${side2 ? 'cursor-pointer' : ''} ${(!side2 || !side2.showOnMobile) ? 'hidden lg:block' : ''}`}
                   onClick={() => side2 && handleBannerClick(side2.ctaLink)}
                 >
                   <Image

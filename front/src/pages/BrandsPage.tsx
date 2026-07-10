@@ -122,7 +122,7 @@ export default function BrandsPage() {
     }
     setCreating(true);
     try {
-      const positionVal = form.position !== "" ? parseInt(form.position) : undefined;
+      const positionVal = form.position !== "" ? Math.max(0, parseInt(form.position) - 1) : undefined;
       if (editBrand) {
         await brands.updateBrand(editBrand.id, {
           name: form.name,
@@ -155,7 +155,7 @@ export default function BrandsPage() {
   const handleEdit = (brand: Brand) => {
     setEditBrand(brand);
     setBrandTags(brand.tags || []);
-    setForm({ name: brand.name, image: null, position: brand.position !== undefined ? String(brand.position) : "" });
+    setForm({ name: brand.name, image: null, position: brand.position !== undefined ? String(brand.position + 1) : "" });
     setImagePreview(getImageUrl(brand.image));
     setOpen(true);
   };
@@ -262,7 +262,7 @@ export default function BrandsPage() {
                     <Input
                       name="position"
                       type="number"
-                      placeholder="Enter position (e.g. 0, 1, 2)"
+                      placeholder="Enter position (e.g. 1, 2, 3)"
                       value={form.position}
                       onChange={handleInputChange}
                       className="border-[#E5E7EB] focus:border-primary"
@@ -421,7 +421,7 @@ export default function BrandsPage() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-center gap-2 mb-1.5">
                         <Badge variant="outline" className="border-gray-300 text-gray-600 bg-gray-50 text-xs">
-                          Pos: {brand.position !== undefined ? brand.position : "N/A"}
+                          Pos: {brand.position !== undefined ? brand.position + 1 : "N/A"}
                         </Badge>
                         <h3 className="font-semibold text-[#1F2937] text-base">
                           {brand.name}

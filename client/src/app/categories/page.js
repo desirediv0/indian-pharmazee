@@ -8,7 +8,7 @@ import { AlertCircle, ArrowRight, Stethoscope, BadgeCheck, Thermometer, Truck } 
 import { getPharmaIcon } from "@/lib/pharma-icons";
 
 const getImageUrl = (image) => {
-  if (!image) return "/placeholder.jpg";
+  if (!image) return "/fallback.png";
   if (image.startsWith("http")) return image;
   return `https://desirediv-storage.blr1.digitaloceanspaces.com/${image}`;
 };
