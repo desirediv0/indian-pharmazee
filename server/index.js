@@ -41,31 +41,45 @@ process.on("SIGINT", gracefulShutdown);
 // Connect to the database and start the server
 const seedExistingPositions = async () => {
   try {
-    console.log("Seeding positions for categories and subcategories...");
     const categories = await prisma.category.findMany({
-      orderBy: { name: "asc" }
+      orderBy: [
+        { position: "asc" },
+        { name: "asc" }
+      ]
     });
-    for (let i = 0; i < categories.length; i++) {
-      await prisma.category.update({
-        where: { id: categories[i].id },
-        data: { position: i + 1 }
-      });
+    
+    const needsCategorySeeding = categories.some(cat => cat.position <= 0);
+    if (needsCategorySeeding) {
+      console.log("Seeding positions for categories...");
+      for (let i = 0; i < categories.length; i++) {
+        await prisma.category.update({
+          where: { id: categories[i].id },
+          data: { position: i + 1 }
+        });
+      }
+      console.log(`Successfully seeded ${categories.length} categories.`);
     }
-    console.log(`Successfully seeded ${categories.length} categories.`);
 
     for (const cat of categories) {
       const subCats = await prisma.subCategory.findMany({
         where: { categoryId: cat.id },
-        orderBy: { name: "asc" }
+        orderBy: [
+          { position: "asc" },
+          { name: "asc" }
+        ]
       });
-      for (let j = 0; j < subCats.length; j++) {
-        await prisma.subCategory.update({
-          where: { id: subCats[j].id },
-          data: { position: j + 1 }
-        });
+      
+      const needsSubCategorySeeding = subCats.some(sc => sc.position <= 0);
+      if (needsSubCategorySeeding) {
+        console.log(`Seeding subcategory positions for category ${cat.name}...`);
+        for (let j = 0; j < subCats.length; j++) {
+          await prisma.subCategory.update({
+            where: { id: subCats[j].id },
+            data: { position: j + 1 }
+          });
+        }
       }
     }
-    console.log("Successfully seeded subcategories.");
   } catch (error) {
     console.error("Error seeding positions:", error);
   }

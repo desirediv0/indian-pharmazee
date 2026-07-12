@@ -53,7 +53,7 @@ export const Footer = () => {
 
   useEffect(() => {
     fetchApi("/public/categories")
-      .then((res) => setCategories((res.data?.categories || []).slice(0, 7)))
+      .then((res) => setCategories(sortCategories(res.data?.categories || []).slice(0, 7)))
       .catch(console.error);
   }, []);
 

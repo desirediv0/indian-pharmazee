@@ -3,7 +3,7 @@
 import Link from "next/link";
 import Image from "next/image";
 import { useState, useEffect } from "react";
-import { fetchApi } from "@/lib/utils";
+import { fetchApi, sortCategories } from "@/lib/utils";
 import { Stethoscope, Thermometer } from "lucide-react";
 import { getPharmaIcon } from "@/lib/pharma-icons";
 
@@ -27,14 +27,14 @@ const FALLBACK_CATEGORIES = [
 
 /* ─────────────────────────────────────────────
    FEATURED CATEGORIES SECTION
-───────────────────────────────────────────── */
+   ───────────────────────────────────────────── */
 export function FeaturedCategoriesSection() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     fetchApi("/public/categories")
-      .then((res) => setCategories((res.data?.categories || []).slice(0, 12)))
+      .then((res) => setCategories(sortCategories(res.data?.categories || []).slice(0, 12)))
       .catch(console.error)
       .finally(() => setLoading(false));
   }, []);

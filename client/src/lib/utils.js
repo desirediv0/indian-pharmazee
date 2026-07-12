@@ -236,5 +236,20 @@ export function sortCategories(categoriesList) {
     };
 
     return getIndex(a.name) - getIndex(b.name);
+  }).map(cat => {
+    if (cat.subCategories && Array.isArray(cat.subCategories)) {
+      return {
+        ...cat,
+        subCategories: [...cat.subCategories].sort((s1, s2) => {
+          const sPosA = s1.position !== undefined && s1.position !== null ? s1.position : 9999;
+          const sPosB = s2.position !== undefined && s2.position !== null ? s2.position : 9999;
+          if (sPosA !== sPosB) {
+            return sPosA - sPosB;
+          }
+          return (s1.name || "").localeCompare(s2.name || "");
+        })
+      };
+    }
+    return cat;
   });
 }

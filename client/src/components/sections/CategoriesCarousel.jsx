@@ -8,7 +8,7 @@ import {
   Carousel, CarouselContent, CarouselItem,
   CarouselPrevious, CarouselNext,
 } from "@/components/ui/carousel";
-import { fetchApi } from "@/lib/utils";
+import { fetchApi, sortCategories } from "@/lib/utils";
 import { getPharmaIcon } from "@/lib/pharma-icons";
 
 const CategoriesCarousel = () => {
@@ -19,7 +19,9 @@ const CategoriesCarousel = () => {
   useEffect(() => {
     fetchApi("/public/categories")
       .then((res) => {
-        if (res.success && res.data?.categories) setCategories(res.data.categories);
+        if (res.success && res.data?.categories) {
+          setCategories(sortCategories(res.data.categories));
+        }
       })
       .catch(console.error)
       .finally(() => setLoading(false));
