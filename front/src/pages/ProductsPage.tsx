@@ -564,6 +564,7 @@ export function ProductForm({
                   : 0,
               featured: productData.featured || false,
               ourProduct: productData.ourProduct || false,
+              isColdChain: productData.isColdChain || false,
               productType: Array.isArray(productData.productType)
                 ? productData.productType
                 : typeof productData.productType === "string"
