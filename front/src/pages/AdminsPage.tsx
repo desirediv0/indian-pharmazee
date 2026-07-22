@@ -2,15 +2,17 @@ import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
 import { adminUsers } from "@/api/adminService";
-import { Admin, Role } from "@/types/admin";
+import { Admin, Role, AdminRole_ } from "@/types/admin";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
+import { Shield, Loader2 } from "lucide-react";
 
 export default function AdminsPage() {
   const [admins, setAdmins] = useState<Admin[]>([]);
+  const [customRoles, setCustomRoles] = useState<AdminRole_[]>([]);
   const [loading, setLoading] = useState(true);
   const { admin: currentAdmin } = useAuth();
   const navigate = useNavigate();
@@ -19,6 +21,9 @@ export default function AdminsPage() {
 
   useEffect(() => {
     fetchAdmins();
+    if (isSuperAdmin) {
+      fetchCustomRoles();
+    }
   }, []);
 
   const fetchAdmins = async () => {
@@ -35,6 +40,25 @@ export default function AdminsPage() {
       toast.error("Error fetching admin users");
     } finally {
       setLoading(false);
+    }
+  };
+
+  const fetchCustomRoles = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/admin/roles`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          },
+        }
+      );
+      const data = await response.json();
+      if (data.success) {
+        setCustomRoles(data.data.roles);
+      }
+    } catch (error) {
+      console.error("Error fetching custom roles:", error);
     }
   };
 
@@ -72,6 +96,32 @@ export default function AdminsPage() {
     } catch (error) {
       console.error("Error updating admin role:", error);
       toast.error("Error updating admin role");
+    }
+  };
+
+  const assignCustomRole = async (adminId: string, roleId: string) => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/admin/admins/${adminId}/assign-role`,
+        {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          },
+          body: JSON.stringify({ roleId: roleId || null }),
+        }
+      );
+      const data = await response.json();
+      if (data.success) {
+        toast.success("Custom role assigned successfully");
+        fetchAdmins();
+      } else {
+        toast.error(data.message || "Failed to assign role");
+      }
+    } catch (error) {
+      console.error("Error assigning role:", error);
+      toast.error("Error assigning role");
     }
   };
 
@@ -114,19 +164,20 @@ export default function AdminsPage() {
     <div className="space-y-6">
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Admin Users</h1>
-        {/* {isSuperAdmin && (
-          <Button asChild>
-            <Link to="/admins/new">
-              <Plus className="mr-2 h-4 w-4" />
-              Add Admin
-            </Link>
+        {isSuperAdmin && (
+          <Button
+            variant="outline"
+            onClick={() => navigate("/roles")}
+          >
+            <Shield className="mr-2 h-4 w-4" />
+            Manage Roles
           </Button>
-        )} */}
+        )}
       </div>
 
       {loading ? (
         <div className="flex justify-center p-8">
-          <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-b-2 border-primary"></div>
+          <Loader2 className="h-12 w-12 animate-spin text-primary" />
         </div>
       ) : admins.length === 0 ? (
         <Card>
@@ -171,6 +222,15 @@ export default function AdminsPage() {
                       : "Never"}
                   </p>
 
+                  {admin.assignedRole && (
+                    <p className="mb-1">
+                      <span className="font-medium">Custom Role: </span>
+                      <Badge variant="secondary">
+                        {admin.assignedRole.name}
+                      </Badge>
+                    </p>
+                  )}
+
                   <Separator className="my-2" />
 
                   {isSuperAdmin && admin.id !== currentAdmin?.id && (
@@ -211,19 +271,38 @@ export default function AdminsPage() {
                         Permissions
                       </Button>
 
-                      <select
-                        className="px-2 py-1 text-sm border rounded"
-                        value={admin.role}
-                        onChange={(e) =>
-                          updateAdminRole(admin.id, e.target.value)
-                        }
-                      >
-                        {Object.keys(Role).map((role) => (
-                          <option key={role} value={role}>
-                            {role.replace("_", " ")}
-                          </option>
-                        ))}
-                      </select>
+                      <div className="flex flex-col gap-1">
+                        <select
+                          className="px-2 py-1 text-sm border rounded"
+                          value={admin.role}
+                          onChange={(e) =>
+                            updateAdminRole(admin.id, e.target.value)
+                          }
+                        >
+                          {Object.keys(Role).map((role) => (
+                            <option key={role} value={role}>
+                              {role.replace("_", " ")}
+                            </option>
+                          ))}
+                        </select>
+
+                        {customRoles.length > 0 && (
+                          <select
+                            className="px-2 py-1 text-sm border rounded"
+                            value={admin.roleId || ""}
+                            onChange={(e) =>
+                              assignCustomRole(admin.id, e.target.value)
+                            }
+                          >
+                            <option value="">No Custom Role</option>
+                            {customRoles.map((role) => (
+                              <option key={role.id} value={role.id}>
+                                {role.name}
+                              </option>
+                            ))}
+                          </select>
+                        )}
+                      </div>
                     </div>
                   )}
                 </div>

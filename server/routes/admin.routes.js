@@ -21,6 +21,16 @@ import {
   updatePriceVisibilitySettings,
 } from "../controllers/admin.controller.js";
 import {
+  getAllRoles,
+  getRoleById,
+  createRole,
+  updateRole,
+  deleteRole,
+  updateRolePermissions,
+  assignRoleToAdmin,
+  getAvailablePermissions,
+} from "../controllers/role.controller.js";
+import {
   verifyAdminJWT,
   hasPermission,
   hasRole,
@@ -77,6 +87,16 @@ router.post(
   hasRole("SUPER_ADMIN"),
   updateAdminPermissions
 );
+
+// Role Management Routes (Super Admin Only)
+router.get("/roles", verifyAdminJWT, hasRole("SUPER_ADMIN"), getAllRoles);
+router.get("/roles/permissions", verifyAdminJWT, hasRole("SUPER_ADMIN"), getAvailablePermissions);
+router.get("/roles/:roleId", verifyAdminJWT, hasRole("SUPER_ADMIN"), getRoleById);
+router.post("/roles", verifyAdminJWT, hasRole("SUPER_ADMIN"), createRole);
+router.put("/roles/:roleId", verifyAdminJWT, hasRole("SUPER_ADMIN"), updateRole);
+router.delete("/roles/:roleId", verifyAdminJWT, hasRole("SUPER_ADMIN"), deleteRole);
+router.put("/roles/:roleId/permissions", verifyAdminJWT, hasRole("SUPER_ADMIN"), updateRolePermissions);
+router.post("/admins/:adminId/assign-role", verifyAdminJWT, hasRole("SUPER_ADMIN"), assignRoleToAdmin);
 
 // User Management Routes
 router.get("/users", verifyAdminJWT, hasPermission("users", "read"), getUsers);

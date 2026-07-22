@@ -25,6 +25,7 @@ import {
   Layers,
   Eye,
   Truck,
+  Shield,
   // Upload,
 } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -186,7 +187,7 @@ const hasPermissionFor = (
   resource: Resource,
   action?: Action
 ): boolean => {
-  if (admin?.role === "SUPER_ADMIN") return true;
+  if (admin?.role === "SUPER_ADMIN" || admin?.role === "ADMIN") return true;
 
   if (!admin?.permissions || !Array.isArray(admin.permissions)) return false;
 
@@ -533,26 +534,18 @@ export default function DashboardLayout() {
                       Action.READ
                     ),
                   },
-                  // {
-                  //   href: "/admins",
-                  //   title: "Admins",
-                  //   icon: <Users className="h-3 w-3" />,
-                  //   hasPermission: hasPermissionFor(
-                  //     admin,
-                  //     Resource.ADMINS,
-                  //     Action.READ
-                  //   ),
-                  // },
-                  // {
-                  //   href: "/admins/new",
-                  //   title: "Add Admin",
-                  //   icon: <Users className="h-3 w-3" />,
-                  //   hasPermission: hasPermissionFor(
-                  //     admin,
-                  //     Resource.ADMINS,
-                  //     Action.CREATE
-                  //   ),
-                  // }
+                  {
+                    href: "/admins",
+                    title: "Admins",
+                    icon: <Users className="h-3 w-3" />,
+                    hasPermission: admin?.role === "SUPER_ADMIN",
+                  },
+                  {
+                    href: "/roles",
+                    title: "Roles",
+                    icon: <Shield className="h-3 w-3" />,
+                    hasPermission: admin?.role === "SUPER_ADMIN",
+                  },
                 ]}
               />
 
@@ -915,6 +908,18 @@ export default function DashboardLayout() {
                       Resource.FAQS,
                       Action.READ
                     ),
+                  },
+                  {
+                    href: "/admins",
+                    title: "Admins",
+                    icon: <Users className="h-3 w-3" />,
+                    hasPermission: admin?.role === "SUPER_ADMIN",
+                  },
+                  {
+                    href: "/roles",
+                    title: "Roles",
+                    icon: <Shield className="h-3 w-3" />,
+                    hasPermission: admin?.role === "SUPER_ADMIN",
                   },
                 ]}
               />

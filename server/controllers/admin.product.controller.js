@@ -439,6 +439,7 @@ export const createProduct = asyncHandler(async (req, res, next) => {
     metaDescription,
     keywords,
     ourProduct,
+    isColdChain,
   } = req.body;
 
   // Validation checks with better error handling
@@ -609,6 +610,7 @@ export const createProduct = asyncHandler(async (req, res, next) => {
               : req.body.hotBrandIds
             : [],
           ourProduct: ourProduct === "true" || ourProduct === true,
+          isColdChain: isColdChain === "true" || isColdChain === true,
         },
       });
 
@@ -1162,6 +1164,7 @@ export const updateProduct = asyncHandler(async (req, res, next) => {
     metaDescription,
     keywords,
     ourProduct,
+    isColdChain,
   } = req.body;
 
   // Check if product exists
@@ -1380,6 +1383,9 @@ export const updateProduct = asyncHandler(async (req, res, next) => {
           }),
           ...(ourProduct !== undefined && {
             ourProduct: ourProduct === "true" || ourProduct === true,
+          }),
+          ...(isColdChain !== undefined && {
+            isColdChain: isColdChain === "true" || isColdChain === true,
           }),
           ...(req.body.brandId !== undefined && {
             brandId:

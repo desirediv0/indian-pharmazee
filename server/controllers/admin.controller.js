@@ -345,61 +345,44 @@ export const deleteAdmin = asyncHandler(async (req, res, next) => {
     .json(new ApiResponsive(200, {}, "Admin deleted successfully"));
 });
 
-// Update admin permissions based on their role
+// Update admin permissions based on their role/custom selection
 export const updateAdminPermissions = asyncHandler(async (req, res) => {
   const { adminId } = req.params;
+  const { permissions } = req.body; // Array of { resource, action }
+
+  if (!Array.isArray(permissions)) {
+    throw new ApiError(400, "Permissions must be an array");
+  }
 
   // Check if admin exists
   const admin = await prisma.admin.findUnique({
     where: { id: adminId },
-    include: {
-      permissions: true,
-    },
   });
 
   if (!admin) {
     throw new ApiError(404, "Admin not found");
   }
 
-  // Get default permissions for this role
-  const defaultPermissions = getDefaultPermissionsForRole(admin.role);
-
-  // Create a record of existing permissions
-  const existingPermissions = admin.permissions.map(
-    (p) => `${p.resource}:${p.action}`
-  );
-
-  // Filter out permissions that already exist
-  const newPermissions = defaultPermissions.filter(
-    (p) => !existingPermissions.includes(`${p.resource}:${p.action}`)
-  );
-
-  if (newPermissions.length === 0) {
-    return res.status(200).json(
-      new ApiResponsive(
-        200,
-        {
-          adminId,
-          message: "No new permissions to add",
-        },
-        "Admin permissions are already up to date"
-      )
-    );
-  }
-
-  // Add missing permissions in a transaction
+  // Replace permissions in a transaction
   const result = await prisma.$transaction(async (tx) => {
-    const createdPermissions = [];
+    // 1. Delete all existing permissions
+    await tx.permission.deleteMany({
+      where: { adminId },
+    });
 
-    for (const permission of newPermissions) {
-      const createdPermission = await tx.adminPermission.create({
-        data: {
-          adminId,
-          resource: permission.resource,
-          action: permission.action,
-        },
-      });
-      createdPermissions.push(createdPermission);
+    // 2. Add new permissions
+    const createdPermissions = [];
+    for (const permission of permissions) {
+      if (permission.resource && permission.action) {
+        const createdPermission = await tx.permission.create({
+          data: {
+            adminId,
+            resource: permission.resource,
+            action: permission.action,
+          },
+        });
+        createdPermissions.push(createdPermission);
+      }
     }
 
     return createdPermissions;
@@ -410,10 +393,10 @@ export const updateAdminPermissions = asyncHandler(async (req, res) => {
       200,
       {
         adminId,
-        addedPermissions: result,
+        permissions: result,
         count: result.length,
       },
-      `Added ${result.length} new permissions to admin`
+      `Updated permissions successfully. Total: ${result.length}`
     )
   );
 });

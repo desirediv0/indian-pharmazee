@@ -33,7 +33,7 @@ export default function SubCategoryPage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  const [sortOption, setSortOption] = useState("newest");
+  const [sortOption, setSortOption] = useState("custom");
   const [viewMode, setViewMode] = useState("grid");
   const [pagination, setPagination] = useState({ page: 1, limit: 15, total: 0, pages: 0 });
 
@@ -41,9 +41,10 @@ export default function SubCategoryPage() {
     if (!slug) return;
     setLoading(true);
 
-    let sort = "createdAt";
-    let order = "desc";
+    let sort = "position";
+    let order = "asc";
     switch (sortOption) {
+      case "custom": sort = "position"; order = "asc"; break;
       case "oldest": sort = "createdAt"; order = "asc"; break;
       case "name-asc": sort = "name"; order = "asc"; break;
       case "name-desc": sort = "name"; order = "desc"; break;
@@ -189,6 +190,7 @@ export default function SubCategoryPage() {
                 onChange={(e) => { setSortOption(e.target.value); setPagination((p) => ({ ...p, page: 1 })); }}
                 className="appearance-none bg-white border border-gray-200 text-gray-700 rounded-lg px-3 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm font-medium cursor-pointer shadow-sm"
               >
+                <option value="custom">Custom Order</option>
                 <option value="newest">Newest First</option>
                 <option value="oldest">Oldest First</option>
                 <option value="name-asc">A to Z</option>

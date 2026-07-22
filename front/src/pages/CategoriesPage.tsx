@@ -27,8 +27,10 @@ import {
   Tags,
   HelpCircle,
   Info,
+  ArrowUpDown,
 } from "lucide-react";
 import { DeleteProductDialog } from "@/components/DeleteProductDialog";
+import { ProductReorderDialog } from "@/components/ProductReorderDialog";
 import { useLanguage } from "@/context/LanguageContext";
 
 export default function CategoriesPage() {
@@ -671,6 +673,12 @@ function CategoryForm({
     string | null
   >(null);
 
+  // Product reorder dialog state
+  const [showProductReorderDialog, setShowProductReorderDialog] = useState(false);
+  const [reorderEntityType, setReorderEntityType] = useState<"category" | "subcategory">("category");
+  const [reorderEntityId, setReorderEntityId] = useState<string>("");
+  const [reorderEntityName, setReorderEntityName] = useState<string>("");
+
   // Fetch category data if editing
   useEffect(() => {
     if (mode === "edit" && categoryId) {
@@ -1111,6 +1119,37 @@ function CategoryForm({
         </form>
       </Card>
 
+      {/* Reorder Products Button - Only show in edit mode */}
+      {mode === "edit" && categoryId && (
+        <Card className="bg-[#FFFFFF] border-[#E5E7EB] shadow-[0_1px_2px_rgba(0,0,0,0.04)] rounded-xl">
+          <CardContent className="px-6 py-4">
+            <div className="flex items-center justify-between">
+              <div>
+                <h3 className="text-lg font-semibold text-[#1F2937]">
+                  Product Ordering
+                </h3>
+                <p className="text-sm text-[#9CA3AF] mt-1">
+                  Arrange products in the order you want them to appear on the website
+                </p>
+              </div>
+              <Button
+                type="button"
+                variant="outline"
+                onClick={() => {
+                  setReorderEntityType("category");
+                  setReorderEntityId(categoryId);
+                  setReorderEntityName(category.name);
+                  setShowProductReorderDialog(true);
+                }}
+              >
+                <ArrowUpDown className="mr-2 h-4 w-4" />
+                Reorder Products
+              </Button>
+            </div>
+          </CardContent>
+        </Card>
+      )}
+
       {/* Sub-Categories Section - Only show in edit mode */}
       {mode === "edit" && categoryId && (
         <Card className="bg-[#FFFFFF] border-[#E5E7EB] shadow-[0_1px_2px_rgba(0,0,0,0.04)] rounded-xl">
@@ -1223,6 +1262,20 @@ function CategoryForm({
                             title="Move Down"
                           >
                             <ChevronLeft className="h-4 w-4 -rotate-90 text-[#4B5563]" />
+                          </Button>
+                          <Button
+                            variant="ghost"
+                            size="icon"
+                            className="h-8 w-8 hover:bg-[#F0F9FF]"
+                            onClick={() => {
+                              setReorderEntityType("subcategory");
+                              setReorderEntityId(subCategory.id);
+                              setReorderEntityName(subCategory.name);
+                              setShowProductReorderDialog(true);
+                            }}
+                            title="Reorder Products"
+                          >
+                            <ArrowUpDown className="h-4 w-4 text-[#3B82F6]" />
                           </Button>
                           <Button
                             variant="ghost"
@@ -1398,6 +1451,18 @@ function CategoryForm({
           </DialogFooter>
         </DialogContent>
       </Dialog>
+
+      {/* Product Reorder Dialog */}
+      <ProductReorderDialog
+        open={showProductReorderDialog}
+        onOpenChange={setShowProductReorderDialog}
+        entityId={reorderEntityId}
+        entityType={reorderEntityType}
+        entityName={reorderEntityName}
+        onSaved={() => {
+          // Refresh data if needed
+        }}
+      />
     </div>
   );
 }

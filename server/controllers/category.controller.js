@@ -93,12 +93,13 @@ export const getProductsByCategory = asyncHandler(async (req, res) => {
   const {
     page = 1,
     limit = 10,
-    sort = "createdAt",
-    order = "desc",
+    sort = "position",
+    order = "asc",
   } = req.query;
 
   const isPriceSort = sort === "price";
-  const effectiveSort = isPriceSort ? "createdAt" : sort;
+  const isPositionSort = sort === "position";
+  const effectiveSort = isPriceSort || isPositionSort ? "createdAt" : sort;
 
   // Find the category by slug
   const category = await prisma.category.findUnique({
@@ -174,7 +175,9 @@ export const getProductsByCategory = asyncHandler(async (req, res) => {
         },
       },
     },
-    orderBy: [{ ourProduct: "desc" }, { [effectiveSort]: order }],
+    orderBy: isPositionSort
+      ? [{ ourProduct: "desc" }, { categories: { position: order } }]
+      : [{ ourProduct: "desc" }, { [effectiveSort]: order }],
     skip: (parseInt(page) - 1) * parseInt(limit),
     take: parseInt(limit),
   });
@@ -302,7 +305,10 @@ export const getProductsByCategory = asyncHandler(async (req, res) => {
 // Get products by sub-category slug (public)
 export const getProductsBySubCategory = asyncHandler(async (req, res) => {
   const { slug } = req.params;
-  const { page = 1, limit = 15, sort = "createdAt", order = "desc" } = req.query;
+  const { page = 1, limit = 15, sort = "position", order = "asc" } = req.query;
+
+  const isPositionSort = sort === "position";
+  const effectiveSort = isPositionSort ? "createdAt" : sort;
 
   const subCategory = await prisma.subCategory.findFirst({
     where: { slug, isActive: true },
@@ -323,6 +329,7 @@ export const getProductsBySubCategory = asyncHandler(async (req, res) => {
     include: {
       images: { orderBy: { isPrimary: "desc" }, take: 1 },
       categories: { include: { category: true }, take: 1 },
+      subCategories: { take: 1 },
       variants: {
         where: { isActive: true },
         include: {
@@ -332,7 +339,9 @@ export const getProductsBySubCategory = asyncHandler(async (req, res) => {
       },
       _count: { select: { reviews: true } },
     },
-    orderBy: [{ ourProduct: "desc" }, { [sort]: order }],
+    orderBy: isPositionSort
+      ? [{ ourProduct: "desc" }, { subCategories: { position: order } }]
+      : [{ ourProduct: "desc" }, { [effectiveSort]: order }],
     skip: (parseInt(page) - 1) * parseInt(limit),
     take: parseInt(limit),
   });

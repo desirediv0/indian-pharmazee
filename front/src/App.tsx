@@ -16,6 +16,8 @@ import CouponsPage from "./pages/CouponsPage";
 import AdminsPage from "./pages/AdminsPage";
 import AdminCreatePage from "./pages/AdminCreatePage";
 import AdminPermissionsPage from "./pages/AdminPermissionsPage";
+import RoleManagementPage from "./pages/RoleManagementPage";
+import RolePermissionsPage from "./pages/RolePermissionsPage";
 import ContactManagementPage from "./pages/ContactManagementPage";
 import ReviewsManagementPage from "./pages/ReviewsManagementPage";
 import FAQManagementPage from "./pages/FAQManagementPage";
@@ -92,6 +94,7 @@ const ProtectedRoute = ({
   if (resource && action) {
     const hasPermission =
       admin?.role === "SUPER_ADMIN" ||
+      admin?.role === "ADMIN" ||
       admin?.permissions?.includes(`${resource}:${action}`);
 
     if (!hasPermission) {
@@ -539,6 +542,24 @@ const App = () => {
               element={
                 <ProtectedRoute superAdminOnly={true}>
                   <AdminPermissionsPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="roles"
+              element={
+                <ProtectedRoute superAdminOnly={true}>
+                  <RoleManagementPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="roles/:roleId/permissions"
+              element={
+                <ProtectedRoute superAdminOnly={true}>
+                  <RolePermissionsPage />
                 </ProtectedRoute>
               }
             />

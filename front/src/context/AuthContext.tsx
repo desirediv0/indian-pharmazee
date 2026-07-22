@@ -32,8 +32,15 @@ const normalizePermissions = (permissions: any): string[] => {
   if (!permissions) return [];
   if (!Array.isArray(permissions)) return [];
 
-  // Filter out any non-string values
-  return permissions.filter((perm) => typeof perm === "string");
+  return permissions
+    .map((perm) => {
+      if (typeof perm === "string") return perm;
+      if (perm && typeof perm === "object" && perm.resource && perm.action) {
+        return `${perm.resource}:${perm.action}`;
+      }
+      return "";
+    })
+    .filter(Boolean);
 };
 
 // Create a provider component

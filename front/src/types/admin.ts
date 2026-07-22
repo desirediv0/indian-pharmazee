@@ -4,12 +4,27 @@ export interface Admin {
   firstName: string;
   lastName: string;
   role: "SUPER_ADMIN" | "ADMIN" | "MANAGER" | "SUPPORT_AGENT" | string;
+  roleId?: string | null;
   permissions: string[];
   lastLogin?: string;
   isActive?: boolean;
   language?: string; // e.g., "en", "hi", "es"
   createdAt?: string;
   updatedAt?: string;
+  assignedRole?: AdminRole_ | null;
+}
+
+export interface AdminRole_ {
+  id: string;
+  name: string;
+  description: string | null;
+  isSystem: boolean;
+  permissions: any;
+  createdAt: string;
+  updatedAt: string;
+  _count?: {
+    admins: number;
+  };
 }
 
 export interface Permission {

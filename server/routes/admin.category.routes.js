@@ -603,4 +603,111 @@ router.delete("/categories/:id", isAdmin, async (req, res) => {
   }
 });
 
+// Bulk update product positions within a category
+router.put("/:categoryId/products/reorder", isAdmin, async (req, res) => {
+  try {
+    const { categoryId } = req.params;
+    const { productOrders } = req.body;
+
+    if (!Array.isArray(productOrders)) {
+      return res.status(400).json({
+        success: false,
+        message: "productOrders must be an array",
+      });
+    }
+
+    // Verify category exists
+    const category = await prisma.category.findUnique({
+      where: { id: categoryId },
+    });
+
+    if (!category) {
+      return res.status(404).json({
+        success: false,
+        message: "Category not found",
+      });
+    }
+
+    // Update positions in bulk
+    const updatePromises = productOrders.map(({ productId, position }) =>
+      prisma.productCategory.update({
+        where: {
+          productId_categoryId: { productId, categoryId },
+        },
+        data: { position: position || 0 },
+      })
+    );
+
+    await Promise.all(updatePromises);
+
+    return res.status(200).json({
+      success: true,
+      message: "Product positions updated successfully",
+    });
+  } catch (error) {
+    console.error("Error reordering products:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to reorder products",
+      error: error.message,
+    });
+  }
+});
+
+// Get products in a category with their positions
+router.get("/:categoryId/products", isAdmin, async (req, res) => {
+  try {
+    const { categoryId } = req.params;
+
+    const category = await prisma.category.findUnique({
+      where: { id: categoryId },
+    });
+
+    if (!category) {
+      return res.status(404).json({
+        success: false,
+        message: "Category not found",
+      });
+    }
+
+    const products = await prisma.productCategory.findMany({
+      where: { categoryId },
+      include: {
+        product: {
+          select: {
+            id: true,
+            name: true,
+            slug: true,
+            isActive: true,
+            images: {
+              select: { url: true },
+              take: 1,
+              orderBy: { isPrimary: "desc" },
+            },
+          },
+        },
+      },
+      orderBy: { position: "asc" },
+    });
+
+    return res.status(200).json({
+      success: true,
+      data: {
+        products: products.map((pc) => ({
+          ...pc.product,
+          position: pc.position,
+          productCategoryId: pc.id,
+        })),
+      },
+    });
+  } catch (error) {
+    console.error("Error fetching category products:", error);
+    return res.status(500).json({
+      success: false,
+      message: "Failed to fetch category products",
+      error: error.message,
+    });
+  }
+});
+
 export default router;

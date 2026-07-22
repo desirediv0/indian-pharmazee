@@ -34,6 +34,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Link } from "react-router-dom";
 import { useLanguage } from "@/context/LanguageContext";
+import { useAuth } from "@/context/AuthContext";
 import {
   PieChart,
   Pie,
@@ -98,6 +99,7 @@ interface UserStats {
 
 export default function DashboardPage() {
   const { t } = useLanguage();
+  const { admin } = useAuth();
   const [orderStats, setOrderStats] = useState<OrderStats | null>(null);
   const [inventoryAlerts, setInventoryAlerts] = useState<any>(null);
   const [returnStats, setReturnStats] = useState<ReturnStats | null>(null);
@@ -335,67 +337,81 @@ export default function DashboardPage() {
         </CardHeader>
         <CardContent className="px-6 pb-6">
           <div className="grid gap-4 md:grid-cols-4">
-            <Button
-              variant="outline"
-              className="h-auto p-4 border-[#E5E7EB] hover:bg-[#F3F7F6] text-left"
-              asChild
-            >
-              <Link to="/product-sections" className="flex items-center gap-3">
-                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-[#E8F5E9]">
-                  <Star className="h-5 w-5 text-[#2E7D32]" />
-                </div>
-                <div>
-                  <div className="font-semibold text-[#1F2937]">{t("dashboard.quick_actions.product_sections")}</div>
-                  <div className="text-sm text-[#9CA3AF]">{t("dashboard.quick_actions.product_sections_desc")}</div>
-                </div>
-              </Link>
-            </Button>
-            <Button
-              variant="outline"
-              className="h-auto p-4 border-[#E5E7EB] hover:bg-[#F3F7F6] text-left"
-              asChild
-            >
-              <Link to="/banners" className="flex items-center gap-3">
-                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-[#E8F5E9]">
-                  <ImageIcon className="h-5 w-5 text-[#2E7D32]" />
-                </div>
-                <div>
-                  <div className="font-semibold text-[#1F2937]">{t("dashboard.quick_actions.banners")}</div>
-                  <div className="text-sm text-[#9CA3AF]">{t("dashboard.quick_actions.banners_desc")}</div>
-                </div>
-              </Link>
-            </Button>
-            <Button
-              variant="outline"
-              className="h-auto p-4 border-[#E5E7EB] hover:bg-[#F3F7F6] text-left"
-              asChild
-            >
-              <Link to="/flash-sales" className="flex items-center gap-3">
-                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-[#E8F5E9]">
-                  <Zap className="h-5 w-5 text-[#2E7D32]" />
-                </div>
-                <div>
-                  <div className="font-semibold text-[#1F2937]">{t("dashboard.quick_actions.flash_sales")}</div>
-                  <div className="text-sm text-[#9CA3AF]">{t("dashboard.quick_actions.flash_sales_desc")}</div>
-                </div>
-              </Link>
-            </Button>
-            <Button
-              variant="outline"
-              className="h-auto p-4 border-[#E5E7EB] hover:bg-[#F3F7F6] text-left"
-              asChild
-            >
-              <Link to="/dashboard/analytics" className="flex items-center gap-3">
-                <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-[#E8F5E9]">
-                  <BarChart3 className="h-5 w-5 text-[#2E7D32]" />
-                </div>
-                <div>
-                  <div className="font-semibold text-[#1F2937]">{t("dashboard.quick_actions.analytics")}</div>
-                  <div className="text-sm text-[#9CA3AF]">{t("dashboard.quick_actions.analytics_desc")}</div>
-                </div>
-              </Link>
-            </Button>
+            {admin?.role === "SUPER_ADMIN" ||
+            admin?.permissions?.some((p) => p.startsWith("products:")) ? (
+              <Button
+                variant="outline"
+                className="h-auto p-4 border-[#E5E7EB] hover:bg-[#F3F7F6] text-left"
+                asChild
+              >
+                <Link to="/product-sections" className="flex items-center gap-3">
+                  <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-[#E8F5E9]">
+                    <Star className="h-5 w-5 text-[#2E7D32]" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-[#1F2937]">{t("dashboard.quick_actions.product_sections")}</div>
+                    <div className="text-sm text-[#9CA3AF]">{t("dashboard.quick_actions.product_sections_desc")}</div>
+                  </div>
+                </Link>
+              </Button>
+            ) : null}
 
+            {admin?.role === "SUPER_ADMIN" ||
+            admin?.permissions?.some((p) => p.startsWith("banners:")) ? (
+              <Button
+                variant="outline"
+                className="h-auto p-4 border-[#E5E7EB] hover:bg-[#F3F7F6] text-left"
+                asChild
+              >
+                <Link to="/banners" className="flex items-center gap-3">
+                  <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-[#E8F5E9]">
+                    <ImageIcon className="h-5 w-5 text-[#2E7D32]" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-[#1F2937]">{t("dashboard.quick_actions.banners")}</div>
+                    <div className="text-sm text-[#9CA3AF]">{t("dashboard.quick_actions.banners_desc")}</div>
+                  </div>
+                </Link>
+              </Button>
+            ) : null}
+
+            {admin?.role === "SUPER_ADMIN" ||
+            admin?.permissions?.some((p) => p.startsWith("products:")) ? (
+              <Button
+                variant="outline"
+                className="h-auto p-4 border-[#E5E7EB] hover:bg-[#F3F7F6] text-left"
+                asChild
+              >
+                <Link to="/flash-sales" className="flex items-center gap-3">
+                  <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-[#E8F5E9]">
+                    <Zap className="h-5 w-5 text-[#2E7D32]" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-[#1F2937]">{t("dashboard.quick_actions.flash_sales")}</div>
+                    <div className="text-sm text-[#9CA3AF]">{t("dashboard.quick_actions.flash_sales_desc")}</div>
+                  </div>
+                </Link>
+              </Button>
+            ) : null}
+
+            {admin?.role === "SUPER_ADMIN" ||
+            admin?.permissions?.some((p) => p.startsWith("analytics:")) ? (
+              <Button
+                variant="outline"
+                className="h-auto p-4 border-[#E5E7EB] hover:bg-[#F3F7F6] text-left"
+                asChild
+              >
+                <Link to="/dashboard/analytics" className="flex items-center gap-3">
+                  <div className="flex items-center justify-center w-10 h-10 rounded-lg bg-[#E8F5E9]">
+                    <BarChart3 className="h-5 w-5 text-[#2E7D32]" />
+                  </div>
+                  <div>
+                    <div className="font-semibold text-[#1F2937]">{t("dashboard.quick_actions.analytics")}</div>
+                    <div className="text-sm text-[#9CA3AF]">{t("dashboard.quick_actions.analytics_desc")}</div>
+                  </div>
+                </Link>
+              </Button>
+            ) : null}
           </div>
         </CardContent>
       </Card>

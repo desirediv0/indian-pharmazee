@@ -38,57 +38,11 @@ const gracefulShutdown = async () => {
 process.on("SIGTERM", gracefulShutdown);
 process.on("SIGINT", gracefulShutdown);
 
-// Connect to the database and start the server
-const seedExistingPositions = async () => {
-  try {
-    const categories = await prisma.category.findMany({
-      orderBy: [
-        { position: "asc" },
-        { name: "asc" }
-      ]
-    });
-    
-    const needsCategorySeeding = categories.some(cat => cat.position <= 0);
-    if (needsCategorySeeding) {
-      console.log("Seeding positions for categories...");
-      for (let i = 0; i < categories.length; i++) {
-        await prisma.category.update({
-          where: { id: categories[i].id },
-          data: { position: i + 1 }
-        });
-      }
-      console.log(`Successfully seeded ${categories.length} categories.`);
-    }
-
-    for (const cat of categories) {
-      const subCats = await prisma.subCategory.findMany({
-        where: { categoryId: cat.id },
-        orderBy: [
-          { position: "asc" },
-          { name: "asc" }
-        ]
-      });
-      
-      const needsSubCategorySeeding = subCats.some(sc => sc.position <= 0);
-      if (needsSubCategorySeeding) {
-        console.log(`Seeding subcategory positions for category ${cat.name}...`);
-        for (let j = 0; j < subCats.length; j++) {
-          await prisma.subCategory.update({
-            where: { id: subCats[j].id },
-            data: { position: j + 1 }
-          });
-        }
-      }
-    }
-  } catch (error) {
-    console.error("Error seeding positions:", error);
-  }
-};
 
 prisma
   .$connect()
   .then(async () => {
-    await seedExistingPositions();
+
     app.listen(PORT, () => {
       console.log(`Server is running on port ${PORT} 🚀`);
     });

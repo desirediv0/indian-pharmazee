@@ -60,10 +60,20 @@ export default function AdminPermissionsPage() {
               adminPermissions[resource] = [];
             });
 
-            // Map existing permissions
-            admin.permissions?.forEach((perm: string) => {
-              const [resource, action] = perm.split(":");
-              if (adminPermissions[resource]) {
+            // Map existing permissions safely supporting both string and object shapes
+            admin.permissions?.forEach((perm: any) => {
+              let resource = "";
+              let action = "";
+              if (typeof perm === "string") {
+                const parts = perm.split(":");
+                resource = parts[0];
+                action = parts[1];
+              } else if (perm && typeof perm === "object" && perm.resource && perm.action) {
+                resource = perm.resource;
+                action = perm.action;
+              }
+
+              if (resource && action && adminPermissions[resource]) {
                 adminPermissions[resource].push(action);
               }
             });

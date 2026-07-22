@@ -122,6 +122,7 @@ export function ProductForm({
     quantity: 0,
     featured: false,
     ourProduct: false,
+    isColdChain: false,
     productType: [] as string[],
     isActive: true,
     // SEO fields
@@ -927,6 +928,7 @@ export function ProductForm({
       formData.append("description", finalDescription);
       formData.append("featured", String(product.featured));
       formData.append("ourProduct", String(product.ourProduct));
+      formData.append("isColdChain", String(product.isColdChain));
       formData.append("productType", JSON.stringify(product.productType));
       formData.append("isActive", String(product.isActive));
       formData.append("hasVariants", String(hasVariants));
@@ -1813,6 +1815,23 @@ export function ProductForm({
                     />
                     <Label htmlFor="ourProduct">
                       {t("products.form.labels.our_product")}
+                    </Label>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="isColdChain"
+                      name="isColdChain"
+                      checked={product.isColdChain}
+                      onCheckedChange={(checked) =>
+                        setProduct((prev) => ({
+                          ...prev,
+                          isColdChain: !!checked,
+                        }))
+                      }
+                    />
+                    <Label htmlFor="isColdChain">
+                      Cold Chain Product
                     </Label>
                   </div>
                 </div>

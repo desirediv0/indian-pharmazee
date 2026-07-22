@@ -37,7 +37,7 @@ export default function CategoryPage() {
     const [products, setProducts] = useState([]);
     const [loading, setLoading] = useState(true);
     const [error, setError] = useState(null);
-    const [sortOption, setSortOption] = useState("newest");
+    const [sortOption, setSortOption] = useState("custom");
     const [viewMode, setViewMode] = useState("grid");
 
     const [pagination, setPagination] = useState({
@@ -51,10 +51,11 @@ export default function CategoryPage() {
         const fetchCategoryAndProducts = async () => {
             setLoading(true);
             try {
-                let sort = "createdAt";
-                let order = "desc";
+                let sort = "position";
+                let order = "asc";
 
                 switch (sortOption) {
+                    case "custom": sort = "position"; order = "asc"; break;
                     case "newest": sort = "createdAt"; order = "desc"; break;
                     case "oldest": sort = "createdAt"; order = "asc"; break;
                     case "name-asc": sort = "name"; order = "asc"; break;
@@ -226,6 +227,7 @@ export default function CategoryPage() {
                                 onChange={handleSortChange}
                                 className="w-full appearance-none bg-white border border-gray-200 text-gray-700 rounded-lg px-3 py-2 pr-8 focus:outline-none focus:ring-2 focus:ring-primary/20 focus:border-primary text-sm font-medium cursor-pointer shadow-sm"
                             >
+                                <option value="custom">Custom Order</option>
                                 <option value="newest">Newest First</option>
                                 <option value="oldest">Oldest First</option>
                                 <option value="name-asc">A to Z</option>

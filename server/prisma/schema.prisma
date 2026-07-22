@@ -132,6 +132,7 @@ model Admin {
   firstName   String
   lastName    String
   role        AdminRole     @default(ADMIN)
+  roleId      String?
   language    String        @default("en")
   isActive    Boolean       @default(true)
   lastLogin   DateTime?
@@ -140,6 +141,18 @@ model Admin {
   BlogPost    BlogPost[]
   PageContent PageContent[]
   permissions Permission[]
+  assignedRole AdminRole_?  @relation(fields: [roleId], references: [id], onDelete: SetNull)
+}
+
+model AdminRole_ {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  description String?
+  isSystem    Boolean  @default(false)
+  permissions Json     @default("[]")
+  createdAt   DateTime @default(now())
+  updatedAt   DateTime @updatedAt
+  admins      Admin[]
 }
 
 model Permission {
@@ -249,6 +262,7 @@ model Product {
   featured          Boolean              @default(false)
   productType       Json? // e.g. { "type": "mobile" }
   isActive          Boolean              @default(true)
+  isColdChain       Boolean              @default(false)
   createdAt         DateTime             @default(now())
   updatedAt         DateTime             @updatedAt
   hasVariants       Boolean              @default(false)
@@ -622,24 +636,28 @@ model ProductCategory {
   productId  String
   categoryId String
   isPrimary  Boolean  @default(false)
+  position   Int      @default(0)
   createdAt  DateTime @default(now())
   updatedAt  DateTime @updatedAt
   product    Product  @relation(fields: [productId], references: [id], onDelete: Cascade)
   category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
 
   @@unique([productId, categoryId])
+  @@index([categoryId, position])
 }
 
 model ProductSubCategory {
   id            String      @id @default(uuid())
   productId     String
   subCategoryId String
+  position      Int         @default(0)
   createdAt     DateTime    @default(now())
   updatedAt     DateTime    @updatedAt
   product       Product     @relation(fields: [productId], references: [id], onDelete: Cascade)
   subCategory   SubCategory @relation(fields: [subCategoryId], references: [id], onDelete: Cascade)
 
   @@unique([productId, subCategoryId])
+  @@index([subCategoryId, position])
 }
 
 model ProductSection {

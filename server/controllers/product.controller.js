@@ -440,6 +440,11 @@ export const getProductBySlug = asyncHandler(async (req, res) => {
   const categoryId =
     product.categories.length > 0 ? product.categories[0].category.id : null;
 
+  // Get the subcategory IDs from the product's subCategories
+  const subCategoryIds = product.subCategories
+    ? product.subCategories.map((psc) => psc.subCategory.id)
+    : [];
+
   // Format the response
   const formattedProduct = {
     ...product,
@@ -669,9 +674,62 @@ export const getProductBySlug = asyncHandler(async (req, res) => {
     formattedProduct.flashSale = null;
   }
 
-  // Add related products
-  const relatedProducts = categoryId
-    ? await prisma.product.findMany({
+  // Add related products (by subcategory first, fallback to category)
+  let relatedProducts = [];
+
+  if (subCategoryIds.length > 0) {
+    // Fetch similar products by subcategory
+    relatedProducts = await prisma.product.findMany({
+      where: {
+        subCategories: {
+          some: {
+            subCategoryId: {
+              in: subCategoryIds,
+            },
+          },
+        },
+        isActive: true,
+        id: { not: product.id },
+      },
+      include: {
+        images: {
+          orderBy: { isPrimary: "desc" },
+          take: 1,
+        },
+        variants: {
+          where: { isActive: true },
+          orderBy: { price: "asc" },
+          take: 1,
+          include: {
+            attributes: {
+              include: {
+                attributeValue: {
+                  include: {
+                    attribute: true,
+                  },
+                },
+              },
+            },
+            images: true,
+          },
+        },
+        _count: {
+          select: {
+            reviews: {
+              where: {
+                status: "APPROVED",
+              },
+            },
+          },
+        },
+      },
+      take: 4,
+    });
+  }
+
+  // Fallback to category if no subcategory results or no subcategories
+  if (relatedProducts.length === 0 && categoryId) {
+    relatedProducts = await prisma.product.findMany({
       where: {
         categories: {
           some: {
@@ -716,8 +774,8 @@ export const getProductBySlug = asyncHandler(async (req, res) => {
         },
       },
       take: 4,
-    })
-    : [];
+    });
+  }
 
   const formattedRelated = relatedProducts.map((p) => ({
     id: p.id,
