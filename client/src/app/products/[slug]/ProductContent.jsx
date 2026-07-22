@@ -848,12 +848,26 @@ export default function ProductContent({ slug }) {
               href={`https://wa.me/919560247619?text=Hello%2C%20I%20want%20to%20enquire%20about%20${encodeURIComponent(product.name)}`}
               target="_blank"
               rel="noopener noreferrer"
-              className="w-full h-12 flex items-center justify-center gap-2.5 rounded-xl font-semibold text-sm mb-5 transition-all hover:opacity-90"
+              className="w-full h-12 flex items-center justify-center gap-2.5 rounded-xl font-semibold text-sm mb-3 transition-all hover:opacity-90"
               style={{ background: "#25D366", color: "white" }}
             >
               <img src="/whatsapp.png" alt="WhatsApp" className="h-5 w-5 object-contain" />
               Enquire on WhatsApp
             </a>
+
+            {/* Cold Chain Badge */}
+            {product.isColdChain && (
+              <div className="w-full h-10 flex items-center justify-center gap-2 rounded-xl font-semibold text-sm mb-5 border-2" style={{ background: "#E3F2FD", borderColor: "#2196F3", color: "#1565C0" }}>
+                <svg xmlns="http://www.w3.org/2000/svg" className="h-5 w-5" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round">
+                  <line x1="2" y1="12" x2="22" y2="12" />
+                  <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z" />
+                  <path d="M2 12h20" />
+                  <path d="M4.93 4.93l14.14 14.14" />
+                  <path d="M19.07 4.93L4.93 19.07" />
+                </svg>
+                Cold Chain Product
+              </div>
+            )}
 
             {/* Trust badges */}
             <div className="grid grid-cols-2 gap-2.5 mb-6">
