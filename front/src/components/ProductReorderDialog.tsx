@@ -58,7 +58,7 @@ export function ProductReorderDialog({
       const endpoint =
         entityType === "category"
           ? `/api/admin/categories/${entityId}/products`
-          : `/api/admin/subcategories/${entityId}/products`;
+          : `/api/admin/sub-categories/${entityId}/products`;
 
       const response = await fetch(
         `${import.meta.env.VITE_API_URL}${endpoint}`,
@@ -107,7 +107,7 @@ export function ProductReorderDialog({
       const endpoint =
         entityType === "category"
           ? `/api/admin/categories/${entityId}/products/reorder`
-          : `/api/admin/subcategories/${entityId}/products/reorder`;
+          : `/api/admin/sub-categories/${entityId}/products/reorder`;
 
       const productOrders = products.map((p) => ({
         productId: p.id,

@@ -49,8 +49,12 @@ export default function RolePermissionsPage() {
         }
       );
       const permData = await permResponse.json();
-      if (permData.success) {
+      if (permData.success && permData.data?.resources) {
         setResources(permData.data.resources);
+      } else {
+        toast.error("Failed to fetch available permissions");
+        navigate("/roles");
+        return;
       }
 
       // Fetch role data

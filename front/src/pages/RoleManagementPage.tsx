@@ -240,7 +240,10 @@ export default function RoleManagementPage() {
             </p>
           </div>
         </div>
-        <Button onClick={() => setShowCreateDialog(true)}>
+        <Button onClick={() => {
+          setFormData({ name: "", description: "" });
+          setShowCreateDialog(true);
+        }}>
           <Plus className="mr-2 h-4 w-4" />
           Create Role
         </Button>
@@ -304,14 +307,16 @@ export default function RoleManagementPage() {
                   </div>
 
                   <div className="flex flex-wrap gap-2 pt-2">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => navigate(`/roles/${role.id}/permissions`)}
-                    >
-                      <Eye className="mr-1 h-3 w-3" />
-                      Permissions
-                    </Button>
+                    {!role.isSystem && (
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => navigate(`/roles/${role.id}/permissions`)}
+                      >
+                        <Eye className="mr-1 h-3 w-3" />
+                        Permissions
+                      </Button>
+                    )}
 
                     {!role.isSystem && (
                       <>

@@ -59,7 +59,7 @@ router.delete(
 );
 
 // Bulk update product positions within a subcategory
-router.put("/:subCategoryId/products/reorder", isAdmin, async (req, res) => {
+router.put("/sub-categories/:subCategoryId/products/reorder", isAdmin, async (req, res) => {
   try {
     const { subCategoryId } = req.params;
     const { productOrders } = req.body;

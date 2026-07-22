@@ -193,6 +193,11 @@ export const updateRolePermissions = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Role not found");
   }
 
+  // Prevent editing system roles
+  if (existingRole.isSystem) {
+    throw new ApiError(400, "Cannot edit permissions of system roles");
+  }
+
   // Validate permissions format
   if (!Array.isArray(permissions)) {
     throw new ApiError(400, "Permissions must be an array");
