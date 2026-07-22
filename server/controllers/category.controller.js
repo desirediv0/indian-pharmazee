@@ -130,57 +130,108 @@ export const getProductsByCategory = asyncHandler(async (req, res) => {
   });
 
   // Get paginated products
-  const products = await prisma.product.findMany({
-    where: {
-      categories: {
-        some: {
-          category: {
-            id: {
-              in: categoryIds,
+  let products;
+  if (isPositionSort) {
+    const productCategories = await prisma.productCategory.findMany({
+      where: {
+        categoryId: { in: categoryIds },
+        product: { isActive: true },
+      },
+      orderBy: [
+        { product: { ourProduct: "desc" } },
+        { position: order },
+      ],
+      include: {
+        product: {
+          include: {
+            images: {
+              orderBy: { isPrimary: "desc" },
+              take: 1,
             },
-          },
-        },
-      },
-      isActive: true,
-    },
-    include: {
-      images: {
-        orderBy: { isPrimary: "desc" },
-        take: 1,
-      },
-      categories: {
-        include: {
-          category: true,
-        },
-        take: 1,
-      },
-      variants: {
-        where: { isActive: true },
-        include: {
-          attributes: {
-            include: {
-              attributeValue: {
-                include: {
-                  attribute: true,
+            categories: {
+              include: {
+                category: true,
+              },
+              take: 1,
+            },
+            variants: {
+              where: { isActive: true },
+              include: {
+                attributes: {
+                  include: {
+                    attributeValue: {
+                      include: {
+                        attribute: true,
+                      },
+                    },
+                  },
                 },
+                images: true,
+              },
+            },
+            _count: {
+              select: {
+                reviews: true,
               },
             },
           },
-          images: true,
         },
       },
-      _count: {
-        select: {
-          reviews: true,
+      skip: (parseInt(page) - 1) * parseInt(limit),
+      take: parseInt(limit),
+    });
+    products = productCategories.map((pc) => pc.product);
+  } else {
+    products = await prisma.product.findMany({
+      where: {
+        categories: {
+          some: {
+            category: {
+              id: {
+                in: categoryIds,
+              },
+            },
+          },
+        },
+        isActive: true,
+      },
+      include: {
+        images: {
+          orderBy: { isPrimary: "desc" },
+          take: 1,
+        },
+        categories: {
+          include: {
+            category: true,
+          },
+          take: 1,
+        },
+        variants: {
+          where: { isActive: true },
+          include: {
+            attributes: {
+              include: {
+                attributeValue: {
+                  include: {
+                    attribute: true,
+                  },
+                },
+              },
+            },
+            images: true,
+          },
+        },
+        _count: {
+          select: {
+            reviews: true,
+          },
         },
       },
-    },
-    orderBy: isPositionSort
-      ? [{ ourProduct: "desc" }, { categories: { position: order } }]
-      : [{ ourProduct: "desc" }, { [effectiveSort]: order }],
-    skip: (parseInt(page) - 1) * parseInt(limit),
-    take: parseInt(limit),
-  });
+      orderBy: [{ ourProduct: "desc" }, { [effectiveSort]: order }],
+      skip: (parseInt(page) - 1) * parseInt(limit),
+      take: parseInt(limit),
+    });
+  }
 
   // Batch fetch active flash sales for products
   const now = new Date();
@@ -324,27 +375,59 @@ export const getProductsBySubCategory = asyncHandler(async (req, res) => {
 
   const totalProducts = await prisma.product.count({ where });
 
-  const products = await prisma.product.findMany({
-    where,
-    include: {
-      images: { orderBy: { isPrimary: "desc" }, take: 1 },
-      categories: { include: { category: true }, take: 1 },
-      subCategories: { take: 1 },
-      variants: {
-        where: { isActive: true },
-        include: {
-          attributes: { include: { attributeValue: { include: { attribute: true } } } },
-          images: true,
+  let products;
+  if (isPositionSort) {
+    const productSubCategories = await prisma.productSubCategory.findMany({
+      where: {
+        subCategoryId: subCategory.id,
+        product: { isActive: true },
+      },
+      orderBy: [
+        { product: { ourProduct: "desc" } },
+        { position: order },
+      ],
+      include: {
+        product: {
+          include: {
+            images: { orderBy: { isPrimary: "desc" }, take: 1 },
+            categories: { include: { category: true }, take: 1 },
+            subCategories: { take: 1 },
+            variants: {
+              where: { isActive: true },
+              include: {
+                attributes: { include: { attributeValue: { include: { attribute: true } } } },
+                images: true,
+              },
+            },
+            _count: { select: { reviews: true } },
+          },
         },
       },
-      _count: { select: { reviews: true } },
-    },
-    orderBy: isPositionSort
-      ? [{ ourProduct: "desc" }, { subCategories: { position: order } }]
-      : [{ ourProduct: "desc" }, { [effectiveSort]: order }],
-    skip: (parseInt(page) - 1) * parseInt(limit),
-    take: parseInt(limit),
-  });
+      skip: (parseInt(page) - 1) * parseInt(limit),
+      take: parseInt(limit),
+    });
+    products = productSubCategories.map((psc) => psc.product);
+  } else {
+    products = await prisma.product.findMany({
+      where,
+      include: {
+        images: { orderBy: { isPrimary: "desc" }, take: 1 },
+        categories: { include: { category: true }, take: 1 },
+        subCategories: { take: 1 },
+        variants: {
+          where: { isActive: true },
+          include: {
+            attributes: { include: { attributeValue: { include: { attribute: true } } } },
+            images: true,
+          },
+        },
+        _count: { select: { reviews: true } },
+      },
+      orderBy: [{ ourProduct: "desc" }, { [effectiveSort]: order }],
+      skip: (parseInt(page) - 1) * parseInt(limit),
+      take: parseInt(limit),
+    });
+  }
 
   const now = new Date();
   const productIds = products.map((p) => p.id);
