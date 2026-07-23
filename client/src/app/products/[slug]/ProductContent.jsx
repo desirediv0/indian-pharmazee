@@ -617,9 +617,9 @@ export default function ProductContent({ slug }) {
               <div>
                 <div className="flex items-center justify-between mb-3">
                   <span className="text-xs font-bold text-red-500 uppercase tracking-wider">Similar Products</span>
-                  {(product.category || product.categories?.[0]) && (
+                  {product.subCategories?.length > 0 && (
                     <Link 
-                      href={`/category/${product.category?.slug || product.categories[0].slug || product.categories[0].category?.slug}`} 
+                      href={`/subcategory/${product.subCategories[0].slug}`} 
                       className="text-xs text-primary hover:underline font-semibold"
                     >
                       See All
@@ -1003,9 +1003,15 @@ export default function ProductContent({ slug }) {
           <div>
             <div className="flex items-center justify-between mb-6">
               <h2 className="text-xl font-bold" style={{ color: "#0A2540" }}>Related Medicines</h2>
-              <Link href="/products" className="text-sm text-primary hover:underline flex items-center gap-1">
-                View all <ChevronRight className="h-4 w-4" />
-              </Link>
+              {product.subCategories?.length > 0 ? (
+                <Link href={`/subcategory/${product.subCategories[0].slug}`} className="text-sm text-primary hover:underline flex items-center gap-1">
+                  View all <ChevronRight className="h-4 w-4" />
+                </Link>
+              ) : (
+                <Link href="/products" className="text-sm text-primary hover:underline flex items-center gap-1">
+                  View all <ChevronRight className="h-4 w-4" />
+                </Link>
+              )}
             </div>
             <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-3">
               {relatedProducts.map((p) => <ProductCard key={p.id} product={p} />)}

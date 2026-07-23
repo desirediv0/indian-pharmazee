@@ -674,7 +674,7 @@ export const getProductBySlug = asyncHandler(async (req, res) => {
     formattedProduct.flashSale = null;
   }
 
-  // Add related products (by subcategory first, fallback to category)
+  // Add related products (by subcategory only)
   let relatedProducts = [];
 
   if (subCategoryIds.length > 0) {
@@ -685,56 +685,6 @@ export const getProductBySlug = asyncHandler(async (req, res) => {
           some: {
             subCategoryId: {
               in: subCategoryIds,
-            },
-          },
-        },
-        isActive: true,
-        id: { not: product.id },
-      },
-      include: {
-        images: {
-          orderBy: { isPrimary: "desc" },
-          take: 1,
-        },
-        variants: {
-          where: { isActive: true },
-          orderBy: { price: "asc" },
-          take: 1,
-          include: {
-            attributes: {
-              include: {
-                attributeValue: {
-                  include: {
-                    attribute: true,
-                  },
-                },
-              },
-            },
-            images: true,
-          },
-        },
-        _count: {
-          select: {
-            reviews: {
-              where: {
-                status: "APPROVED",
-              },
-            },
-          },
-        },
-      },
-      take: 4,
-    });
-  }
-
-  // Fallback to category if no subcategory results or no subcategories
-  if (relatedProducts.length === 0 && categoryId) {
-    relatedProducts = await prisma.product.findMany({
-      where: {
-        categories: {
-          some: {
-            category: {
-              id: categoryId,
             },
           },
         },
