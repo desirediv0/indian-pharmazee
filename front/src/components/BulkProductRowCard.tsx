@@ -129,7 +129,7 @@ function VariantRowEditor({
         <CardContent className="pt-0 px-4 pb-4 space-y-3">
           <div className="grid grid-cols-2 md:grid-cols-4 gap-3">
             <div>
-              <RequiredLabel>Price</RequiredLabel>
+              <RequiredLabel>MRP</RequiredLabel>
               <Input
                 type="number"
                 min="0"
@@ -575,7 +575,7 @@ export default function BulkProductRowCard({
             <div className="space-y-4">
               <div className="grid grid-cols-1 sm:grid-cols-3 gap-3">
                 <div>
-                  <RequiredLabel>{t("bulk_products.price")}</RequiredLabel>
+                  <RequiredLabel>MRP</RequiredLabel>
                   <Input
                     type="number"
                     min="0"
