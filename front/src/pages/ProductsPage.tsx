@@ -123,6 +123,10 @@ export function ProductForm({
     featured: false,
     ourProduct: false,
     isColdChain: false,
+    isGenuineMedicine: false,
+    isTempControlled: false,
+    isVerifiedSupplier: false,
+    isPanIndiaDelivery: false,
     productType: [] as string[],
     isActive: true,
     // SEO fields
@@ -565,6 +569,10 @@ export function ProductForm({
               featured: productData.featured || false,
               ourProduct: productData.ourProduct || false,
               isColdChain: productData.isColdChain || false,
+              isGenuineMedicine: productData.isGenuineMedicine || false,
+              isTempControlled: productData.isTempControlled || false,
+              isVerifiedSupplier: productData.isVerifiedSupplier || false,
+              isPanIndiaDelivery: productData.isPanIndiaDelivery || false,
               productType: Array.isArray(productData.productType)
                 ? productData.productType
                 : typeof productData.productType === "string"
@@ -930,6 +938,10 @@ export function ProductForm({
       formData.append("featured", String(product.featured));
       formData.append("ourProduct", String(product.ourProduct));
       formData.append("isColdChain", String(product.isColdChain));
+      formData.append("isGenuineMedicine", String(product.isGenuineMedicine));
+      formData.append("isTempControlled", String(product.isTempControlled));
+      formData.append("isVerifiedSupplier", String(product.isVerifiedSupplier));
+      formData.append("isPanIndiaDelivery", String(product.isPanIndiaDelivery));
       formData.append("productType", JSON.stringify(product.productType));
       formData.append("isActive", String(product.isActive));
       formData.append("hasVariants", String(hasVariants));
@@ -1833,6 +1845,74 @@ export function ProductForm({
                     />
                     <Label htmlFor="isColdChain">
                       Cold Chain Product
+                    </Label>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="isGenuineMedicine"
+                      name="isGenuineMedicine"
+                      checked={product.isGenuineMedicine}
+                      onCheckedChange={(checked) =>
+                        setProduct((prev) => ({
+                          ...prev,
+                          isGenuineMedicine: !!checked,
+                        }))
+                      }
+                    />
+                    <Label htmlFor="isGenuineMedicine">
+                      100% Genuine Medicine
+                    </Label>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="isTempControlled"
+                      name="isTempControlled"
+                      checked={product.isTempControlled}
+                      onCheckedChange={(checked) =>
+                        setProduct((prev) => ({
+                          ...prev,
+                          isTempControlled: !!checked,
+                        }))
+                      }
+                    />
+                    <Label htmlFor="isTempControlled">
+                      Temp-Controlled 2°C–8°C
+                    </Label>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="isVerifiedSupplier"
+                      name="isVerifiedSupplier"
+                      checked={product.isVerifiedSupplier}
+                      onCheckedChange={(checked) =>
+                        setProduct((prev) => ({
+                          ...prev,
+                          isVerifiedSupplier: !!checked,
+                        }))
+                      }
+                    />
+                    <Label htmlFor="isVerifiedSupplier">
+                      Verified Supplier
+                    </Label>
+                  </div>
+
+                  <div className="flex items-center gap-2">
+                    <Checkbox
+                      id="isPanIndiaDelivery"
+                      name="isPanIndiaDelivery"
+                      checked={product.isPanIndiaDelivery}
+                      onCheckedChange={(checked) =>
+                        setProduct((prev) => ({
+                          ...prev,
+                          isPanIndiaDelivery: !!checked,
+                        }))
+                      }
+                    />
+                    <Label htmlFor="isPanIndiaDelivery">
+                      Pan-India Delivery
                     </Label>
                   </div>
                 </div>

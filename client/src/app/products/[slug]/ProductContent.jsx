@@ -26,11 +26,11 @@ const getImageUrl = (img) => {
 };
 
 
-const TRUST = [
-  { icon: BadgeCheck,   label: "100% Genuine Medicine" },
-  { icon: Thermometer,  label: "Temp-Controlled 2°C–8°C" },
-  { icon: ShieldCheck,  label: "Verified Supplier" },
-  { icon: Truck,        label: "Pan-India Delivery" },
+const TRUST_CONFIG = [
+  { key: "isGenuineMedicine", icon: BadgeCheck,   label: "100% Genuine Medicine" },
+  { key: "isTempControlled",  icon: Thermometer,  label: "Temp-Controlled 2°C–8°C" },
+  { key: "isVerifiedSupplier", icon: ShieldCheck,  label: "Verified Supplier" },
+  { key: "isPanIndiaDelivery", icon: Truck,        label: "Pan-India Delivery" },
 ];
 
 /* ─────────────────────────────────────────────
@@ -871,12 +871,14 @@ export default function ProductContent({ slug }) {
 
             {/* Trust badges */}
             <div className="grid grid-cols-2 gap-2.5 mb-6">
-              {TRUST.map(({ icon: Icon, label }) => (
-                <div key={label} className="flex items-center gap-2.5 p-3 rounded-xl border" style={{ background: "rgba(0,94,184,0.04)", borderColor: "#DCE7F2" }}>
-                  <Icon className="h-4 w-4 flex-shrink-0" style={{ color: "#005EB8" }} />
-                  <span className="text-xs text-gray-600 font-semibold">{label}</span>
-                </div>
-              ))}
+              {TRUST_CONFIG
+                .filter(({ key }) => product[key])
+                .map(({ icon: Icon, label }) => (
+                  <div key={label} className="flex items-center gap-2.5 p-3 rounded-xl border" style={{ background: "rgba(0,94,184,0.04)", borderColor: "#DCE7F2" }}>
+                    <Icon className="h-4 w-4 flex-shrink-0" style={{ color: "#005EB8" }} />
+                    <span className="text-xs text-gray-600 font-semibold">{label}</span>
+                  </div>
+                ))}
             </div>
 
             {/* SKU + Category + SubCategories */}

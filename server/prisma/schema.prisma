@@ -263,6 +263,10 @@ model Product {
   productType       Json? // e.g. { "type": "mobile" }
   isActive          Boolean              @default(true)
   isColdChain       Boolean              @default(false)
+  isGenuineMedicine Boolean              @default(false)
+  isTempControlled  Boolean              @default(false)
+  isVerifiedSupplier Boolean             @default(false)
+  isPanIndiaDelivery Boolean             @default(false)
   createdAt         DateTime             @default(now())
   updatedAt         DateTime             @updatedAt
   hasVariants       Boolean              @default(false)

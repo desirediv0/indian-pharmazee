@@ -440,6 +440,10 @@ export const createProduct = asyncHandler(async (req, res, next) => {
     keywords,
     ourProduct,
     isColdChain,
+    isGenuineMedicine,
+    isTempControlled,
+    isVerifiedSupplier,
+    isPanIndiaDelivery,
   } = req.body;
 
   // Validation checks with better error handling
@@ -611,6 +615,10 @@ export const createProduct = asyncHandler(async (req, res, next) => {
             : [],
           ourProduct: ourProduct === "true" || ourProduct === true,
           isColdChain: isColdChain === "true" || isColdChain === true,
+          isGenuineMedicine: isGenuineMedicine === "true" || isGenuineMedicine === true,
+          isTempControlled: isTempControlled === "true" || isTempControlled === true,
+          isVerifiedSupplier: isVerifiedSupplier === "true" || isVerifiedSupplier === true,
+          isPanIndiaDelivery: isPanIndiaDelivery === "true" || isPanIndiaDelivery === true,
         },
       });
 
@@ -1165,6 +1173,10 @@ export const updateProduct = asyncHandler(async (req, res, next) => {
     keywords,
     ourProduct,
     isColdChain,
+    isGenuineMedicine,
+    isTempControlled,
+    isVerifiedSupplier,
+    isPanIndiaDelivery,
   } = req.body;
 
   // Check if product exists
@@ -1386,6 +1398,18 @@ export const updateProduct = asyncHandler(async (req, res, next) => {
           }),
           ...(isColdChain !== undefined && {
             isColdChain: isColdChain === "true" || isColdChain === true,
+          }),
+          ...(isGenuineMedicine !== undefined && {
+            isGenuineMedicine: isGenuineMedicine === "true" || isGenuineMedicine === true,
+          }),
+          ...(isTempControlled !== undefined && {
+            isTempControlled: isTempControlled === "true" || isTempControlled === true,
+          }),
+          ...(isVerifiedSupplier !== undefined && {
+            isVerifiedSupplier: isVerifiedSupplier === "true" || isVerifiedSupplier === true,
+          }),
+          ...(isPanIndiaDelivery !== undefined && {
+            isPanIndiaDelivery: isPanIndiaDelivery === "true" || isPanIndiaDelivery === true,
           }),
           ...(req.body.brandId !== undefined && {
             brandId:
