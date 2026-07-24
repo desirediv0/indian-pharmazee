@@ -701,17 +701,19 @@ export default function UserManagementPage() {
                             <Eye className="h-4 w-4 mr-2" />
                             {t("user_management.actions.view_details")}
                           </DropdownMenuItem>
-                          <DropdownMenuItem
-                            className="text-[#1F2937] hover:bg-[#F3F7F6]"
-                            onClick={() => {
-                              setSelectedUser(user);
-                              setEditDialogOpen(true);
-                            }}
-                          >
-                            <Edit className="h-4 w-4 mr-2" />
-                            {t("user_management.actions.edit")}
-                          </DropdownMenuItem>
-                          {!user.emailVerified && (
+                          {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("users:update")) && (
+                            <DropdownMenuItem
+                              className="text-[#1F2937] hover:bg-[#F3F7F6]"
+                              onClick={() => {
+                                setSelectedUser(user);
+                                setEditDialogOpen(true);
+                              }}
+                            >
+                              <Edit className="h-4 w-4 mr-2" />
+                              {t("user_management.actions.edit")}
+                            </DropdownMenuItem>
+                          )}
+                          {!user.emailVerified && (admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("users:update")) && (
                             <DropdownMenuItem
                               className="text-[#1F2937] hover:bg-[#F3F7F6]"
                               onClick={() => handleVerifyUser(user.id)}
@@ -720,16 +722,18 @@ export default function UserManagementPage() {
                               {t("user_management.actions.verify_email")}
                             </DropdownMenuItem>
                           )}
-                          <DropdownMenuItem
-                            className="text-[#EF4444] hover:bg-[#FEF2F2]"
-                            onClick={() => {
-                              setSelectedUser(user);
-                              setDeleteDialogOpen(true);
-                            }}
-                          >
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            {t("user_management.actions.delete")}
-                          </DropdownMenuItem>
+                          {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("users:delete")) && (
+                            <DropdownMenuItem
+                              className="text-[#EF4444] hover:bg-[#FEF2F2]"
+                              onClick={() => {
+                                setSelectedUser(user);
+                                setDeleteDialogOpen(true);
+                              }}
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              {t("user_management.actions.delete")}
+                            </DropdownMenuItem>
+                          )}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>
