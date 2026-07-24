@@ -22,6 +22,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/context";
+import { useAuth } from "@/context/AuthContext";
 
 interface FlashSaleItem {
   id: string;
@@ -62,6 +63,7 @@ export default function FlashSalesPage() {
 
 function FlashSalesList() {
   const { t } = useLanguage();
+  const { admin } = useAuth();
   const [flashSalesList, setFlashSalesList] = useState<FlashSaleItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
