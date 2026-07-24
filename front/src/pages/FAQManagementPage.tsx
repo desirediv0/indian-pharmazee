@@ -234,8 +234,9 @@ export default function FAQManagementPage() {
         </CardContent>
       </Card>
 
+      {/* FAQ List Card */}
       <Card className="bg-[#FFFFFF] border-[#E5E7EB] shadow-[0_1px_2px_rgba(0,0,0,0.04)] rounded-xl">
-        <CardHeader>
+        <CardHeader className="px-6 pt-6 pb-4">
           <CardTitle className="text-lg font-semibold text-[#1F2937]">
             {t("faq_management.list_title")}
           </CardTitle>
@@ -340,33 +341,41 @@ export default function FAQManagementPage() {
                             {t("faq_management.actions")}
                           </DropdownMenuLabel>
                           <DropdownMenuSeparator />
-                          <DropdownMenuItem
-                            className="text-[#1F2937] hover:bg-[#F3F7F6]"
-                            onClick={() => handleEdit(faq)}
-                          >
-                            <Edit className="h-4 w-4 mr-2" /> {t("faq_management.edit")}
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            className="text-[#1F2937] hover:bg-[#F3F7F6]"
-                            onClick={() => togglePublish(faq)}
-                          >
-                            {faq.isPublished ? (
-                              <>
-                                <EyeOff className="h-4 w-4 mr-2" /> {t("faq_management.unpublish")}
-                              </>
-                            ) : (
-                              <>
-                                <Eye className="h-4 w-4 mr-2" /> {t("faq_management.publish")}
-                              </>
-                            )}
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-
-                            className="text-[#EF4444] hover:bg-[#FEF2F2]"
-                            onClick={() => setDeleteConfirmId(faq.id)}
-                          >
-                            <Trash className="h-4 w-4 mr-2" /> {t("faq_management.delete")}
-                          </DropdownMenuItem>
+                          {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("faqs:update")) && (
+                            <DropdownMenuItem
+                              className="text-[#1F2937] hover:bg-[#F3F7F6]"
+                              onClick={() => handleEdit(faq)}
+                            >
+                              <Edit className="h-4 w-4 mr-2" /> {t("faq_management.edit")}
+                            </DropdownMenuItem>
+                          )}
+                          {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("faqs:update")) && (
+                            <DropdownMenuItem
+                              className="text-[#1F2937] hover:bg-[#F3F7F6]"
+                              onClick={() => togglePublish(faq)}
+                            >
+                              {faq.isPublished ? (
+                                <>
+                                  <EyeOff className="h-4 w-4 mr-2 text-[#F59E0B]" /> {t("faq_management.unpublish")}
+                                </>
+                              ) : (
+                                <>
+                                  <Eye className="h-4 w-4 mr-2 text-[#22C55E]" /> {t("faq_management.publish")}
+                                </>
+                              )}
+                            </DropdownMenuItem>
+                          )}
+                          {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("faqs:delete")) && (
+                            <>
+                              <DropdownMenuSeparator />
+                              <DropdownMenuItem
+                                className="text-[#EF4444] hover:bg-[#FEF2F2]"
+                                onClick={() => setDeleteConfirmId(faq.id)}
+                              >
+                                <Trash className="h-4 w-4 mr-2" /> {t("faq_management.delete")}
+                              </DropdownMenuItem>
+                            </>
+                          )}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>
