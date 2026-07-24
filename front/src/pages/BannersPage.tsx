@@ -948,78 +948,27 @@ function BannersList() {
 
                   {/* Actions */}
                   <div className="flex items-center gap-2 flex-shrink-0">
-                    <Button
-                      variant="ghost"
-                      size="icon"
-                      className="h-9 w-9 hover:bg-[#F3F4F6]"
-                      onClick={() => handleTogglePublish(banner.id)}
-                      title={banner.isPublished ? t("banners.list.unpublish") : t("banners.list.publish")}
-                    >
-                      {banner.isPublished ? (
-                        <EyeOff className="h-4 w-4 text-[#4B5563]" />
-                      ) : (
-                        <Eye className="h-4 w-4 text-[#4B5563]" />
-                      )}
-              className="bg-[#FFFFFF] border-[#E5E7EB] shadow-[0_1px_2px_rgba(0,0,0,0.04)] rounded-xl hover:shadow-md transition-shadow overflow-hidden flex flex-col"
-            >
-              {/* Banner Image Preview */}
-              <div className="relative h-48 bg-[#F3F4F6] border-b border-[#E5E7EB] overflow-hidden group">
-                <img
-                  src={banner.image}
-                  alt={banner.title}
-                  className="w-full h-full object-cover transition-transform group-hover:scale-105"
-                />
-                <div className="absolute top-3 left-3 flex gap-2">
-                  <Badge
-                    className={cn(
-                      "text-xs font-medium",
-                      banner.isPublished
-                        ? "bg-[#ECFDF5] text-[#22C55E] border-[#D1FAE5]"
-                        : "bg-[#F3F4F6] text-[#6B7280] border-[#E5E7EB]"
-                    )}
-                  >
-                    {banner.isPublished ? t("banners.list.published") : t("banners.list.draft")}
-                  </Badge>
-                  {banner.type && (
-                    <Badge
-                      variant="outline"
-                      className="bg-[#FFFFFF]/90 text-[#4B5563] border-[#E5E7EB] text-xs backdrop-blur-sm"
-                    >
-                      {banner.type}
-                    </Badge>
-                  )}
-                </div>
-              </div>
-
-              {/* Banner Details */}
-              <CardContent className="p-6 flex-1 flex flex-col justify-between space-y-4">
-                <div className="space-y-2">
-                  <h3 className="font-semibold text-[#1F2937] text-lg truncate">
-                    {banner.title}
-                  </h3>
-                  {banner.subtitle && (
-                    <p className="text-sm text-[#9CA3AF] line-clamp-2">
-                      {banner.subtitle}
-                    </p>
-                  )}
-                  {banner.link && (
-                    <p className="text-xs font-mono text-[#3B82F6] truncate pt-1">
-                      {banner.link}
-                    </p>
-                  )}
-                </div>
-
-                <div className="flex items-center justify-between pt-4 border-t border-[#E5E7EB]">
-                  <div className="text-xs text-[#9CA3AF]">
-                    Order: {banner.position !== undefined ? banner.position : "N/A"}
-                  </div>
-                  <div className="flex items-center gap-2">
                     {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("banners:update")) && (
                       <Button
                         variant="ghost"
-                        size="sm"
-                        className="h-8 hover:bg-[#F3F7F6]"
+                        size="icon"
+                        className="h-9 w-9 hover:bg-[#F3F4F6]"
+                        onClick={() => handleTogglePublish(banner.id)}
+                        title={banner.isPublished ? t("banners.list.unpublish") : t("banners.list.publish")}
+                      >
+                        {banner.isPublished ? (
+                          <EyeOff className="h-4 w-4 text-[#4B5563]" />
+                        ) : (
+                          <Eye className="h-4 w-4 text-[#4B5563]" />
+                        )}
+                      </Button>
+                    )}
+                    {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("banners:update")) && (
+                      <Button
                         asChild
+                        variant="ghost"
+                        size="icon"
+                        className="h-9 w-9 hover:bg-[#F3F4F6]"
                       >
                         <Link to={`/banners/${banner.id}`}>
                           <Edit className="h-4 w-4 text-[#4B5563]" />
@@ -1031,7 +980,7 @@ function BannersList() {
                         <Button
                           variant="ghost"
                           size="icon"
-                          className="h-8 w-8 hover:bg-[#F3F4F6]"
+                          className="h-9 w-9 hover:bg-[#F3F4F6]"
                         >
                           <MoreVertical className="h-4 w-4 text-[#4B5563]" />
                         </Button>
