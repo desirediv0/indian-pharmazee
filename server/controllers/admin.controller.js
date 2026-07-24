@@ -25,11 +25,19 @@ export const registerAdmin = asyncHandler(async (req, res) => {
     throw new ApiError(409, "Email already registered");
   }
 
+  const cleanRoleId =
+    roleId && typeof roleId === "string" && roleId.trim() !== ""
+      ? roleId.trim()
+      : null;
+
   let roleData = null;
-  if (roleId) {
+  if (cleanRoleId) {
     roleData = await prisma.adminRole_.findUnique({
-      where: { id: roleId },
+      where: { id: cleanRoleId },
     });
+    if (!roleData) {
+      throw new ApiError(404, "Selected custom role was not found");
+    }
   }
 
   // Hash password
@@ -45,7 +53,7 @@ export const registerAdmin = asyncHandler(async (req, res) => {
         firstName,
         lastName,
         role: role || "ADMIN",
-        roleId: roleId || null,
+        roleId: roleData ? roleData.id : null,
         lastLogin: new Date(),
       },
     });

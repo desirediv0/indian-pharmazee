@@ -7,6 +7,7 @@ import {
   CardContent,
   CardHeader,
   CardTitle,
+  CardDescription,
   CardFooter,
 } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
@@ -14,8 +15,19 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { toast } from "sonner";
 import { Checkbox } from "@/components/ui/checkbox";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useAuth } from "@/context/AuthContext";
+import {
+  User,
+  Mail,
+  Lock,
+  Eye,
+  EyeOff,
+  Shield,
+  ArrowLeft,
+  UserPlus,
+  CheckCircle2,
+  Key,
+} from "lucide-react";
 
 export default function AdminCreatePage() {
   const { admin: currentAdmin } = useAuth();
@@ -23,6 +35,11 @@ export default function AdminCreatePage() {
   const [loading, setLoading] = useState(false);
   const [customRoles, setCustomRoles] = useState<AdminRole_[]>([]);
   const [selectedRoleId, setSelectedRoleId] = useState<string>("");
+
+  // Password Visibility States
+  const [showPassword, setShowPassword] = useState(false);
+  const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -52,7 +69,7 @@ export default function AdminCreatePage() {
         }
       );
       const data = await response.json();
-      if (data.success) {
+      if (data.success && Array.isArray(data.data?.roles)) {
         setCustomRoles(data.data.roles);
       }
     } catch (error) {
@@ -60,7 +77,7 @@ export default function AdminCreatePage() {
     }
   };
 
-  // Add a state for custom permissions
+  // State for custom fine-grained permissions
   const [useCustomPermissions, setUseCustomPermissions] = useState(false);
   const [permissions, setPermissions] = useState<Record<string, string[]>>({
     [Resource.DASHBOARD]: [Action.READ],
@@ -80,7 +97,6 @@ export default function AdminCreatePage() {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
 
-    // When role changes, reset custom permissions
     if (name === "role") {
       setUseCustomPermissions(false);
     }
@@ -103,12 +119,10 @@ export default function AdminCreatePage() {
     });
   };
 
-  // Check if a permission is selected
   const hasPermission = (resource: Resource, action: Action): boolean => {
     return permissions[resource]?.includes(action) || false;
   };
 
-  // Toggle all actions for a resource
   const toggleAllForResource = (resource: Resource) => {
     const allActions = [
       Action.CREATE,
@@ -127,7 +141,6 @@ export default function AdminCreatePage() {
     }));
   };
 
-  // Format permissions for API call
   const formatPermissionsForApi = () => {
     const result: { resource: string; action: string }[] = [];
 
@@ -145,36 +158,41 @@ export default function AdminCreatePage() {
 
     // Validate form
     if (
-      !formData.email ||
+      !formData.email.trim() ||
       !formData.password ||
-      !formData.firstName ||
-      !formData.lastName
+      !formData.firstName.trim() ||
+      !formData.lastName.trim()
     ) {
-      toast.error("All fields are required");
+      toast.error("All required fields must be filled out");
       return;
     }
 
     if (formData.password.length < 8) {
-      toast.error("Password must be at least 8 characters");
+      toast.error("Password must be at least 8 characters long");
       return;
     }
 
     if (formData.password !== formData.confirmPassword) {
-      toast.error("Passwords do not match");
+      toast.error("Passwords do not match!");
       return;
     }
 
     try {
       setLoading(true);
 
-      // Add permissions to the request if using custom permissions
+      // Clean roleId: ensure it's undefined if empty string
+      const cleanRoleId =
+        selectedRoleId && selectedRoleId.trim() !== ""
+          ? selectedRoleId.trim()
+          : undefined;
+
       const requestData = {
-        email: formData.email,
+        email: formData.email.trim(),
         password: formData.password,
-        firstName: formData.firstName,
-        lastName: formData.lastName,
+        firstName: formData.firstName.trim(),
+        lastName: formData.lastName.trim(),
         role: formData.role,
-        roleId: selectedRoleId || undefined,
+        roleId: cleanRoleId,
         ...(useCustomPermissions && {
           customPermissions: formatPermissionsForApi(),
         }),
@@ -183,30 +201,38 @@ export default function AdminCreatePage() {
       const response = await adminUsers.registerAdmin(requestData);
 
       if (response.data.success) {
-        toast.success("Admin created successfully");
+        toast.success("New Admin created successfully!");
         navigate("/admins");
       } else {
         toast.error(response.data.message || "Failed to create admin");
       }
     } catch (error: any) {
       console.error("Error creating admin:", error);
-      toast.error(error.response?.data?.message || "Error creating admin");
+      toast.error(
+        error.response?.data?.message || "An error occurred while creating admin"
+      );
     } finally {
       setLoading(false);
     }
   };
 
-  // Only proceed if user is a super admin
   if (!isSuperAdmin) {
     return (
-      <div className="max-w-md mx-auto">
-        <Card className="bg-amber-50">
-          <CardContent className="p-6">
-            <div className="flex items-center gap-2">
-              <p className="text-amber-800">
-                Only Super Admins can create new admin accounts.
-              </p>
-            </div>
+      <div className="max-w-md mx-auto my-12">
+        <Card className="border-amber-200 bg-amber-50">
+          <CardContent className="p-6 text-center">
+            <Shield className="h-12 w-12 text-amber-600 mx-auto mb-3" />
+            <h2 className="text-lg font-semibold text-amber-900">Access Restricted</h2>
+            <p className="text-amber-700 text-sm mt-1">
+              Only Super Administrators can create and assign roles to new admins.
+            </p>
+            <Button
+              className="mt-4"
+              variant="outline"
+              onClick={() => navigate("/dashboard")}
+            >
+              Back to Dashboard
+            </Button>
           </CardContent>
         </Card>
       </div>
@@ -214,89 +240,219 @@ export default function AdminCreatePage() {
   }
 
   return (
-    <div className="max-w-3xl mx-auto">
-      <div className="mb-6">
-        <h1 className="text-2xl font-bold">Create New Admin</h1>
-        <p className="text-muted-foreground">
-          Add a new administrator to the system
-        </p>
+    <div className="max-w-4xl mx-auto space-y-6 pb-12">
+      {/* Top Header Navigation */}
+      <div className="flex items-center justify-between">
+        <div className="flex items-center gap-3">
+          <Button
+            variant="ghost"
+            size="icon"
+            onClick={() => navigate("/admins")}
+            className="h-9 w-9 text-slate-600 hover:bg-slate-100"
+          >
+            <ArrowLeft className="h-5 w-5" />
+          </Button>
+          <div>
+            <h1 className="text-2xl font-bold text-slate-900 flex items-center gap-2">
+              <UserPlus className="h-6 w-6 text-[#2E7D32]" />
+              Create New Admin User
+            </h1>
+            <p className="text-sm text-slate-500">
+              Set up credentials and assign roles for a new administrator
+            </p>
+          </div>
+        </div>
       </div>
 
-      <Card>
-        <CardHeader>
-          <CardTitle>Admin Information</CardTitle>
-        </CardHeader>
-        <CardContent>
-          <form onSubmit={handleSubmit} className="space-y-4">
-            <div className="grid grid-cols-2 gap-4">
+      <form onSubmit={handleSubmit} className="space-y-6">
+        {/* Step 1: Personal Info & Credentials */}
+        <Card className="border-slate-200 shadow-sm">
+          <CardHeader className="bg-slate-50/50 border-b border-slate-100 pb-4">
+            <CardTitle className="text-base font-semibold flex items-center gap-2 text-slate-800">
+              <User className="h-4 w-4 text-[#2E7D32]" />
+              1. Admin Credentials & Account Info
+            </CardTitle>
+            <CardDescription>
+              This info will be used for login at admin.indianpharmazee.com/login
+            </CardDescription>
+          </CardHeader>
+          <CardContent className="p-6 space-y-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
               <div className="space-y-2">
-                <Label htmlFor="firstName">First Name</Label>
+                <Label htmlFor="firstName" className="text-slate-700 font-medium">
+                  First Name <span className="text-red-500">*</span>
+                </Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Input
+                    id="firstName"
+                    name="firstName"
+                    placeholder="e.g. Rahul"
+                    className="pl-9"
+                    value={formData.firstName}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="lastName" className="text-slate-700 font-medium">
+                  Last Name <span className="text-red-500">*</span>
+                </Label>
+                <div className="relative">
+                  <User className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Input
+                    id="lastName"
+                    name="lastName"
+                    placeholder="e.g. Sharma"
+                    className="pl-9"
+                    value={formData.lastName}
+                    onChange={handleChange}
+                    required
+                  />
+                </div>
+              </div>
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="email" className="text-slate-700 font-medium">
+                Email Address (Login Username) <span className="text-red-500">*</span>
+              </Label>
+              <div className="relative">
+                <Mail className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
                 <Input
-                  id="firstName"
-                  name="firstName"
-                  value={formData.firstName}
+                  id="email"
+                  name="email"
+                  type="email"
+                  placeholder="e.g. rahul@indianpharmazee.com"
+                  className="pl-9"
+                  value={formData.email}
                   onChange={handleChange}
                   required
                 />
               </div>
+            </div>
+
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-2">
+              {/* Password Field with Eye Toggle */}
               <div className="space-y-2">
-                <Label htmlFor="lastName">Last Name</Label>
-                <Input
-                  id="lastName"
-                  name="lastName"
-                  value={formData.lastName}
-                  onChange={handleChange}
-                  required
-                />
+                <Label htmlFor="password" className="text-slate-700 font-medium">
+                  Password <span className="text-red-500">*</span>
+                </Label>
+                <div className="relative">
+                  <Key className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Input
+                    id="password"
+                    name="password"
+                    type={showPassword ? "text" : "password"}
+                    placeholder="At least 8 characters"
+                    className="pl-9 pr-10"
+                    value={formData.password}
+                    onChange={handleChange}
+                    required
+                    minLength={8}
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowPassword(!showPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none"
+                    title={showPassword ? "Hide password" : "Show password"}
+                  >
+                    {showPassword ? (
+                      <EyeOff className="h-4 w-4 text-slate-600" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
+              </div>
+
+              {/* Confirm Password Field with Eye Toggle */}
+              <div className="space-y-2">
+                <Label htmlFor="confirmPassword" className="text-slate-700 font-medium">
+                  Confirm Password <span className="text-red-500">*</span>
+                </Label>
+                <div className="relative">
+                  <Lock className="absolute left-3 top-1/2 -translate-y-1/2 h-4 w-4 text-slate-400" />
+                  <Input
+                    id="confirmPassword"
+                    name="confirmPassword"
+                    type={showConfirmPassword ? "text" : "password"}
+                    placeholder="Repeat password"
+                    className="pl-9 pr-10"
+                    value={formData.confirmPassword}
+                    onChange={handleChange}
+                    required
+                  />
+                  <button
+                    type="button"
+                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                    className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600 focus:outline-none"
+                    title={showConfirmPassword ? "Hide password" : "Show password"}
+                  >
+                    {showConfirmPassword ? (
+                      <EyeOff className="h-4 w-4 text-slate-600" />
+                    ) : (
+                      <Eye className="h-4 w-4" />
+                    )}
+                  </button>
+                </div>
               </div>
             </div>
+          </CardContent>
+        </Card>
 
-            <div className="space-y-2">
-              <Label htmlFor="email">Email</Label>
-              <Input
-                id="email"
-                name="email"
-                type="email"
-                value={formData.email}
-                onChange={handleChange}
-                required
-              />
-            </div>
+        {/* Step 2: Select Role & Permissions */}
+        <Card className="border-slate-200 shadow-sm">
+          <CardHeader className="bg-slate-50/50 border-b border-slate-100 pb-4">
+            <CardTitle className="text-base font-semibold flex items-center gap-2 text-slate-800">
+              <Shield className="h-4 w-4 text-[#2E7D32]" />
+              2. Assign Role & Page Permissions
+            </CardTitle>
+            <CardDescription>
+              Select what access this admin will have in the dashboard
+            </CardDescription>
+          </CardHeader>
 
-            <div className="space-y-2">
-              <Label htmlFor="password">Password</Label>
-              <Input
-                id="password"
-                name="password"
-                type="password"
-                value={formData.password}
-                onChange={handleChange}
-                required
-                minLength={8}
-              />
-            </div>
+          <CardContent className="p-6 space-y-6">
+            {/* Custom Roles List Select */}
+            {customRoles.length > 0 && (
+              <div className="space-y-2 bg-[#F0FDF4] border border-[#DCFCE7] p-4 rounded-xl">
+                <Label htmlFor="customRole" className="text-[#166534] font-semibold flex items-center gap-2">
+                  <CheckCircle2 className="h-4 w-4 text-[#166534]" />
+                  Select Custom Role (Created on /roles page)
+                </Label>
+                <select
+                  id="customRole"
+                  value={selectedRoleId}
+                  onChange={(e) => setSelectedRoleId(e.target.value)}
+                  className="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-lg text-slate-800 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2E7D32]"
+                >
+                  <option value="">-- No Custom Role (Use System Base Role) --</option>
+                  {customRoles.map((r) => (
+                    <option key={r.id} value={r.id}>
+                      ✨ {r.name} {r.description ? `(${r.description})` : ""}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-xs text-[#15803D]">
+                  Selecting a custom role will automatically give this user all page permissions configured for that role.
+                </p>
+              </div>
+            )}
 
+            {/* Base Role Selector (Only relevant if no custom role selected) */}
             <div className="space-y-2">
-              <Label htmlFor="confirmPassword">Confirm Password</Label>
-              <Input
-                id="confirmPassword"
-                name="confirmPassword"
-                type="password"
-                value={formData.confirmPassword}
-                onChange={handleChange}
-                required
-              />
-            </div>
-
-            <div className="space-y-2">
-              <Label htmlFor="role">Base System Role</Label>
+              <Label htmlFor="role" className="text-slate-700 font-medium">
+                System Base Role
+              </Label>
               <select
                 id="role"
                 name="role"
                 value={formData.role}
                 onChange={handleChange}
-                className="w-full px-3 py-2 border rounded-md"
-                required
+                className="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-lg text-slate-800 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2E7D32]"
               >
                 {Object.keys(Role).map((role) => (
                   <option key={role} value={role}>
@@ -306,31 +462,9 @@ export default function AdminCreatePage() {
               </select>
             </div>
 
-            {customRoles.length > 0 && (
-              <div className="space-y-2">
-                <Label htmlFor="customRole">Assign Custom Role (Created on /roles)</Label>
-                <select
-                  id="customRole"
-                  value={selectedRoleId}
-                  onChange={(e) => setSelectedRoleId(e.target.value)}
-                  className="w-full px-3 py-2 border rounded-md"
-                >
-                  <option value="">No Custom Role (Use System Default Permissions)</option>
-                  {customRoles.map((r) => (
-                    <option key={r.id} value={r.id}>
-                      {r.name}
-                    </option>
-                  ))}
-                </select>
-                <p className="text-sm text-muted-foreground">
-                  Selecting a custom role will automatically give this admin all permissions defined in that role.
-                </p>
-              </div>
-            )}
-
-            {/* Custom Permissions Section */}
-            <div className="border-t pt-4 mt-6">
-              <div className="flex items-center space-x-2 mb-4">
+            {/* Fine-Grain Custom Permissions Toggle */}
+            <div className="border-t border-slate-200 pt-5">
+              <div className="flex items-center space-x-3 mb-4">
                 <Checkbox
                   id="customPermissions"
                   checked={useCustomPermissions}
@@ -338,104 +472,116 @@ export default function AdminCreatePage() {
                     setUseCustomPermissions(!!checked)
                   }
                 />
-                <Label htmlFor="customPermissions" className="font-medium">
-                  Customize permissions for this admin
+                <Label htmlFor="customPermissions" className="font-semibold text-slate-800 cursor-pointer">
+                  Customize granular page permissions manually for this user
                 </Label>
               </div>
 
               {useCustomPermissions && (
-                <div className="space-y-6">
-                  <Tabs defaultValue="resources">
-                    <TabsList className="mb-4">
-                      <TabsTrigger value="resources">Resources</TabsTrigger>
-                    </TabsList>
+                <div className="space-y-4 pt-2">
+                  <p className="text-xs text-slate-500">
+                    Check the exact actions (Create, Read, Update, Delete) this admin is allowed to perform for each page.
+                  </p>
 
-                    <TabsContent value="resources" className="space-y-4">
-                      {Object.values(Resource).map((resource) => (
-                        <div key={resource} className="border rounded-md p-4">
-                          <div className="flex justify-between items-center mb-2">
-                            <div className="flex items-center space-x-2">
+                  <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                    {Object.values(Resource).map((resource) => (
+                      <div
+                        key={resource}
+                        className="border border-slate-200 rounded-xl p-4 bg-slate-50/50 hover:bg-white transition-all"
+                      >
+                        <div className="flex justify-between items-center pb-2 border-b border-slate-200 mb-3">
+                          <span className="font-bold text-slate-800 text-sm capitalize">
+                            {resource.replace("_", " ")}
+                          </span>
+                          <div className="flex items-center space-x-1.5">
+                            <Checkbox
+                              id={`resource-${resource}-all`}
+                              checked={[
+                                Action.CREATE,
+                                Action.READ,
+                                Action.UPDATE,
+                                Action.DELETE,
+                              ].every((action) =>
+                                hasPermission(resource as Resource, action)
+                              )}
+                              onCheckedChange={() =>
+                                toggleAllForResource(resource as Resource)
+                              }
+                            />
+                            <Label
+                              htmlFor={`resource-${resource}-all`}
+                              className="text-xs font-semibold text-slate-600 cursor-pointer"
+                            >
+                              Select All
+                            </Label>
+                          </div>
+                        </div>
+
+                        <div className="grid grid-cols-2 gap-2">
+                          {Object.values(Action).map((action) => (
+                            <div
+                              key={`${resource}-${action}`}
+                              className="flex items-center space-x-2 bg-white px-2.5 py-1.5 rounded border border-slate-200"
+                            >
                               <Checkbox
-                                id={`resource-${resource}-all`}
-                                checked={[
-                                  Action.CREATE,
-                                  Action.READ,
-                                  Action.UPDATE,
-                                  Action.DELETE,
-                                ].every((action) =>
-                                  hasPermission(resource as Resource, action)
+                                id={`${resource}-${action}`}
+                                checked={hasPermission(
+                                  resource as Resource,
+                                  action as Action
                                 )}
                                 onCheckedChange={() =>
-                                  toggleAllForResource(resource as Resource)
+                                  togglePermission(
+                                    resource as Resource,
+                                    action as Action
+                                  )
                                 }
                               />
                               <Label
-                                htmlFor={`resource-${resource}-all`}
-                                className="font-bold capitalize"
+                                htmlFor={`${resource}-${action}`}
+                                className="text-xs capitalize font-medium text-slate-700 cursor-pointer"
                               >
-                                {resource.replace("_", " ")}
+                                {action}
                               </Label>
                             </div>
-                          </div>
-
-                          <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 mt-3">
-                            {Object.values(Action).map((action) => (
-                              <div
-                                key={`${resource}-${action}`}
-                                className="flex items-center space-x-2"
-                              >
-                                <Checkbox
-                                  id={`${resource}-${action}`}
-                                  checked={hasPermission(
-                                    resource as Resource,
-                                    action as Action
-                                  )}
-                                  onCheckedChange={() =>
-                                    togglePermission(
-                                      resource as Resource,
-                                      action as Action
-                                    )
-                                  }
-                                />
-                                <Label
-                                  htmlFor={`${resource}-${action}`}
-                                  className="capitalize"
-                                >
-                                  {action}
-                                </Label>
-                              </div>
-                            ))}
-                          </div>
+                          ))}
                         </div>
-                      ))}
-                    </TabsContent>
-                  </Tabs>
+                      </div>
+                    ))}
+                  </div>
                 </div>
               )}
             </div>
+          </CardContent>
 
-            <CardFooter className="flex justify-between px-0 pt-4">
-              <Button
-                type="button"
-                variant="outline"
-                onClick={() => navigate("/admins")}
-              >
-                Cancel
-              </Button>
-              <Button type="submit" disabled={loading}>
-                {loading ? (
-                  <>
-                    <span className="mr-2">Creating...</span>
-                    <div className="h-4 w-4 animate-spin rounded-full border-2 border-current border-t-transparent" />
-                  </>
-                ) : (
-                  "Create Admin"
-                )}
-              </Button>
-            </CardFooter>
-          </form>
-        </CardContent>
-      </Card>
+          <CardFooter className="flex justify-between bg-slate-50/80 border-t border-slate-200 p-6 rounded-b-xl">
+            <Button
+              type="button"
+              variant="outline"
+              onClick={() => navigate("/admins")}
+              className="border-slate-300 text-slate-700"
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={loading}
+              className="bg-[#2E7D32] hover:bg-[#1b5e20] text-white px-6"
+            >
+              {loading ? (
+                <div className="flex items-center gap-2">
+                  <div className="h-4 w-4 animate-spin rounded-full border-2 border-white border-t-transparent" />
+                  <span>Creating Admin...</span>
+                </div>
+              ) : (
+                <div className="flex items-center gap-2">
+                  <UserPlus className="h-4 w-4" />
+                  <span>Create Admin Account</span>
+                </div>
+              )}
+            </Button>
+          </CardFooter>
+        </Card>
+      </form>
     </div>
   );
 }
