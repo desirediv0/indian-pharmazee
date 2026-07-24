@@ -19,6 +19,7 @@ import { useAuth } from "@/context/AuthContext";
 export default function MOQSettingsPage() {
     const { t } = useLanguage();
     const { admin } = useAuth();
+    const canUpdate = admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("settings:update") || admin?.permissions?.includes("products:update");
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [isActive, setIsActive] = useState(false);
@@ -128,6 +129,7 @@ export default function MOQSettingsPage() {
                         <Switch
                             id="moq-enabled"
                             checked={isActive}
+                            disabled={!canUpdate || isSaving}
                             onCheckedChange={setIsActive}
                         />
                     </div>
@@ -143,12 +145,13 @@ export default function MOQSettingsPage() {
                                 type="number"
                                 min="1"
                                 value={minQuantity}
+                                disabled={!canUpdate || isSaving}
                                 onChange={(e) => setMinQuantity(parseInt(e.target.value) || 1)}
                                 placeholder="Enter minimum quantity"
                                 className="max-w-xs"
                             />
                             <p className="text-sm text-muted-foreground">
-                                {t('moq_settings.min_qty_desc')}
+                                {t('moq_settings.min_qty_hint')}
                             </p>
                         </div>
                     )}
@@ -192,11 +195,11 @@ export default function MOQSettingsPage() {
                         <Button
                             variant="outline"
                             onClick={() => fetchGlobalMOQ()}
-                            disabled={isSaving}
+                            disabled={!canUpdate || isSaving}
                         >
                             {t('moq_settings.reset')}
                         </Button>
-                        <Button onClick={handleSave} disabled={isSaving}>
+                        <Button onClick={handleSave} disabled={!canUpdate || isSaving}>
                             {isSaving ? (
                                 <>
                                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />

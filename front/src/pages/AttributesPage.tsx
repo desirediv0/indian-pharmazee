@@ -27,6 +27,14 @@ import { toast } from "sonner";
 import { useLanguage } from "@/context/LanguageContext";
 import { useAuth } from "@/context/AuthContext";
 import { ErrorDialog } from "@/components/ErrorDialog";
+import { useDebounce } from "@/utils/debounce";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 
 export default function AttributesPage() {
   const { id } = useParams();
