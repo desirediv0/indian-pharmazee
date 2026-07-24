@@ -198,15 +198,16 @@ function FlashSalesList() {
               {t("flash_sales.subtitle")}
             </p>
           </div>
-          <Button
-            asChild
-
-          >
-            <Link to="/flash-sales/new">
-              <Plus className="h-4 w-4 mr-2" />
-              {t("flash_sales.create_button")}
-            </Link>
-          </Button>
+          {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("products:create")) && (
+            <Button
+              asChild
+            >
+              <Link to="/flash-sales/new">
+                <Plus className="h-4 w-4 mr-2" />
+                {t("flash_sales.create_button")}
+              </Link>
+            </Button>
+          )}
         </div>
         <div className="h-px bg-[#E5E7EB]" />
       </div>
@@ -223,15 +224,16 @@ function FlashSalesList() {
             <p className="text-sm text-[#9CA3AF] mb-6 max-w-sm mx-auto">
               {t("flash_sales.empty.description")}
             </p>
-            <Button
-              asChild
-
-            >
-              <Link to="/flash-sales/new">
-                <Plus className="h-4 w-4 mr-2" />
-                {t("flash_sales.create_button")}
-              </Link>
-            </Button>
+            {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("products:create")) && (
+              <Button
+                asChild
+              >
+                <Link to="/flash-sales/new">
+                  <Plus className="h-4 w-4 mr-2" />
+                  {t("flash_sales.create_button")}
+                </Link>
+              </Button>
+            )}
           </div>
         </Card>
       ) : (
@@ -254,40 +256,32 @@ function FlashSalesList() {
                 <CardContent className="p-6">
                   <div className="flex items-start justify-between gap-4 mb-4">
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-3 mb-2">
-                        <div className="flex h-10 w-10 items-center justify-center rounded-lg bg-[#FEF3C7]">
-                          <Zap className="h-5 w-5 text-[#F59E0B]" />
-                        </div>
-                        <div className="flex-1 min-w-0">
-                          <h3 className="text-lg font-semibold text-[#1F2937] truncate">
-                            {sale.name}
-                          </h3>
-                        </div>
-                      </div>
-                      <div className="mb-3">
-                        <Badge className={`${statusBadgeClass} text-xs font-medium`}>
+                      <div className="flex items-center gap-2 mb-1">
+                        <h3 className="font-semibold text-[#1F2937] text-lg truncate">
+                          {sale.name}
+                        </h3>
+                        <Badge className={`text-xs ${statusBadgeClass}`}>
                           {status.text}
                         </Badge>
                       </div>
+                      <p className="text-sm text-[#9CA3AF]">
+                        {sale.productCount || sale.products?.length || 0}{" "}
+                        {t("flash_sales.card.products_included")}
+                      </p>
                     </div>
                   </div>
 
-                  <div className="grid grid-cols-2 gap-4 mb-4">
+                  <div className="grid grid-cols-3 gap-3 mb-4">
                     <div className="p-3 bg-[#F3F7F6] rounded-lg border border-[#E5E7EB]">
                       <p className="text-xs text-[#9CA3AF] mb-1">{t("flash_sales.card.discount")}</p>
-                      <p className="font-bold text-[#EF4444] text-lg">
-                        {sale.discountPercentage}% OFF
+                      <p className="font-bold text-[#4CAF50] text-lg flex items-center">
+                        {sale.discountPercentage}
+                        <Percent className="h-4 w-4 ml-0.5 inline" />
                       </p>
                     </div>
                     <div className="p-3 bg-[#F3F7F6] rounded-lg border border-[#E5E7EB]">
-                      <p className="text-xs text-[#9CA3AF] mb-1">{t("flash_sales.card.products")}</p>
-                      <p className="font-bold text-[#1F2937] text-lg">
-                        {sale.productCount}
-                      </p>
-                    </div>
-                    <div className="p-3 bg-[#F3F7F6] rounded-lg border border-[#E5E7EB]">
-                      <p className="text-xs text-[#9CA3AF] mb-1">{t("flash_sales.card.sold")}</p>
-                      <p className="font-bold text-[#1F2937] text-lg">
+                      <p className="text-xs text-[#9CA3AF] mb-1">{t("flash_sales.card.claimed")}</p>
+                      <p className="font-bold text-[#3B82F6] text-lg">
                         {sale.soldCount}
                       </p>
                     </div>
@@ -311,30 +305,35 @@ function FlashSalesList() {
                   </div>
 
                   <div className="flex items-center justify-end gap-2 pt-4 border-t border-[#E5E7EB]">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 hover:bg-[#F3F4F6]"
-                      asChild
-                    >
-                      <Link to={`/flash-sales/${sale.id}`}>
-                        <Edit className="h-4 w-4 text-[#4B5563]" />
-                      </Link>
-                    </Button>
+                    {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("products:update")) && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 hover:bg-[#F3F4F6]"
+                        asChild
+                      >
+                        <Link to={`/flash-sales/${sale.id}`}>
+                          <Edit className="h-4 w-4 text-[#4B5563]" />
+                        </Link>
+                      </Button>
+                    )}
                     <Switch
                       checked={sale.isActive}
+                      disabled={!(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("products:update"))}
                       onCheckedChange={() =>
                         handleToggleStatus(sale.id, sale.isActive)
                       }
                     />
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 hover:bg-[#FEF2F2]"
-                      onClick={() => handleDelete(sale.id, sale.name)}
-                    >
-                      <Trash2 className="h-4 w-4 text-[#EF4444]" />
-                    </Button>
+                    {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("products:delete")) && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 hover:bg-[#FEF2F2]"
+                        onClick={() => handleDelete(sale.id, sale.name)}
+                      >
+                        <Trash2 className="h-4 w-4 text-[#EF4444]" />
+                      </Button>
+                    )}
                   </div>
                 </CardContent>
               </Card>
