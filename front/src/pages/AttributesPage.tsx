@@ -25,15 +25,8 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/context/LanguageContext";
+import { useAuth } from "@/context/AuthContext";
 import { ErrorDialog } from "@/components/ErrorDialog";
-import { useDebounce } from "@/utils/debounce";
-import {
-  Dialog,
-  DialogContent,
-  DialogDescription,
-  DialogHeader,
-  DialogTitle,
-} from "@/components/ui/dialog";
 
 export default function AttributesPage() {
   const { id } = useParams();
@@ -54,6 +47,7 @@ export default function AttributesPage() {
 
 function AttributesList() {
   const { t } = useLanguage();
+  const { admin } = useAuth();
   const [attributesList, setAttributesList] = useState<any[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
@@ -167,12 +161,14 @@ function AttributesList() {
 
       <div className="flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between">
         <h1 className="text-2xl font-bold">{t("attributes.title")}</h1>
-        <Button asChild>
-          <Link to="/attributes/new">
-            <Plus className="mr-2 h-4 w-4" />
-            {t("attributes.create_button")}
-          </Link>
-        </Button>
+        {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("products:create")) && (
+          <Button asChild>
+            <Link to="/attributes/new">
+              <Plus className="mr-2 h-4 w-4" />
+              {t("attributes.create_button")}
+            </Link>
+          </Button>
+        )}
       </div>
 
       <Card className="p-4">
@@ -192,12 +188,14 @@ function AttributesList() {
             <p className="mt-2 text-sm text-muted-foreground">
               {t("attributes.empty.description")}
             </p>
-            <Button asChild className="mt-4">
-              <Link to="/attributes/new">
-                <Plus className="mr-2 h-4 w-4" />
-                {t("attributes.create_button")}
-              </Link>
-            </Button>
+            {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("products:create")) && (
+              <Button asChild className="mt-4">
+                <Link to="/attributes/new">
+                  <Plus className="mr-2 h-4 w-4" />
+                  {t("attributes.create_button")}
+                </Link>
+              </Button>
+            )}
           </div>
         ) : (
           <div className="overflow-x-auto">
@@ -239,22 +237,26 @@ function AttributesList() {
                     </td>
                     <td className="px-4 py-3 text-right">
                       <div className="flex justify-end gap-2">
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          asChild
-                        >
-                          <Link to={`/attributes/${attribute.id}`}>
-                            <Edit className="h-4 w-4" />
-                          </Link>
-                        </Button>
-                        <Button
-                          variant="ghost"
-                          size="sm"
-                          onClick={() => confirmDeleteAttribute(attribute.id)}
-                        >
-                          <Trash2 className="h-4 w-4 text-destructive" />
-                        </Button>
+                        {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("products:update")) && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            asChild
+                          >
+                            <Link to={`/attributes/${attribute.id}`}>
+                              <Edit className="h-4 w-4" />
+                            </Link>
+                          </Button>
+                        )}
+                        {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("products:delete")) && (
+                          <Button
+                            variant="ghost"
+                            size="sm"
+                            onClick={() => confirmDeleteAttribute(attribute.id)}
+                          >
+                            <Trash2 className="h-4 w-4 text-destructive" />
+                          </Button>
+                        )}
                       </div>
                     </td>
                   </tr>

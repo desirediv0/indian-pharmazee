@@ -647,6 +647,7 @@ function CategoryForm({
   mode: "create" | "edit";
   categoryId?: string;
 }) {
+  const { admin } = useAuth();
   const navigate = useNavigate();
   const { t } = useLanguage();
   const [isLoading, setIsLoading] = useState(false);
@@ -1283,24 +1284,28 @@ function CategoryForm({
                           >
                             <ArrowUpDown className="h-4 w-4 text-[#3B82F6]" />
                           </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 hover:bg-[#F3F4F6]"
-                            onClick={() => openSubCategoryDialog(subCategory)}
-                          >
-                            <Edit className="h-4 w-4 text-[#4B5563]" />
-                          </Button>
-                          <Button
-                            variant="ghost"
-                            size="icon"
-                            className="h-8 w-8 hover:bg-[#FEF2F2]"
-                            onClick={() =>
-                              handleDeleteSubCategory(subCategory.id)
-                            }
-                          >
-                            <Trash2 className="h-4 w-4 text-[#EF4444]" />
-                          </Button>
+                          {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("categories:update")) && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 hover:bg-[#F3F4F6]"
+                              onClick={() => openSubCategoryDialog(subCategory)}
+                            >
+                              <Edit className="h-4 w-4 text-[#4B5563]" />
+                            </Button>
+                          )}
+                          {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("categories:delete")) && (
+                            <Button
+                              variant="ghost"
+                              size="icon"
+                              className="h-8 w-8 hover:bg-[#FEF2F2]"
+                              onClick={() =>
+                                handleDeleteSubCategory(subCategory.id)
+                              }
+                            >
+                              <Trash2 className="h-4 w-4 text-[#EF4444]" />
+                            </Button>
+                          )}
                         </div>
                       </div>
                     </CardContent>

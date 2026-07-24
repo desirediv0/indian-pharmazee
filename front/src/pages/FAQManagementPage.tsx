@@ -33,11 +33,13 @@ import { Skeleton } from "@/components/ui/skeleton";
 import { toast } from "sonner";
 import { Edit, MoreHorizontal, Plus, Trash, Eye, EyeOff } from "lucide-react";
 import { useLanguage } from "@/context/LanguageContext";
+import { useAuth } from "@/context/AuthContext";
 import { Badge } from "@/components/ui/badge";
 
 
 export default function FAQManagementPage() {
   const { t } = useLanguage();
+  const { admin } = useAuth();
   const [faqs, setFaqs] = useState<FAQ[]>([]);
   const [loading, setLoading] = useState(true);
   const [editingFaq, setEditingFaq] = useState<FAQ | null>(null);
