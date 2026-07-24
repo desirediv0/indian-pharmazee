@@ -14,9 +14,11 @@ import {
 import { toast } from "sonner";
 import api from "@/api/api";
 import { useLanguage } from "@/context/LanguageContext";
+import { useAuth } from "@/context/AuthContext";
 
 export default function MOQSettingsPage() {
     const { t } = useLanguage();
+    const { admin } = useAuth();
     const [isLoading, setIsLoading] = useState(true);
     const [isSaving, setIsSaving] = useState(false);
     const [isActive, setIsActive] = useState(false);

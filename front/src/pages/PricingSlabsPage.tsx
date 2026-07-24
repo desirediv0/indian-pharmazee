@@ -38,6 +38,7 @@ import {
 import { toast } from "sonner";
 import api from "@/api/api";
 import { useLanguage } from "@/context/LanguageContext";
+import { useAuth } from "@/context/AuthContext";
 
 interface PricingSlab {
     id: string;
@@ -64,6 +65,7 @@ interface Variant {
 
 export default function PricingSlabsPage() {
     const { t } = useLanguage();
+    const { admin } = useAuth();
     const [slabs, setSlabs] = useState<PricingSlab[]>([]);
     const [products, setProducts] = useState<Product[]>([]);
     const [variants, setVariants] = useState<Variant[]>([]);
@@ -321,10 +323,12 @@ export default function PricingSlabsPage() {
                         {t('pricing_slabs.description')}
                     </p>
                 </div>
-                <Button onClick={() => handleOpenDialog()}>
-                    <Plus className="mr-2 h-4 w-4" />
-                    {t('pricing_slabs.add_button')}
-                </Button>
+                {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("products:create")) && (
+                    <Button onClick={() => handleOpenDialog()}>
+                        <Plus className="mr-2 h-4 w-4" />
+                        {t('pricing_slabs.add_button')}
+                    </Button>
+                )}
             </div>
 
             {/* Info Card */}
@@ -370,17 +374,15 @@ export default function PricingSlabsPage() {
                     </div>
 
                     {filteredSlabs.length === 0 ? (
-                        <div className="text-center py-12 text-muted-foreground">
-                            <Layers className="h-12 w-12 mx-auto mb-4 opacity-50" />
-                            <p>{t('pricing_slabs.no_slabs')}</p>
-                            <p className="text-sm mt-2">{t('pricing_slabs.create_first')}</p>
+                        <div className="text-center py-10 text-muted-foreground">
+                            {t('pricing_slabs.no_slabs')}
                         </div>
                     ) : (
                         <Table>
                             <TableHeader>
                                 <TableRow>
                                     <TableHead>{t('pricing_slabs.table.type')}</TableHead>
-                                    <TableHead>{t('pricing_slabs.table.product_variant')}</TableHead>
+                                    <TableHead>{t('pricing_slabs.table.target')}</TableHead>
                                     <TableHead>{t('pricing_slabs.table.min_qty')}</TableHead>
                                     <TableHead>{t('pricing_slabs.table.max_qty')}</TableHead>
                                     <TableHead>{t('pricing_slabs.table.price')}</TableHead>
@@ -392,11 +394,11 @@ export default function PricingSlabsPage() {
                                     <TableRow key={slab.id}>
                                         <TableCell>
                                             {slab.variantId ? (
-                                                <span className="text-xs bg-purple-100 text-purple-800 px-2 py-1 rounded">
+                                                <span className="inline-flex items-center rounded-md bg-purple-50 px-2 py-1 text-xs font-medium text-purple-700 ring-1 ring-inset ring-purple-700/10">
                                                     {t('pricing_slabs.variant')}
                                                 </span>
                                             ) : (
-                                                <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
+                                                <span className="inline-flex items-center rounded-md bg-blue-50 px-2 py-1 text-xs font-medium text-blue-700 ring-1 ring-inset ring-blue-700/10">
                                                     {t('pricing_slabs.product')}
                                                 </span>
                                             )}
@@ -411,20 +413,24 @@ export default function PricingSlabsPage() {
                                         <TableCell>₹{parseFloat(slab.price.toString()).toFixed(2)}</TableCell>
                                         <TableCell>
                                             <div className="flex gap-2">
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() => handleOpenDialog(slab)}
-                                                >
-                                                    <Edit className="h-4 w-4" />
-                                                </Button>
-                                                <Button
-                                                    variant="ghost"
-                                                    size="sm"
-                                                    onClick={() => handleDelete(slab.id)}
-                                                >
-                                                    <Trash2 className="h-4 w-4 text-red-600" />
-                                                </Button>
+                                                {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("products:update")) && (
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => handleOpenDialog(slab)}
+                                                    >
+                                                        <Edit className="h-4 w-4" />
+                                                    </Button>
+                                                )}
+                                                {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("products:delete")) && (
+                                                    <Button
+                                                        variant="ghost"
+                                                        size="sm"
+                                                        onClick={() => handleDelete(slab.id)}
+                                                    >
+                                                        <Trash2 className="h-4 w-4 text-red-600" />
+                                                    </Button>
+                                                )}
                                             </div>
                                         </TableCell>
                                     </TableRow>
