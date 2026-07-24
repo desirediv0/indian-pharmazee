@@ -23,6 +23,7 @@ import {
 } from "lucide-react";
 import { DeleteProductDialog } from "@/components/DeleteProductDialog";
 import { useLanguage } from "@/context/LanguageContext";
+import { useAuth } from "@/context/AuthContext";
 
 export default function ProductDetailPage() {
   const { t } = useLanguage();
