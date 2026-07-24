@@ -57,8 +57,8 @@ export const verifyAdminJWT = asyncHandler(async (req, res, next) => {
 // Check if admin has specific permission
 export const hasPermission = (resource, action) => {
   return asyncHandler(async (req, res, next) => {
-    // Super admins and Admins bypass permission checks
-    if (req.admin.role === "SUPER_ADMIN" || req.admin.role === "ADMIN") {
+    // Only Super Admins bypass permission checks
+    if (req.admin.role === "SUPER_ADMIN") {
       return next();
     }
 

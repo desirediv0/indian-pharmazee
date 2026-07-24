@@ -124,6 +124,7 @@ export const adminUsers = {
     firstName: string;
     lastName: string;
     role: string;
+    roleId?: string;
     customPermissions?: Array<{ resource: string; action: string }>;
   }) => {
     return api.post("/api/admin/register", data);

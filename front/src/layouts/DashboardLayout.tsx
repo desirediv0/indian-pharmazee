@@ -187,7 +187,7 @@ const hasPermissionFor = (
   resource: Resource,
   action?: Action
 ): boolean => {
-  if (admin?.role === "SUPER_ADMIN" || admin?.role === "ADMIN") return true;
+  if (admin?.role === "SUPER_ADMIN") return true;
 
   if (!admin?.permissions || !Array.isArray(admin.permissions)) return false;
 

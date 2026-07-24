@@ -2,6 +2,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponsive } from "../utils/ApiResponsive.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { prisma } from "../config/db.js";
+import { getDefaultPermissionsForRole } from "./admin.controller.js";
 
 // Get all roles
 export const getAllRoles = asyncHandler(async (req, res) => {
@@ -90,6 +91,34 @@ export const createRole = asyncHandler(async (req, res) => {
   );
 });
 
+// Helper to sync role permissions to all assigned admins
+const syncAdminsPermissionsForRole = async (tx, roleId, permissions) => {
+  const admins = await tx.admin.findMany({
+    where: { roleId },
+    select: { id: true },
+  });
+
+  for (const admin of admins) {
+    await tx.permission.deleteMany({
+      where: { adminId: admin.id },
+    });
+
+    if (Array.isArray(permissions)) {
+      for (const perm of permissions) {
+        if (perm.resource && perm.action) {
+          await tx.permission.create({
+            data: {
+              adminId: admin.id,
+              resource: perm.resource,
+              action: perm.action,
+            },
+          });
+        }
+      }
+    }
+  }
+};
+
 // Update a role
 export const updateRole = asyncHandler(async (req, res) => {
   const { roleId } = req.params;
@@ -124,13 +153,21 @@ export const updateRole = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Permissions must be an array");
   }
 
-  const role = await prisma.adminRole_.update({
-    where: { id: roleId },
-    data: {
-      name: name || existingRole.name,
-      description: description !== undefined ? description : existingRole.description,
-      permissions: permissions || existingRole.permissions,
-    },
+  const role = await prisma.$transaction(async (tx) => {
+    const updated = await tx.adminRole_.update({
+      where: { id: roleId },
+      data: {
+        name: name || existingRole.name,
+        description: description !== undefined ? description : existingRole.description,
+        permissions: permissions || existingRole.permissions,
+      },
+    });
+
+    if (permissions && Array.isArray(permissions)) {
+      await syncAdminsPermissionsForRole(tx, roleId, permissions);
+    }
+
+    return updated;
   });
 
   res.status(200).json(
@@ -203,11 +240,17 @@ export const updateRolePermissions = asyncHandler(async (req, res) => {
     throw new ApiError(400, "Permissions must be an array");
   }
 
-  const role = await prisma.adminRole_.update({
-    where: { id: roleId },
-    data: {
-      permissions,
-    },
+  const role = await prisma.$transaction(async (tx) => {
+    const updated = await tx.adminRole_.update({
+      where: { id: roleId },
+      data: {
+        permissions,
+      },
+    });
+
+    await syncAdminsPermissionsForRole(tx, roleId, permissions);
+
+    return updated;
   });
 
   res.status(200).json(
@@ -239,37 +282,83 @@ export const assignRoleToAdmin = asyncHandler(async (req, res) => {
   }
 
   // Check if role exists (if roleId is provided)
+  let roleData = null;
   if (roleId) {
-    const role = await prisma.adminRole_.findUnique({
+    roleData = await prisma.adminRole_.findUnique({
       where: { id: roleId },
     });
 
-    if (!role) {
+    if (!roleData) {
       throw new ApiError(404, "Role not found");
     }
   }
 
-  // Update admin's role
-  const updatedAdmin = await prisma.admin.update({
+  // Update admin's role AND permissions in a transaction
+  const updatedAdmin = await prisma.$transaction(async (tx) => {
+    // Update roleId on admin
+    const admin = await tx.admin.update({
+      where: { id: adminId },
+      data: {
+        roleId: roleId || null,
+      },
+    });
+
+    // Delete existing permissions
+    await tx.permission.deleteMany({
+      where: { adminId },
+    });
+
+    // If a role is assigned, copy its permissions to the admin
+    if (roleData && Array.isArray(roleData.permissions) && roleData.permissions.length > 0) {
+      for (const perm of roleData.permissions) {
+        if (perm.resource && perm.action) {
+          await tx.permission.create({
+            data: {
+              adminId,
+              resource: perm.resource,
+              action: perm.action,
+            },
+          });
+        }
+      }
+    } else {
+      // No role assigned - give default ADMIN permissions
+      const defaultPerms = getDefaultPermissionsForRole(admin.role);
+      for (const perm of defaultPerms) {
+        await tx.permission.create({
+          data: {
+            adminId,
+            resource: perm.resource,
+            action: perm.action,
+          },
+        });
+      }
+    }
+
+    return admin;
+  });
+
+  // Fetch updated admin with permissions
+  const adminWithPermissions = await prisma.admin.findUnique({
     where: { id: adminId },
-    data: {
-      roleId: roleId || null,
-    },
-    select: {
-      id: true,
-      firstName: true,
-      lastName: true,
-      email: true,
-      role: true,
-      roleId: true,
-    },
+    include: { permissions: true },
   });
 
   res.status(200).json(
     new ApiResponsive(
       200,
-      { admin: updatedAdmin },
-      "Role assigned successfully"
+      {
+        admin: {
+          id: adminWithPermissions.id,
+          firstName: adminWithPermissions.firstName,
+          lastName: adminWithPermissions.lastName,
+          email: adminWithPermissions.email,
+          role: adminWithPermissions.role,
+          roleId: adminWithPermissions.roleId,
+          permissions: adminWithPermissions.permissions,
+        },
+      },
+      "Role assigned and permissions updated successfully"
     )
   );
 });

@@ -8,7 +8,7 @@ import jwt from "jsonwebtoken";
 
 // Register a new admin
 export const registerAdmin = asyncHandler(async (req, res) => {
-  const { email, password, firstName, lastName, role, customPermissions } =
+  const { email, password, firstName, lastName, role, roleId, customPermissions } =
     req.body;
 
   // Check if the current user is a super admin (if not, they shouldn't be here)
@@ -25,6 +25,13 @@ export const registerAdmin = asyncHandler(async (req, res) => {
     throw new ApiError(409, "Email already registered");
   }
 
+  let roleData = null;
+  if (roleId) {
+    roleData = await prisma.adminRole_.findUnique({
+      where: { id: roleId },
+    });
+  }
+
   // Hash password
   const hashedPassword = await bcrypt.hash(password, 10);
 
@@ -38,25 +45,32 @@ export const registerAdmin = asyncHandler(async (req, res) => {
         firstName,
         lastName,
         role: role || "ADMIN",
+        roleId: roleId || null,
         lastLogin: new Date(),
       },
     });
 
-    // If customPermissions were provided, use them instead of defaults
-    const permissionsToCreate =
-      Array.isArray(customPermissions) && customPermissions.length > 0
-        ? customPermissions
-        : getDefaultPermissionsForRole(role || "ADMIN");
+    // Determine permissions to create
+    let permissionsToCreate = [];
+    if (Array.isArray(customPermissions) && customPermissions.length > 0) {
+      permissionsToCreate = customPermissions;
+    } else if (roleData && Array.isArray(roleData.permissions) && roleData.permissions.length > 0) {
+      permissionsToCreate = roleData.permissions;
+    } else {
+      permissionsToCreate = getDefaultPermissionsForRole(role || "ADMIN");
+    }
 
     // Add permissions
     for (const perm of permissionsToCreate) {
-      await tx.permission.create({
-        data: {
-          adminId: admin.id,
-          resource: perm.resource,
-          action: perm.action,
-        },
-      });
+      if (perm.resource && perm.action) {
+        await tx.permission.create({
+          data: {
+            adminId: admin.id,
+            resource: perm.resource,
+            action: perm.action,
+          },
+        });
+      }
     }
 
     return admin;
@@ -509,7 +523,7 @@ export const getLowStockAlerts = asyncHandler(async (req, res) => {
 });
 
 // Helper function to get default permissions based on role
-const getDefaultPermissionsForRole = (role) => {
+export const getDefaultPermissionsForRole = (role) => {
   const permissions = [];
 
   // Common permissions for all admins

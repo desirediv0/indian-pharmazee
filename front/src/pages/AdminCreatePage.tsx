@@ -1,7 +1,7 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { adminUsers } from "@/api/adminService";
-import { Role, Resource, Action } from "@/types/admin";
+import { Role, Resource, Action, AdminRole_ } from "@/types/admin";
 import {
   Card,
   CardContent,
@@ -21,6 +21,8 @@ export default function AdminCreatePage() {
   const { admin: currentAdmin } = useAuth();
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
+  const [customRoles, setCustomRoles] = useState<AdminRole_[]>([]);
+  const [selectedRoleId, setSelectedRoleId] = useState<string>("");
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -29,6 +31,34 @@ export default function AdminCreatePage() {
     lastName: "",
     role: "ADMIN",
   });
+
+  // Check if current user is super admin
+  const isSuperAdmin = currentAdmin?.role === "SUPER_ADMIN";
+
+  useEffect(() => {
+    if (isSuperAdmin) {
+      fetchCustomRoles();
+    }
+  }, [isSuperAdmin]);
+
+  const fetchCustomRoles = async () => {
+    try {
+      const response = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/admin/roles`,
+        {
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("adminToken")}`,
+          },
+        }
+      );
+      const data = await response.json();
+      if (data.success) {
+        setCustomRoles(data.data.roles);
+      }
+    } catch (error) {
+      console.error("Error fetching custom roles:", error);
+    }
+  };
 
   // Add a state for custom permissions
   const [useCustomPermissions, setUseCustomPermissions] = useState(false);
@@ -43,9 +73,6 @@ export default function AdminCreatePage() {
     [Resource.COUPONS]: [],
     [Resource.USERS]: [],
   });
-
-  // Check if current user is super admin
-  const isSuperAdmin = currentAdmin?.role === "SUPER_ADMIN";
 
   const handleChange = (
     e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
@@ -147,6 +174,7 @@ export default function AdminCreatePage() {
         firstName: formData.firstName,
         lastName: formData.lastName,
         role: formData.role,
+        roleId: selectedRoleId || undefined,
         ...(useCustomPermissions && {
           customPermissions: formatPermissionsForApi(),
         }),
@@ -261,7 +289,7 @@ export default function AdminCreatePage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="role">Role</Label>
+              <Label htmlFor="role">Base System Role</Label>
               <select
                 id="role"
                 name="role"
@@ -276,11 +304,29 @@ export default function AdminCreatePage() {
                   </option>
                 ))}
               </select>
-              <p className="text-sm text-muted-foreground">
-                Roles have default permissions, but you can customize them
-                below.
-              </p>
             </div>
+
+            {customRoles.length > 0 && (
+              <div className="space-y-2">
+                <Label htmlFor="customRole">Assign Custom Role (Created on /roles)</Label>
+                <select
+                  id="customRole"
+                  value={selectedRoleId}
+                  onChange={(e) => setSelectedRoleId(e.target.value)}
+                  className="w-full px-3 py-2 border rounded-md"
+                >
+                  <option value="">No Custom Role (Use System Default Permissions)</option>
+                  {customRoles.map((r) => (
+                    <option key={r.id} value={r.id}>
+                      {r.name}
+                    </option>
+                  ))}
+                </select>
+                <p className="text-sm text-muted-foreground">
+                  Selecting a custom role will automatically give this admin all permissions defined in that role.
+                </p>
+              </div>
+            )}
 
             {/* Custom Permissions Section */}
             <div className="border-t pt-4 mt-6">

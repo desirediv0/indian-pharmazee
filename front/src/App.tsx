@@ -94,7 +94,6 @@ const ProtectedRoute = ({
   if (resource && action) {
     const hasPermission =
       admin?.role === "SUPER_ADMIN" ||
-      admin?.role === "ADMIN" ||
       admin?.permissions?.includes(`${resource}:${action}`);
 
     if (!hasPermission) {

@@ -8,7 +8,7 @@ import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
-import { Shield, Loader2 } from "lucide-react";
+import { Shield, Loader2, Plus } from "lucide-react";
 
 export default function AdminsPage() {
   const [admins, setAdmins] = useState<Admin[]>([]);
@@ -165,13 +165,19 @@ export default function AdminsPage() {
       <div className="flex items-center justify-between">
         <h1 className="text-2xl font-bold">Admin Users</h1>
         {isSuperAdmin && (
-          <Button
-            variant="outline"
-            onClick={() => navigate("/roles")}
-          >
-            <Shield className="mr-2 h-4 w-4" />
-            Manage Roles
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button onClick={() => navigate("/admins/new")}>
+              <Plus className="mr-2 h-4 w-4" />
+              Create Admin
+            </Button>
+            <Button
+              variant="outline"
+              onClick={() => navigate("/roles")}
+            >
+              <Shield className="mr-2 h-4 w-4" />
+              Manage Roles
+            </Button>
+          </div>
         )}
       </div>
 
