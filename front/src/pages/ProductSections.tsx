@@ -44,6 +44,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/context";
+import { useAuth } from "@/context/AuthContext";
 
 interface Product {
   id: string;
@@ -81,6 +82,7 @@ interface ProductSection {
 
 export default function ProductSectionsPage() {
   const { t } = useLanguage();
+  const { admin } = useAuth();
   const [sections, setSections] = useState<ProductSection[]>([]);
   const [allProducts, setAllProducts] = useState<Product[]>([]);
   const [loading, setLoading] = useState(true);
@@ -391,16 +393,18 @@ export default function ProductSectionsPage() {
             >
               <HelpCircle className="h-4 w-4 text-[#4B5563]" />
             </Button>
-            <Button
-              className=""
-              onClick={() => {
-                resetForm();
-                setShowCreateDialog(true);
-              }}
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              {t("product_sections.create_button")}
-            </Button>
+            {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("products:create")) && (
+              <Button
+                className=""
+                onClick={() => {
+                  resetForm();
+                  setShowCreateDialog(true);
+                }}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                {t("product_sections.create_button")}
+              </Button>
+            )}
           </div>
         </div>
         <div className="h-px bg-[#E5E7EB]" />
@@ -418,16 +422,18 @@ export default function ProductSectionsPage() {
             <p className="text-sm text-[#9CA3AF] mb-6 max-w-sm mx-auto">
               {t("product_sections.empty.description")}
             </p>
-            <Button
-              className=""
-              onClick={() => {
-                resetForm();
-                setShowCreateDialog(true);
-              }}
-            >
-              <Plus className="mr-2 h-4 w-4" />
-              {t("product_sections.empty.create_first")}
-            </Button>
+            {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("products:create")) && (
+              <Button
+                className=""
+                onClick={() => {
+                  resetForm();
+                  setShowCreateDialog(true);
+                }}
+              >
+                <Plus className="mr-2 h-4 w-4" />
+                {t("product_sections.empty.create_first")}
+              </Button>
+            )}
           </div>
         </Card>
       ) : (
@@ -450,11 +456,12 @@ export default function ProductSectionsPage() {
                   <div className="flex items-center gap-2">
                     <span>{section.name}</span>
                     <Badge
+                      variant="outline"
                       className={cn(
-                        "text-xs",
-                        section.isActive
-                          ? "bg-[#ECFDF5] text-[#22C55E] border-[#D1FAE5]"
-                          : "bg-[#FFFBEB] text-[#F59E0B] border-[#FEF3C7]"
+                        "text-xs font-normal border-transparent",
+                        activeTab === section.id
+                          ? "bg-[#C8E6C9] text-[#1B5E20]"
+                          : "bg-[#F3F4F6] text-[#6B7280]"
                       )}
                     >
                       {section.items?.length || 0}/{section.maxProducts}
@@ -507,6 +514,7 @@ export default function ProductSectionsPage() {
                       <Switch
                         id={`switch-${currentSection.id}`}
                         checked={currentSection.isActive}
+                        disabled={!(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("products:update"))}
                         onCheckedChange={(checked) =>
                           handleToggleSectionActive(currentSection, checked)
                         }
@@ -526,21 +534,27 @@ export default function ProductSectionsPage() {
                         align="end"
                         className="bg-[#FFFFFF] border-[#E5E7EB] shadow-lg"
                       >
-                        <DropdownMenuItem
-                          className="text-[#1F2937] hover:bg-[#F3F7F6]"
-                          onClick={() => openEditDialog(currentSection)}
-                        >
-                          <Edit className="h-4 w-4 mr-2" />
-                          {t("product_sections.actions.edit")}
-                        </DropdownMenuItem>
-                        <DropdownMenuSeparator className="bg-[#E5E7EB]" />
-                        <DropdownMenuItem
-                          className="text-[#EF4444] hover:bg-[#FEF2F2]"
-                          onClick={() => handleDeleteSection(currentSection.id)}
-                        >
-                          <Trash2 className="h-4 w-4 mr-2" />
-                          {t("product_sections.actions.delete")}
-                        </DropdownMenuItem>
+                        {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("products:update")) && (
+                          <DropdownMenuItem
+                            className="text-[#1F2937] hover:bg-[#F3F7F6]"
+                            onClick={() => openEditDialog(currentSection)}
+                          >
+                            <Edit className="h-4 w-4 mr-2" />
+                            {t("product_sections.actions.edit")}
+                          </DropdownMenuItem>
+                        )}
+                        {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("products:delete")) && (
+                          <>
+                            <DropdownMenuSeparator className="bg-[#E5E7EB]" />
+                            <DropdownMenuItem
+                              className="text-[#EF4444] hover:bg-[#FEF2F2]"
+                              onClick={() => handleDeleteSection(currentSection.id)}
+                            >
+                              <Trash2 className="h-4 w-4 mr-2" />
+                              {t("product_sections.actions.delete")}
+                            </DropdownMenuItem>
+                          </>
+                        )}
                       </DropdownMenuContent>
                     </DropdownMenu>
                   </div>
@@ -557,13 +571,15 @@ export default function ProductSectionsPage() {
                   </p>
                   {currentSection.items &&
                     currentSection.items.length < currentSection.maxProducts && (
-                      <Button
-                        size="sm"
-                        onClick={() => openAddProductDialog(currentSection)}
-                      >
-                        <Plus className="mr-2 h-4 w-4" />
-                        {t("product_sections.labels.add_product")}
-                      </Button>
+                      (admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("products:update")) && (
+                        <Button
+                          size="sm"
+                          onClick={() => openAddProductDialog(currentSection)}
+                        >
+                          <Plus className="mr-2 h-4 w-4" />
+                          {t("product_sections.labels.add_product")}
+                        </Button>
+                      )
                     )}
                 </div>
 
@@ -635,19 +651,21 @@ export default function ProductSectionsPage() {
                             </div>
 
                             {/* Remove Button */}
-                            <Button
-                              variant="ghost"
-                              size="icon"
-                              className="h-8 w-8 hover:bg-[#FEF2F2] text-[#EF4444] hover:text-[#EF4444]"
-                              onClick={() =>
-                                handleRemoveProduct(
-                                  currentSection.id,
-                                  item.productId
-                                )
-                              }
-                            >
-                              <X className="h-4 w-4" />
-                            </Button>
+                            {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("products:update") || admin?.permissions?.includes("products:delete")) && (
+                              <Button
+                                variant="ghost"
+                                size="icon"
+                                className="h-8 w-8 hover:bg-[#FEF2F2] text-[#EF4444] hover:text-[#EF4444]"
+                                onClick={() =>
+                                  handleRemoveProduct(
+                                    currentSection.id,
+                                    item.productId
+                                  )
+                                }
+                              >
+                                <X className="h-4 w-4" />
+                              </Button>
+                            )}
                           </div>
                         );
                       })}
