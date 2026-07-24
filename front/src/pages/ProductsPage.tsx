@@ -38,6 +38,7 @@ import {
 import { toast } from "sonner";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { useAuth } from "@/context/AuthContext";
 import { useDropzone } from "react-dropzone";
 import { Badge } from "@/components/ui/badge";
 import { v4 as uuidv4 } from "uuid";
@@ -2740,6 +2741,7 @@ const CategorySelector = ({
 };
 
 export default function ProductsPage() {
+  const { admin } = useAuth();
   const { id } = useParams();
   const location = useLocation();
   const isNewProduct = location.pathname.includes("/new");
@@ -3150,14 +3152,16 @@ function ProductsList() {
                 onKeyPress={(e) => e.key === "Enter" && handleSearch(e)}
               />
             </div>
-            <Button
-              asChild
-            >
-              <Link to="/products/new">
-                <Plus className="mr-2 h-4 w-4" />
-                {t("products.add_new")}
-              </Link>
-            </Button>
+            {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("products:create")) && (
+              <Button
+                asChild
+              >
+                <Link to="/products/new">
+                  <Plus className="mr-2 h-4 w-4" />
+                  {t("products.add_new")}
+                </Link>
+              </Button>
+            )}
           </div>
         </div>
         <div className="h-px bg-[#E5E7EB]" />
@@ -3387,34 +3391,42 @@ function ProductsList() {
                           align="end"
                           className="bg-[#FFFFFF] border-[#E5E7EB] shadow-lg"
                         >
-                          <DropdownMenuItem
-                            className="text-[#1F2937] hover:bg-[#F3F7F6]"
-                            asChild
-                          >
-                            <Link to={`/products/${product.id}`}>
-                              <Edit className="h-4 w-4 mr-2" />
-                              Edit
-                            </Link>
-                          </DropdownMenuItem>
-                          <DropdownMenuItem
-                            className="text-[#1F2937] hover:bg-[#F3F7F6]"
-                            onClick={() =>
-                              handleToggleProductStatus(
-                                product.id,
-                                product.isActive
-                              )
-                            }
-                          >
-                            {product.isActive ? "Deactivate" : "Activate"}
-                          </DropdownMenuItem>
-                          <DropdownMenuSeparator className="bg-[#E5E7EB]" />
-                          <DropdownMenuItem
-                            className="text-[#EF4444] hover:bg-[#FEF2F2]"
-                            onClick={() => openDeleteDialog(product.id)}
-                          >
-                            <Trash2 className="h-4 w-4 mr-2" />
-                            Delete
-                          </DropdownMenuItem>
+                          {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("products:update")) && (
+                            <DropdownMenuItem
+                              className="text-[#1F2937] hover:bg-[#F3F7F6]"
+                              asChild
+                            >
+                              <Link to={`/products/${product.id}`}>
+                                <Edit className="h-4 w-4 mr-2" />
+                                Edit
+                              </Link>
+                            </DropdownMenuItem>
+                          )}
+                          {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("products:update")) && (
+                            <DropdownMenuItem
+                              className="text-[#1F2937] hover:bg-[#F3F7F6]"
+                              onClick={() =>
+                                handleToggleProductStatus(
+                                  product.id,
+                                  product.isActive
+                                )
+                              }
+                            >
+                              {product.isActive ? "Deactivate" : "Activate"}
+                            </DropdownMenuItem>
+                          )}
+                          {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("products:delete")) && (
+                            <>
+                              <DropdownMenuSeparator className="bg-[#E5E7EB]" />
+                              <DropdownMenuItem
+                                className="text-[#EF4444] hover:bg-[#FEF2F2]"
+                                onClick={() => openDeleteDialog(product.id)}
+                              >
+                                <Trash2 className="h-4 w-4 mr-2" />
+                                Delete
+                              </DropdownMenuItem>
+                            </>
+                          )}
                         </DropdownMenuContent>
                       </DropdownMenu>
                     </div>

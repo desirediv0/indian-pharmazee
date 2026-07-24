@@ -32,6 +32,7 @@ import {
 import { DeleteProductDialog } from "@/components/DeleteProductDialog";
 import { ProductReorderDialog } from "@/components/ProductReorderDialog";
 import { useLanguage } from "@/context/LanguageContext";
+import { useAuth } from "@/context/AuthContext";
 
 export default function CategoriesPage() {
   const { id } = useParams();
@@ -62,6 +63,8 @@ function CategoriesList() {
     Record<string, number>
   >({});
   const { t } = useLanguage();
+
+  const { admin } = useAuth();
 
   // States for delete dialog
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
@@ -288,15 +291,17 @@ function CategoriesList() {
             >
               <HelpCircle className="h-4 w-4" />
             </Button>
-            <Button
-              asChild
-              className=""
-            >
-              <Link to="/categories/new">
-                <Plus className="mr-2 h-4 w-4" />
-                {t("categories.create_button")}
-              </Link>
-            </Button>
+            {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("categories:create")) && (
+              <Button
+                asChild
+                className=""
+              >
+                <Link to="/categories/new">
+                  <Plus className="mr-2 h-4 w-4" />
+                  {t("categories.create_button")}
+                </Link>
+              </Button>
+            )}
           </div>
         </div>
         <div className="h-px bg-[#E5E7EB]" />
@@ -315,15 +320,17 @@ function CategoriesList() {
             <p className="text-sm text-[#9CA3AF] mb-6 max-w-sm mx-auto">
               {t("categories.empty.description")}
             </p>
-            <Button
-              asChild
-              className=""
-            >
-              <Link to="/categories/new">
-                <Plus className="mr-2 h-4 w-4" />
-                {t("categories.empty.create_first")}
-              </Link>
-            </Button>
+            {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("categories:create")) && (
+              <Button
+                asChild
+                className=""
+              >
+                <Link to="/categories/new">
+                  <Plus className="mr-2 h-4 w-4" />
+                  {t("categories.empty.create_first")}
+                </Link>
+              </Button>
+            )}
           </div>
         </Card>
       ) : (
@@ -348,15 +355,10 @@ function CategoriesList() {
                       </div>
                     )}
                     <div className="flex-1 min-w-0">
-                      <div className="flex items-center gap-2">
-                        <span className="inline-flex items-center justify-center bg-gray-100 text-gray-800 text-xs font-semibold px-2 py-0.5 rounded-full">
-                          #{category.position || 0}
-                        </span>
-                        <h3 className="font-semibold text-[#1F2937] truncate">
-                          {category.name}
-                        </h3>
-                      </div>
-                      <p className="text-xs text-[#9CA3AF] mt-0.5">
+                      <h3 className="font-semibold text-[#1F2937] truncate">
+                        {category.name}
+                      </h3>
+                      <p className="text-xs text-[#9CA3AF]">
                         {t("categories.sub_categories_count").replace("{count}", String(subCategoriesCount[category.id] || 0))}
                       </p>
                     </div>
@@ -386,24 +388,28 @@ function CategoriesList() {
                     </Button>
                   </div>
                   <div className="flex items-center gap-2">
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 hover:bg-[#F3F4F6]"
-                      asChild
-                    >
-                      <Link to={`/categories/${category.id}`}>
-                        <Edit className="h-4 w-4 text-[#4B5563]" />
-                      </Link>
-                    </Button>
-                    <Button
-                      variant="ghost"
-                      size="sm"
-                      className="h-8 hover:bg-[#FEF2F2]"
-                      onClick={() => openDeleteDialog(category.id)}
-                    >
-                      <Trash2 className="h-4 w-4 text-[#EF4444]" />
-                    </Button>
+                    {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("categories:update")) && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 hover:bg-[#F3F4F6]"
+                        asChild
+                      >
+                        <Link to={`/categories/${category.id}`}>
+                          <Edit className="h-4 w-4 text-[#4B5563]" />
+                        </Link>
+                      </Button>
+                    )}
+                    {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("categories:delete")) && (
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        className="h-8 hover:bg-[#FEF2F2]"
+                        onClick={() => openDeleteDialog(category.id)}
+                      >
+                        <Trash2 className="h-4 w-4 text-[#EF4444]" />
+                      </Button>
+                    )}
                   </div>
                 </div>
               </CardContent>

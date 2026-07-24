@@ -249,6 +249,8 @@ export default function ProductDetailPage() {
     );
   }
 
+  const { admin } = useAuth();
+  
   return (
     <div className="space-y-6">
       {/* Delete Confirmation Dialog */}
@@ -308,42 +310,49 @@ export default function ProductDetailPage() {
               {t("products.list.status.inactive")}
             </Badge>
           )}
-          <Button
-            variant="outline"
-            size="sm"
-            className="ml-2"
-            onClick={handleToggleProductStatus}
-          >
-            {product.isActive ? t("products.details.actions.deactivate") : t("products.details.actions.activate")}
-          </Button>
+          {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("products:update")) && (
+            <Button
+              variant="outline"
+              size="sm"
+              className="ml-2"
+              onClick={handleToggleProductStatus}
+            >
+              {product.isActive ? t("products.details.actions.deactivate") : t("products.details.actions.activate")}
+            </Button>
+          )}
         </div>
         <div className="flex space-x-2">
-          <Button
-            variant="outline"
-            onClick={handleEditProduct}
-            className="flex items-center"
-          >
-            <Edit className="mr-2 h-4 w-4" />
-            {t("products.details.actions.edit")}
-          </Button>
-          <Button
-            variant="destructive"
-            onClick={() => setIsDeleteDialogOpen(true)}
-            disabled={deletingProduct}
-            className="flex items-center"
-          >
-            {deletingProduct ? (
-              <>
-                <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                {t("common.deleting") || "Deleting..."}
-              </>
-            ) : (
-              <>
-                <Trash2 className="mr-2 h-4 w-4" />
-                {t("products.details.actions.delete")}
-              </>
-            )}
-          </Button>
+          {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("products:update")) && (
+            <Button
+              variant="outline"
+              onClick={handleEditProduct}
+              className="flex items-center"
+            >
+              <Edit className="mr-2 h-4 w-4" />
+              {t("products.details.actions.edit")}
+            </Button>
+          )}
+
+          {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("products:delete")) && (
+            <Button
+              variant="destructive"
+              onClick={() => setIsDeleteDialogOpen(true)}
+              disabled={deletingProduct}
+              className="flex items-center"
+            >
+              {deletingProduct ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  {t("common.deleting") || "Deleting..."}
+                </>
+              ) : (
+                <>
+                  <Trash2 className="mr-2 h-4 w-4" />
+                  {t("products.details.actions.delete")}
+                </>
+              )}
+            </Button>
+          )}
         </div>
       </div>
 

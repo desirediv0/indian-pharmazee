@@ -28,6 +28,7 @@ import {
 } from "lucide-react";
 import { toast } from "sonner";
 import { useLanguage } from "@/context/LanguageContext";
+import { useAuth } from "@/context/AuthContext";
 
 interface CouponItem {
   id: string;
@@ -67,6 +68,7 @@ export default function CouponsPage() {
 
 function CouponsList() {
   const { t } = useLanguage();
+  const { admin } = useAuth();
   const [couponsList, setCouponsList] = useState<CouponItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
