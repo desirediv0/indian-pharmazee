@@ -210,20 +210,21 @@ function CouponsList() {
               {t('coupons.description')}
             </p>
           </div>
-          <Button
-            asChild
-            className=""
-          >
-            <Link to="/coupons/new">
-              <Plus className="mr-2 h-4 w-4" />
-              {t('coupons.add_coupon')}
-            </Link>
-          </Button>
+          {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("coupons:create")) && (
+            <Button
+              asChild
+              className=""
+            >
+              <Link to="/coupons/new">
+                <Plus className="mr-2 h-4 w-4" />
+                {t('coupons.add_coupon')}
+              </Link>
+            </Button>
+          )}
         </div>
         <div className="h-px bg-[#E5E7EB]" />
       </div>
 
-      {/* Coupons List */}
       {couponsList.length === 0 ? (
         <Card className="bg-[#FFFFFF] border-[#E5E7EB] shadow-[0_1px_2px_rgba(0,0,0,0.04)] rounded-xl">
           <div className="text-center py-16">
@@ -236,12 +237,14 @@ function CouponsList() {
             <p className="text-sm text-[#9CA3AF] mb-6 max-w-sm mx-auto">
               {t('coupons.no_coupons_desc')}
             </p>
-            <Button
-              className=""
-              asChild
-            >
-              <Link to="/coupons/new">{t('coupons.add_first_coupon')}</Link>
-            </Button>
+            {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("coupons:create")) && (
+              <Button
+                className=""
+                asChild
+              >
+                <Link to="/coupons/new">{t('coupons.add_first_coupon')}</Link>
+              </Button>
+            )}
           </div>
         </Card>
       ) : (
@@ -273,6 +276,7 @@ function CouponsList() {
                   <div className="flex items-center gap-2 flex-shrink-0">
                     <Switch
                       checked={!!coupon.isActive}
+                      disabled={!(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("coupons:update"))}
                       onCheckedChange={() =>
                         handleToggleStatus(coupon.id, !!coupon.isActive, coupon.code || "")
                       }
@@ -292,7 +296,6 @@ function CouponsList() {
                 </div>
 
                 <div className="space-y-3 mb-4">
-                  {/* Discount */}
                   <div className="flex items-center gap-2">
                     {coupon.discountType === "PERCENTAGE" ? (
                       <>

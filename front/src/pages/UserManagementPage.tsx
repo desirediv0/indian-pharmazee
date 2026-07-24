@@ -42,6 +42,7 @@ import {
 import { toast } from "sonner";
 import { formatDate } from "@/lib/utils";
 import { useLanguage } from "@/context/LanguageContext";
+import { useAuth } from "@/context/AuthContext";
 
 // User type definition
 interface User {
@@ -341,6 +342,7 @@ const DeleteConfirmDialog = ({
 // Main user management page component
 export default function UserManagementPage() {
   const { t } = useLanguage();
+  const { admin } = useAuth();
   // States
   const [users, setUsers] = useState<User[]>([]);
   const [loading, setLoading] = useState(true);
