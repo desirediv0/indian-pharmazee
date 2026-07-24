@@ -1,7 +1,7 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { adminUsers } from "@/api/adminService";
-import { Role, Resource, Action, AdminRole_ } from "@/types/admin";
+import { Resource, Action, AdminRole_ } from "@/types/admin";
 import {
   Card,
   CardContent,
@@ -25,8 +25,8 @@ import {
   Shield,
   ArrowLeft,
   UserPlus,
-  CheckCircle2,
   Key,
+  ShieldCheck,
 } from "lucide-react";
 
 export default function AdminCreatePage() {
@@ -34,8 +34,10 @@ export default function AdminCreatePage() {
   const navigate = useNavigate();
   const [loading, setLoading] = useState(false);
   const [customRoles, setCustomRoles] = useState<AdminRole_[]>([]);
-  const [selectedRoleId, setSelectedRoleId] = useState<string>("");
-
+  
+  // Single Role Selection state (e.g. "SUPER_ADMIN", "ADMIN", or "custom_<roleId>")
+  const [selectedRoleOption, setSelectedRoleOption] = useState<string>("ADMIN");
+  
   // Password Visibility States
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -46,7 +48,6 @@ export default function AdminCreatePage() {
     confirmPassword: "",
     firstName: "",
     lastName: "",
-    role: "ADMIN",
   });
 
   // Check if current user is super admin
@@ -92,14 +93,10 @@ export default function AdminCreatePage() {
   });
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>
+    e: React.ChangeEvent<HTMLInputElement>
   ) => {
     const { name, value } = e.target;
     setFormData((prev) => ({ ...prev, [name]: value }));
-
-    if (name === "role") {
-      setUseCustomPermissions(false);
-    }
   };
 
   // Handle permission toggles
@@ -180,19 +177,26 @@ export default function AdminCreatePage() {
     try {
       setLoading(true);
 
-      // Clean roleId: ensure it's undefined if empty string
-      const cleanRoleId =
-        selectedRoleId && selectedRoleId.trim() !== ""
-          ? selectedRoleId.trim()
-          : undefined;
+      // Determine role and roleId from unified selection
+      let role = "ADMIN";
+      let roleId: string | undefined = undefined;
+
+      if (selectedRoleOption === "SUPER_ADMIN") {
+        role = "SUPER_ADMIN";
+      } else if (selectedRoleOption.startsWith("custom_")) {
+        role = "ADMIN";
+        roleId = selectedRoleOption.replace("custom_", "");
+      } else {
+        role = "ADMIN";
+      }
 
       const requestData = {
         email: formData.email.trim(),
         password: formData.password,
         firstName: formData.firstName.trim(),
         lastName: formData.lastName.trim(),
-        role: formData.role,
-        roleId: cleanRoleId,
+        role,
+        roleId,
         ...(useCustomPermissions && {
           customPermissions: formatPermissionsForApi(),
         }),
@@ -224,7 +228,7 @@ export default function AdminCreatePage() {
             <Shield className="h-12 w-12 text-amber-600 mx-auto mb-3" />
             <h2 className="text-lg font-semibold text-amber-900">Access Restricted</h2>
             <p className="text-amber-700 text-sm mt-1">
-              Only Super Administrators can create and assign roles to new admins.
+              Only Super Administrators can create new admin accounts.
             </p>
             <Button
               className="mt-4"
@@ -258,7 +262,7 @@ export default function AdminCreatePage() {
               Create New Admin User
             </h1>
             <p className="text-sm text-slate-500">
-              Set up credentials and assign roles for a new administrator
+              Set up credentials and assign a role for a new administrator
             </p>
           </div>
         </div>
@@ -273,7 +277,7 @@ export default function AdminCreatePage() {
               1. Admin Credentials & Account Info
             </CardTitle>
             <CardDescription>
-              This info will be used for login at admin.indianpharmazee.com/login
+              Login credentials for admin.indianpharmazee.com/login
             </CardDescription>
           </CardHeader>
           <CardContent className="p-6 space-y-4">
@@ -403,63 +407,45 @@ export default function AdminCreatePage() {
           </CardContent>
         </Card>
 
-        {/* Step 2: Select Role & Permissions */}
+        {/* Step 2: Select Role */}
         <Card className="border-slate-200 shadow-sm">
           <CardHeader className="bg-slate-50/50 border-b border-slate-100 pb-4">
             <CardTitle className="text-base font-semibold flex items-center gap-2 text-slate-800">
-              <Shield className="h-4 w-4 text-[#2E7D32]" />
-              2. Assign Role & Page Permissions
+              <ShieldCheck className="h-4 w-4 text-[#2E7D32]" />
+              2. Select Role for this Admin
             </CardTitle>
             <CardDescription>
-              Select what access this admin will have in the dashboard
+              Choose a custom role created on /roles page or pick Super Admin / Standard Admin
             </CardDescription>
           </CardHeader>
 
-          <CardContent className="p-6 space-y-6">
-            {/* Custom Roles List Select */}
-            {customRoles.length > 0 && (
-              <div className="space-y-2 bg-[#F0FDF4] border border-[#DCFCE7] p-4 rounded-xl">
-                <Label htmlFor="customRole" className="text-[#166534] font-semibold flex items-center gap-2">
-                  <CheckCircle2 className="h-4 w-4 text-[#166534]" />
-                  Select Custom Role (Created on /roles page)
-                </Label>
-                <select
-                  id="customRole"
-                  value={selectedRoleId}
-                  onChange={(e) => setSelectedRoleId(e.target.value)}
-                  className="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-lg text-slate-800 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2E7D32]"
-                >
-                  <option value="">-- No Custom Role (Use System Base Role) --</option>
-                  {customRoles.map((r) => (
-                    <option key={r.id} value={r.id}>
-                      ✨ {r.name} {r.description ? `(${r.description})` : ""}
-                    </option>
-                  ))}
-                </select>
-                <p className="text-xs text-[#15803D]">
-                  Selecting a custom role will automatically give this user all page permissions configured for that role.
-                </p>
-              </div>
-            )}
-
-            {/* Base Role Selector (Only relevant if no custom role selected) */}
+          <CardContent className="p-6 space-y-4">
             <div className="space-y-2">
-              <Label htmlFor="role" className="text-slate-700 font-medium">
-                System Base Role
+              <Label htmlFor="roleOption" className="text-slate-800 font-semibold">
+                Select Admin Role <span className="text-red-500">*</span>
               </Label>
               <select
-                id="role"
-                name="role"
-                value={formData.role}
-                onChange={handleChange}
+                id="roleOption"
+                value={selectedRoleOption}
+                onChange={(e) => setSelectedRoleOption(e.target.value)}
                 className="w-full px-3 py-2.5 bg-white border border-slate-300 rounded-lg text-slate-800 text-sm font-medium shadow-sm focus:outline-none focus:ring-2 focus:ring-[#2E7D32]"
               >
-                {Object.keys(Role).map((role) => (
-                  <option key={role} value={role}>
-                    {role.replace("_", " ")}
-                  </option>
-                ))}
+                <option value="ADMIN">Standard Admin (Default permissions)</option>
+                <option value="SUPER_ADMIN">👑 Super Admin (Full Access to Everything)</option>
+                
+                {customRoles.length > 0 && (
+                  <optgroup label="✨ Custom Roles (Created on /roles)">
+                    {customRoles.map((r) => (
+                      <option key={r.id} value={`custom_${r.id}`}>
+                        {r.name} {r.description ? `— ${r.description}` : ""}
+                      </option>
+                    ))}
+                  </optgroup>
+                )}
               </select>
+              <p className="text-xs text-slate-500">
+                Selecting a custom role will automatically assign all permissions defined in that role to this user.
+              </p>
             </div>
 
             {/* Fine-Grain Custom Permissions Toggle */}
