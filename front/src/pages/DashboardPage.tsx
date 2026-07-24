@@ -108,17 +108,15 @@ export default function DashboardPage() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
 
-  // Fetch dashboard data
+  // Fetch dashboard data safely per module
   useEffect(() => {
     const fetchDashboardData = async () => {
+      setIsLoading(true);
+      setError(null);
+
+      // 1. Try loading order stats if user has permission
       try {
-        setIsLoading(true);
-        setError(null);
-
-        // Load order stats
         const orderStatsData = await orders.getOrderStats();
-
-        // Handle different response structures
         let actualData: OrderStats = {};
         if (orderStatsData?.data?.success && orderStatsData?.data?.data) {
           actualData = orderStatsData.data.data;
@@ -150,8 +148,12 @@ export default function DashboardPage() {
           revenueGrowth: actualData.revenueGrowth || 0,
         };
         setOrderStats(processedData);
+      } catch (err) {
+        console.log("Order stats not accessible for current role");
+      }
 
-        // Load inventory alerts
+      // 2. Try loading inventory alerts if user has permission
+      try {
         const inventoryAlertsData = await inventory.getInventoryAlerts();
         let actualInventoryData = {};
         if (
@@ -168,83 +170,73 @@ export default function DashboardPage() {
           actualInventoryData = inventoryAlertsData.data;
         }
         setInventoryAlerts(actualInventoryData);
-
-        // Load return requests stats
-        try {
-          const returnStatsData = await returnRequests.getReturnStats();
-          let actualReturnStats: ReturnStats = {};
-          if (returnStatsData?.data?.success && returnStatsData?.data?.data) {
-            actualReturnStats = returnStatsData.data.data;
-          } else if (
-            returnStatsData?.data?.statusCode === 200 &&
-            returnStatsData?.data?.data
-          ) {
-            actualReturnStats = returnStatsData.data.data;
-          } else if (returnStatsData?.data) {
-            actualReturnStats = returnStatsData.data;
-          }
-          setReturnStats(actualReturnStats);
-
-          // Fetch recent return requests
-          const recentReturnsData = await returnRequests.getAllReturnRequests({
-            page: 1,
-            limit: 5,
-          });
-          let actualReturns: any[] = [];
-          if (
-            recentReturnsData?.data?.success &&
-            recentReturnsData?.data?.data?.returnRequests
-          ) {
-            actualReturns = recentReturnsData.data.data.returnRequests;
-          } else if (
-            recentReturnsData?.data?.statusCode === 200 &&
-            recentReturnsData?.data?.data?.returnRequests
-          ) {
-            actualReturns = recentReturnsData.data.data.returnRequests;
-          } else if (recentReturnsData?.data?.returnRequests) {
-            actualReturns = recentReturnsData.data.returnRequests;
-          }
-          setRecentReturns(actualReturns);
-        } catch (err) {
-          console.error("Error fetching return stats:", err);
-        }
-
-        // Load user stats
-        try {
-          const userStatsData = await customerUsers.getUsers({ limit: 1 });
-          let totalUsers = 0;
-          if (
-            userStatsData?.data?.success &&
-            userStatsData?.data?.data?.pagination
-          ) {
-            totalUsers = userStatsData.data.data.pagination.total || 0;
-          } else if (
-            userStatsData?.data?.statusCode === 200 &&
-            userStatsData?.data?.data?.pagination
-          ) {
-            totalUsers = userStatsData.data.data.pagination.total || 0;
-          } else if (userStatsData?.data?.pagination) {
-            totalUsers = userStatsData.data.pagination.total || 0;
-          }
-          setUserStats({ total: totalUsers });
-        } catch (err) {
-          console.error("Error fetching user stats:", err);
-        }
-      } catch (error: any) {
-        console.error("Error fetching dashboard data:", error);
-        setError("Failed to load dashboard data. Please try again.");
-        setOrderStats({
-          totalOrders: 0,
-          totalSales: 0,
-          statusCounts: {},
-          topProducts: [],
-          monthlySales: [],
-          orderGrowth: 0,
-          revenueGrowth: 0,
-        });
-      } finally {
-        setIsLoading(false);
+      } catch (err) {
+        console.log("Inventory alerts not accessible for current role");
       }
+
+      // 3. Try loading return requests stats if user has permission
+      try {
+        const returnStatsData = await returnRequests.getReturnStats();
+        let actualReturnStats: ReturnStats = {};
+        if (returnStatsData?.data?.success && returnStatsData?.data?.data) {
+          actualReturnStats = returnStatsData.data.data;
+        } else if (
+          returnStatsData?.data?.statusCode === 200 &&
+          returnStatsData?.data?.data
+        ) {
+          actualReturnStats = returnStatsData.data.data;
+        } else if (returnStatsData?.data) {
+          actualReturnStats = returnStatsData.data;
+        }
+        setReturnStats(actualReturnStats);
+
+        // Fetch recent return requests
+        const recentReturnsData = await returnRequests.getAllReturnRequests({
+          page: 1,
+          limit: 5,
+        });
+        let actualReturns: any[] = [];
+        if (
+          recentReturnsData?.data?.success &&
+          recentReturnsData?.data?.data?.returnRequests
+        ) {
+          actualReturns = recentReturnsData.data.data.returnRequests;
+        } else if (
+          recentReturnsData?.data?.statusCode === 200 &&
+          recentReturnsData?.data?.data?.returnRequests
+        ) {
+          actualReturns = recentReturnsData.data.data.returnRequests;
+        } else if (recentReturnsData?.data?.returnRequests) {
+          actualReturns = recentReturnsData.data.returnRequests;
+        }
+        setRecentReturns(actualReturns);
+      } catch (err) {
+        console.log("Return stats not accessible for current role");
+      }
+
+      // 4. Try loading user stats if user has permission
+      try {
+        const userStatsData = await customerUsers.getUsers({ limit: 1 });
+        let totalUsers = 0;
+        if (
+          userStatsData?.data?.success &&
+          userStatsData?.data?.data?.pagination
+        ) {
+          totalUsers = userStatsData.data.data.pagination.total || 0;
+        } else if (
+          userStatsData?.data?.statusCode === 200 &&
+          userStatsData?.data?.data?.pagination
+        ) {
+          totalUsers = userStatsData.data.data.pagination.total || 0;
+        } else if (userStatsData?.data?.pagination) {
+          totalUsers = userStatsData.data.pagination.total || 0;
+        }
+        setUserStats({ total: totalUsers });
+      } catch (err) {
+        console.log("User stats not accessible for current role");
+      }
+
+      setIsLoading(false);
     };
 
     fetchDashboardData();

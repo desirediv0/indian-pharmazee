@@ -91,10 +91,12 @@ api.interceptors.response.use(
           window.location.href = "/login";
         }
       } else if (status === 403) {
-        // Forbidden - show permission denied message
-        toast.error(
-          data.message || "You don't have permission to perform this action"
-        );
+        // Forbidden - show permission denied message only for non-GET requests (e.g. user action like create/edit/delete)
+        if (!error.config?.suppressErrorToast && error.config?.method !== "get") {
+          toast.error(
+            data.message || "You don't have permission to perform this action"
+          );
+        }
       } else if (status === 500) {
         // Server error
         toast.error("Server error. Please try again later.");
