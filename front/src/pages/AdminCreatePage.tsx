@@ -470,69 +470,95 @@ export default function AdminCreatePage() {
                   </p>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-                    {Object.values(Resource).map((resource) => (
-                      <div
-                        key={resource}
-                        className="border border-slate-200 rounded-xl p-4 bg-slate-50/50 hover:bg-white transition-all"
-                      >
-                        <div className="flex justify-between items-center pb-2 border-b border-slate-200 mb-3">
-                          <span className="font-bold text-slate-800 text-sm capitalize">
-                            {resource.replace("_", " ")}
-                          </span>
-                          <div className="flex items-center space-x-1.5">
-                            <Checkbox
-                              id={`resource-${resource}-all`}
-                              checked={[
-                                Action.CREATE,
-                                Action.READ,
-                                Action.UPDATE,
-                                Action.DELETE,
-                              ].every((action) =>
-                                hasPermission(resource as Resource, action)
-                              )}
-                              onCheckedChange={() =>
-                                toggleAllForResource(resource as Resource)
-                              }
-                            />
-                            <Label
-                              htmlFor={`resource-${resource}-all`}
-                              className="text-xs font-semibold text-slate-600 cursor-pointer"
-                            >
-                              Select All
-                            </Label>
-                          </div>
-                        </div>
+                    {Object.values(Resource).map((resource) => {
+                      const pageLabels: Record<string, string> = {
+                        dashboard: "📊 Dashboard Page (/)",
+                        admins: "🛡️ Admins & Roles (/admins, /roles)",
+                        users: "👥 Customer Users (/users)",
+                        products: "📦 Products, Sections & Flash Sales (/products, /product-sections, /flash-sales, /attributes, /pricing-slabs)",
+                        orders: "🛒 Orders Management (/orders)",
+                        categories: "🏷️ Categories & Subcategories (/categories)",
+                        brands: "🏢 Brands Management (/brands)",
+                        banners: "🖼️ Banners Management (/banners)",
+                        coupons: "🎟️ Coupons & Discounts (/coupons)",
+                        faqs: "❓ FAQ Management (/faq-management)",
+                        reviews: "⭐ Product Reviews (/reviews)",
+                        settings: "⚙️ Store & MOQ Settings (/moq-settings)",
+                        inventory: "📦 Inventory Management (/inventory)",
+                        analytics: "📈 Analytics & Reports (/analytics)",
+                      };
 
-                        <div className="grid grid-cols-2 gap-2">
-                          {Object.values(Action).map((action) => (
-                            <div
-                              key={`${resource}-${action}`}
-                              className="flex items-center space-x-2 bg-white px-2.5 py-1.5 rounded border border-slate-200"
-                            >
+                      const actionLabels: Record<string, string> = {
+                        read: "👁️ View Page",
+                        create: "➕ Add / Create",
+                        update: "✏️ Edit / Toggle",
+                        delete: "🗑️ Delete",
+                      };
+
+                      return (
+                        <div
+                          key={resource}
+                          className="border border-slate-200 rounded-xl p-4 bg-slate-50/50 hover:bg-white transition-all shadow-sm"
+                        >
+                          <div className="flex justify-between items-center pb-2 border-b border-slate-200 mb-3">
+                            <span className="font-bold text-slate-800 text-xs sm:text-sm">
+                              {pageLabels[resource] || resource.replace("_", " ")}
+                            </span>
+                            <div className="flex items-center space-x-1.5">
                               <Checkbox
-                                id={`${resource}-${action}`}
-                                checked={hasPermission(
-                                  resource as Resource,
-                                  action as Action
+                                id={`resource-${resource}-all`}
+                                checked={[
+                                  Action.CREATE,
+                                  Action.READ,
+                                  Action.UPDATE,
+                                  Action.DELETE,
+                                ].every((action) =>
+                                  hasPermission(resource as Resource, action)
                                 )}
                                 onCheckedChange={() =>
-                                  togglePermission(
-                                    resource as Resource,
-                                    action as Action
-                                  )
+                                  toggleAllForResource(resource as Resource)
                                 }
                               />
                               <Label
-                                htmlFor={`${resource}-${action}`}
-                                className="text-xs capitalize font-medium text-slate-700 cursor-pointer"
+                                htmlFor={`resource-${resource}-all`}
+                                className="text-xs font-semibold text-slate-600 cursor-pointer"
                               >
-                                {action}
+                                Select All
                               </Label>
                             </div>
-                          ))}
+                          </div>
+
+                          <div className="grid grid-cols-2 gap-2">
+                            {Object.values(Action).map((action) => (
+                              <div
+                                key={`${resource}-${action}`}
+                                className="flex items-center space-x-2 bg-white px-2.5 py-1.5 rounded border border-slate-200"
+                              >
+                                <Checkbox
+                                  id={`${resource}-${action}`}
+                                  checked={hasPermission(
+                                    resource as Resource,
+                                    action as Action
+                                  )}
+                                  onCheckedChange={() =>
+                                    togglePermission(
+                                      resource as Resource,
+                                      action as Action
+                                    )
+                                  }
+                                />
+                                <Label
+                                  htmlFor={`${resource}-${action}`}
+                                  className="text-xs font-medium text-slate-700 cursor-pointer"
+                                >
+                                  {actionLabels[action] || action}
+                                </Label>
+                              </div>
+                            ))}
+                          </div>
                         </div>
-                      </div>
-                    ))}
+                      );
+                    })}
                   </div>
                 </div>
               )}

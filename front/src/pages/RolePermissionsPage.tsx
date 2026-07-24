@@ -303,56 +303,65 @@ export default function RolePermissionsPage() {
       </div>
 
       <div className="space-y-4">
-        {resources.map((resource) => (
-          <Card key={resource.id}>
-            <CardHeader className="pb-2">
-              <div className="flex items-center justify-between">
-                <div className="flex items-center space-x-2">
-                  <Checkbox
-                    id={`resource-${resource.id}-all`}
-                    checked={resource.actions.every((action) =>
-                      hasPermission(resource.id, action)
-                    )}
-                    onCheckedChange={() => toggleAllForResource(resource.id)}
-                  />
-                  <Label
-                    htmlFor={`resource-${resource.id}-all`}
-                    className="font-bold text-lg"
-                  >
-                    {resource.name}
-                  </Label>
-                </div>
-                <span className="text-sm text-muted-foreground">
-                  {permissions[resource.id]?.length || 0}/{resource.actions.length} permissions
-                </span>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-2 sm:grid-cols-4 gap-4">
-                {resource.actions.map((action) => (
-                  <div
-                    key={`${resource.id}-${action}`}
-                    className="flex items-center space-x-2"
-                  >
+        {resources.map((resource) => {
+          const actionLabels: Record<string, string> = {
+            read: "👁️ View Page (Page dekhna)",
+            create: "➕ Create / Add (Naya add karna)",
+            update: "✏️ Edit / Toggle (Modify karna)",
+            delete: "🗑️ Delete (Remove karna)",
+          };
+
+          return (
+            <Card key={resource.id} className="border-[#E5E7EB] shadow-sm hover:border-[#4CAF50] transition-colors">
+              <CardHeader className="pb-3 bg-[#F9FAFB] border-b border-[#E5E7EB]">
+                <div className="flex items-center justify-between">
+                  <div className="flex items-center space-x-3">
                     <Checkbox
-                      id={`${resource.id}-${action}`}
-                      checked={hasPermission(resource.id, action)}
-                      onCheckedChange={() =>
-                        togglePermission(resource.id, action)
-                      }
+                      id={`resource-${resource.id}-all`}
+                      checked={resource.actions.every((action) =>
+                        hasPermission(resource.id, action)
+                      )}
+                      onCheckedChange={() => toggleAllForResource(resource.id)}
                     />
                     <Label
-                      htmlFor={`${resource.id}-${action}`}
-                      className="capitalize"
+                      htmlFor={`resource-${resource.id}-all`}
+                      className="font-bold text-base text-[#1F2937] cursor-pointer"
                     >
-                      {action}
+                      {resource.name}
                     </Label>
                   </div>
-                ))}
-              </div>
-            </CardContent>
-          </Card>
-        ))}
+                  <span className="text-xs font-semibold px-2.5 py-1 rounded-full bg-[#E8F5E9] text-[#2E7D32]">
+                    {permissions[resource.id]?.length || 0}/{resource.actions.length} allowed
+                  </span>
+                </div>
+              </CardHeader>
+              <CardContent className="pt-4">
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-4 gap-3">
+                  {resource.actions.map((action) => (
+                    <div
+                      key={`${resource.id}-${action}`}
+                      className="flex items-center space-x-2 p-2.5 rounded-lg border border-[#F3F4F6] bg-white hover:bg-[#F9FAFB]"
+                    >
+                      <Checkbox
+                        id={`${resource.id}-${action}`}
+                        checked={hasPermission(resource.id, action)}
+                        onCheckedChange={() =>
+                          togglePermission(resource.id, action)
+                        }
+                      />
+                      <Label
+                        htmlFor={`${resource.id}-${action}`}
+                        className="text-xs font-medium text-[#374151] cursor-pointer"
+                      >
+                        {actionLabels[action] || action}
+                      </Label>
+                    </div>
+                  ))}
+                </div>
+              </CardContent>
+            </Card>
+          );
+        })}
       </div>
     </div>
   );
