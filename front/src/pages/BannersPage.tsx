@@ -33,6 +33,7 @@ import {
 } from "@/components/ui/dropdown-menu";
 import { cn } from "@/lib/utils";
 import { useLanguage } from "@/context";
+import { useAuth } from "@/context/AuthContext";
 
 // Banner Form Component
 function BannerForm({
