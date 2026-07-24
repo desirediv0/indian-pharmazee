@@ -99,11 +99,14 @@ const CollapsibleNavItem = ({
   onClick,
 }: CollapsibleNavItemProps) => {
   const location = useLocation();
-  const hasActiveChild = children.some(
+  const visibleChildren = children.filter((child) => child.hasPermission);
+
+  if (visibleChildren.length === 0) return null;
+
+  const hasActiveChild = visibleChildren.some(
     (child) =>
-      child.hasPermission &&
-      (location.pathname === child.href ||
-        location.pathname.startsWith(`${child.href}/`))
+      location.pathname === child.href ||
+      location.pathname.startsWith(`${child.href}/`)
   );
 
   const handleToggle = (e: React.MouseEvent) => {
@@ -143,8 +146,7 @@ const CollapsibleNavItem = ({
         )}
       >
         <div className="flex flex-col gap-0.5 pl-4 mt-1">
-          {children.map((child) => {
-            if (!child.hasPermission) return null;
+          {visibleChildren.map((child) => {
             const isActive =
               location.pathname === child.href ||
               location.pathname.startsWith(`${child.href}/`);
