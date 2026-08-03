@@ -6,7 +6,8 @@ import {
   useRef,
   useMemo,
 } from "react";
-import { Link, useParams, useLocation, useNavigate } from "react-router-dom";
+import { Link, useParams, useLocation, useNavigate, useSearchParams } from "react-router-dom";
+
 import {
   products,
   categories,
@@ -99,7 +100,12 @@ export function ProductForm({
 }) {
   const { t } = useLanguage();
   const navigate = useNavigate();
+  const [searchParams] = useSearchParams();
+  const pageQuery = searchParams.get("page");
+  const returnPath = pageQuery ? `/products?page=${pageQuery}` : "/products";
+
   const [isLoading, setIsLoading] = useState(false);
+
   const [formLoading, setFormLoading] = useState(mode === "edit");
   const [attributesList, setAttributesList] = useState<any[]>([]);
   const [attributeValuesMap, setAttributeValuesMap] = useState<
@@ -1267,8 +1273,9 @@ export function ProductForm({
             ? "Product created successfully"
             : "Product updated successfully"
         );
-        navigate("/products");
+        navigate(returnPath);
       } else {
+
         toast.error(response.data.message || "Failed to save product");
       }
     } catch (error: any) {
@@ -2549,10 +2556,11 @@ export function ProductForm({
             <Button
               type="button"
               variant="outline"
-              onClick={() => navigate("/products")}
+              onClick={() => navigate(returnPath)}
             >
               {t("common.cancel")}
             </Button>
+
             <Button type="submit" disabled={isLoading}>
               {isLoading ? (
                 <>
@@ -2817,9 +2825,20 @@ function ProductsList() {
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
   const [searchQuery, setSearchQuery] = useState("");
-  const debouncedSearchQuery = useDebounce(searchQuery, 500);
-  const [currentPage, setCurrentPage] = useState(1);
+  const [searchParams, setSearchParams] = useSearchParams();
+  const pageParam = parseInt(searchParams.get("page") || "1", 10);
+  const currentPage = isNaN(pageParam) || pageParam < 1 ? 1 : pageParam;
+
+  const setCurrentPage = (newPage: number | ((prev: number) => number)) => {
+    setSearchParams((prev) => {
+      const nextVal = typeof newPage === "function" ? newPage(currentPage) : newPage;
+      const newParams = new URLSearchParams(prev);
+      newParams.set("page", String(nextVal));
+      return newParams;
+    });
+  };
   const [totalPages, setTotalPages] = useState(1);
+
   const [selectedCategory, setSelectedCategory] = useState("");
   const [categoriesList, setCategoriesList] = useState<any[]>([]);
 
@@ -2978,10 +2997,15 @@ function ProductsList() {
           setIsForceDeleteDialogOpen(false);
         } else {
           toast.success("Product deleted successfully");
-          // Remove from product list
-          setProductsList((prevProducts) =>
-            prevProducts.filter((product) => product.id !== productId)
-          );
+          // If deleted last item on current page, go back to previous page
+          if (productsList.length === 1 && currentPage > 1) {
+            setCurrentPage(currentPage - 1);
+          } else {
+            setProductsList((prevProducts) =>
+              prevProducts.filter((product) => product.id !== productId)
+            );
+          }
+
 
           // Close dialogs if open
           setIsDeleteDialogOpen(false);
@@ -3447,10 +3471,11 @@ function ProductsList() {
                               className="text-[#1F2937] hover:bg-[#F3F7F6]"
                               asChild
                             >
-                              <Link to={`/products/${product.id}`}>
+                              <Link to={`/products/${product.id}?page=${currentPage}`}>
                                 <Edit className="h-4 w-4 mr-2" />
                                 Edit
                               </Link>
+
                             </DropdownMenuItem>
                           )}
                           {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("products:update")) && (
