@@ -186,8 +186,9 @@ export default function ProductDetailPage() {
 
   // Handle edit navigation
   const handleEditProduct = () => {
-    navigate(`/products/edit/${id}`);
+    navigate(`/products/edit/${id}${location.search}`);
   };
+
 
   // Add a helper function to determine if it's a simple product (before the component)
   const isSimpleProduct = (variants: any[]) => {

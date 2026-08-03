@@ -2803,7 +2803,8 @@ export default function ProductsPage() {
   const { id } = useParams();
   const location = useLocation();
   const isNewProduct = location.pathname.includes("/new");
-  const isEditProduct = !!id;
+  const isEditProduct = !!id || location.pathname.includes("/edit/");
+
 
   // Show appropriate content based on route
   if (isNewProduct) {
@@ -3233,7 +3234,7 @@ function ProductsList() {
               <Button
                 asChild
               >
-                <Link to="/products/new">
+                <Link to={`/products/new?page=${currentPage}`}>
                   <Plus className="mr-2 h-4 w-4" />
                   {t("products.add_new")}
                 </Link>
@@ -3306,7 +3307,7 @@ function ProductsList() {
             <Button
               asChild
             >
-              <Link to="/products/new">
+              <Link to={`/products/new?page=${currentPage}`}>
                 <Plus className="mr-2 h-4 w-4" />
                 {t("products.add_new")}
               </Link>
@@ -3473,10 +3474,11 @@ function ProductsList() {
                               className="text-[#1F2937] hover:bg-[#F3F7F6]"
                               asChild
                             >
-                              <Link to={`/products/${product.id}?page=${currentPage}`}>
+                              <Link to={`/products/edit/${product.id}?page=${currentPage}`}>
                                 <Edit className="h-4 w-4 mr-2" />
                                 Edit
                               </Link>
+
 
                             </DropdownMenuItem>
                           )}
