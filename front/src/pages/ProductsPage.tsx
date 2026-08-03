@@ -137,7 +137,10 @@ export function ProductForm({
     tags: [] as string[],
     // single brand association
     brandId: "",
+    brandName: "",
+    composition: "",
     topBrandIds: [] as string[],
+
     newBrandIds: [] as string[],
     hotBrandIds: [] as string[],
     // Shipping dimensions for Shiprocket (for products without variants)
@@ -538,7 +541,10 @@ export function ProductForm({
               description: productData.description || "",
               // Prefill brandId if available
               brandId: productData.brand?.id || productData.brandId || "",
+              brandName: productData.brandName || productData.brand?.name || "",
+              composition: productData.composition || "",
               categoryId: primaryCategory?.id || "",
+
               categoryIds: productCategories.map((c: any) => c.id),
               primaryCategoryId: primaryCategory?.id || "",
               subCategoryIds: existingSubCategoryIds,
@@ -1075,6 +1081,13 @@ export function ProductForm({
       if ((product as any).brandId) {
         formData.append("brandId", (product as any).brandId);
       }
+      if ((product as any).brandName) {
+        formData.append("brandName", (product as any).brandName);
+      }
+      if ((product as any).composition) {
+        formData.append("composition", (product as any).composition);
+      }
+
       formData.append("topBrandIds", JSON.stringify(product.topBrandIds || []));
       formData.append("newBrandIds", JSON.stringify(product.newBrandIds || []));
       formData.append("hotBrandIds", JSON.stringify(product.hotBrandIds || []));
@@ -1738,29 +1751,67 @@ export function ProductForm({
                 </p>
               </div>
 
-              {/* Brand selection */}
+              {/* Brand selection & Text fields */}
+              <div className="grid gap-4 sm:grid-cols-2">
+                <div className="space-y-2">
+                  <Label htmlFor="brandId">{t("products.form.labels.brand_optional")}</Label>
+                  <select
+                    id="brandId"
+                    name="brandId"
+                    value={(product as any).brandId || ""}
+                    onChange={(e) =>
+                      setProduct((prev) => ({ ...prev, brandId: e.target.value }))
+                    }
+                    className="rounded-md border bg-background px-3 py-2 text-sm w-full"
+                  >
+                    <option value="">{t("products.form.placeholders.select_brand")}</option>
+                    {brandsList.map((b) => (
+                      <option key={b.id} value={b.id}>
+                        {b.name}
+                      </option>
+                    ))}
+                  </select>
+                  <p className="text-xs text-muted-foreground">
+                    Optional - associate with a brand entity
+                  </p>
+                </div>
+
+                <div className="space-y-2">
+                  <Label htmlFor="brandName">Brand Name (Display Text)</Label>
+                  <Input
+                    id="brandName"
+                    name="brandName"
+                    type="text"
+                    placeholder="e.g. Cipla, Sun Pharma, Intas"
+                    value={(product as any).brandName || ""}
+                    onChange={(e) =>
+                      setProduct((prev) => ({ ...prev, brandName: e.target.value }))
+                    }
+                  />
+                  <p className="text-xs text-muted-foreground">
+                    Direct brand name text to show on product details
+                  </p>
+                </div>
+              </div>
+
+              {/* Composition field */}
               <div className="space-y-2">
-                <Label htmlFor="brandId">{t("products.form.labels.brand_optional")}</Label>
-                <select
-                  id="brandId"
-                  name="brandId"
-                  value={(product as any).brandId || ""}
+                <Label htmlFor="composition">Composition (Optional)</Label>
+                <Input
+                  id="composition"
+                  name="composition"
+                  type="text"
+                  placeholder="e.g. Progesterone Soft Gelatin Capsules 200 mg"
+                  value={(product as any).composition || ""}
                   onChange={(e) =>
-                    setProduct((prev) => ({ ...prev, brandId: e.target.value }))
+                    setProduct((prev) => ({ ...prev, composition: e.target.value }))
                   }
-                  className="rounded-md border bg-background px-3 py-2 text-sm w-full"
-                >
-                  <option value="">{t("products.form.placeholders.select_brand")}</option>
-                  {brandsList.map((b) => (
-                    <option key={b.id} value={b.id}>
-                      {b.name}
-                    </option>
-                  ))}
-                </select>
+                />
                 <p className="text-xs text-muted-foreground">
-                  Optional - associate this product with a brand
+                  Chemical composition or active ingredients
                 </p>
               </div>
+
 
               <div className="flex items-center gap-2 p-1">
                 <Label className="text-base">{t("products.form.labels.has_variants")}</Label>

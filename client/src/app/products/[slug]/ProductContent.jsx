@@ -913,7 +913,20 @@ export default function ProductContent({ slug }) {
                   </div>
                 </div>
               )}
+              {(product.brandName || product.brand?.name) && (
+                <div className="flex gap-3 text-sm">
+                  <span className="w-28 text-gray-400 flex-shrink-0">Brand</span>
+                  <span className="text-gray-700 font-medium">{product.brandName || product.brand?.name}</span>
+                </div>
+              )}
+              {product.composition && (
+                <div className="flex gap-3 text-sm">
+                  <span className="w-28 text-gray-400 flex-shrink-0">Composition</span>
+                  <span className="text-gray-700 font-medium">{product.composition}</span>
+                </div>
+              )}
             </div>
+
           </div>
         </div>
 

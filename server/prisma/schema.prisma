@@ -280,7 +280,10 @@ model Product {
   hotBrandIds       String[]             @default([])
   ourProduct        Boolean              @default(false)
   brandId           String?
+  brandName         String?
+  composition       String?
   brand             Brand?               @relation(fields: [brandId], references: [id])
+
   orderItems        OrderItem[]
   categories        ProductCategory[]
   subCategories     ProductSubCategory[]

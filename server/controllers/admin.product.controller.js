@@ -585,7 +585,10 @@ export const createProduct = asyncHandler(async (req, res, next) => {
                 ? null
                 : req.body.brandId,
           }),
+          ...(req.body.brandName !== undefined && { brandName: req.body.brandName }),
+          ...(req.body.composition !== undefined && { composition: req.body.composition }),
           slug,
+
           hasVariants: hasVariants === "true" || hasVariants === true,
           featured: featured === "true" || featured === true,
           productType: parsedProductType,
@@ -1417,7 +1420,10 @@ export const updateProduct = asyncHandler(async (req, res, next) => {
                 ? null
                 : req.body.brandId,
           }),
+          ...(req.body.brandName !== undefined && { brandName: req.body.brandName }),
+          ...(req.body.composition !== undefined && { composition: req.body.composition }),
         },
+
       });
 
       // Get all categories for this product after update
