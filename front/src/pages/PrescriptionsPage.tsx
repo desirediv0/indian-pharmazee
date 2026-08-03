@@ -245,10 +245,11 @@ export default function PrescriptionsPage() {
                       <td className="py-4 px-4">
                         <div className="flex items-center gap-2">
                           <span
-                            className={`px-2 py-0.5 text-[11px] font-bold rounded uppercase tracking-wider ${item.fileType?.toUpperCase() === "PDF"
+                            className={`px-2 py-0.5 text-[11px] font-bold rounded uppercase tracking-wider ${
+                              item.fileType?.toUpperCase() === "PDF"
                                 ? "bg-red-100 text-red-700"
                                 : "bg-blue-100 text-blue-700"
-                              }`}
+                            }`}
                           >
                             {item.fileType?.toUpperCase() || "IMAGE"}
                           </span>
@@ -274,15 +275,18 @@ export default function PrescriptionsPage() {
                       </td>
 
                       <td className="py-4 px-4">
-                        <select
-                          value={item.status}
-                          onChange={(e) => handleStatusChange(item.id, e.target.value)}
-                          className="text-xs font-semibold px-2 py-1 border border-slate-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
-                        >
-                          <option value="PENDING">Pending</option>
-                          <option value="REVIEWED">Reviewed</option>
-                          <option value="COMPLETED">Completed</option>
-                        </select>
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center gap-1.5">
+                          {getStatusBadge(item.status)}
+                          <select
+                            value={item.status}
+                            onChange={(e) => handleStatusChange(item.id, e.target.value)}
+                            className="text-xs font-semibold px-2 py-1 border border-slate-200 rounded-md bg-white focus:outline-none focus:ring-1 focus:ring-emerald-500"
+                          >
+                            <option value="PENDING">Pending</option>
+                            <option value="REVIEWED">Reviewed</option>
+                            <option value="COMPLETED">Completed</option>
+                          </select>
+                        </div>
                       </td>
 
                       <td className="py-4 px-4 text-xs text-slate-500 whitespace-nowrap">
