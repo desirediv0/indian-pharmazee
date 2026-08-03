@@ -141,27 +141,29 @@ export const FloatingPrescriptionModal = () => {
       {/* Floating Button right above WhatsApp button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-[146px] md:bottom-24 right-4 md:right-6 z-40 group flex items-center justify-center md:justify-start w-14 h-14 md:w-auto md:h-auto bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 border border-white/30 md:pr-4 md:pl-4 md:py-2.5 rounded-full shadow-2xl hover:shadow-emerald-900/30 hover:scale-105 active:scale-95 transition-all duration-300 cursor-pointer gap-2.5"
+        className="fixed bottom-[146px] md:bottom-24 right-4 md:right-6 z-40 group flex items-center justify-center md:justify-start w-14 h-14 md:w-auto md:h-auto bg-gradient-to-r from-[#03360E] to-[#0A5618] hover:from-[#022409] hover:to-[#073c10] border border-white/20 md:pr-2 md:pl-4 md:py-1 rounded-full shadow-2xl hover:shadow-emerald-950/20 hover:scale-110 active:scale-95 transition-all duration-300 cursor-pointer gap-4"
         aria-label="Upload Prescription"
       >
-        {/* Pulse Glow Effect */}
-        <div className="absolute inset-0 rounded-full bg-emerald-400/20 animate-ping pointer-events-none opacity-75" />
+        {/* Pulse Glow Effect (matching WhatsApp button) */}
+        <div className="absolute inset-0 rounded-full bg-emerald-500/20 animate-pulse pointer-events-none" />
 
-        {/* Prescription Icon */}
-        <div className="w-10 h-10 rounded-full bg-white/10 flex items-center justify-center text-white shrink-0">
-          <FileText className="w-6 h-6" />
-        </div>
-
-        {/* Text on Left for desktop */}
+        {/* Text on Left */}
         <div className="hidden md:flex flex-col items-start leading-tight">
           <span className="font-extrabold text-white text-xs tracking-wider uppercase font-display">
             UPLOAD PRESCRIPTION
           </span>
-          <span className="text-[10px] text-emerald-100 font-medium tracking-wide">
-            Max 10MB (Image / PDF)
+          <span className="text-[10px] text-white/95 font-medium tracking-wide mt-0.5">
+            MAX 10MB (IMAGE / PDF)
           </span>
         </div>
+
+        {/* Icon on Right */}
+        <div className="w-9 h-9 md:w-11 md:h-11 rounded-full bg-white/10 flex items-center justify-center text-white shrink-0">
+          <FileText className="w-5 h-5 md:w-6 md:h-6" />
+        </div>
       </button>
+
+
 
       {/* Modal Backdrop & Dialog */}
       {isOpen && (
