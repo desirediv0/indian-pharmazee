@@ -3374,16 +3374,20 @@ function ProductsList() {
                     <div className="flex-1 min-w-0">
                       <div className="flex items-start justify-between gap-4">
                         <div className="flex-1 min-w-0">
-                          <div className="flex items-center gap-2 mb-1">
-                            <h3 className="font-semibold text-[#1F2937] text-base truncate">
+                          <div className="flex items-center gap-2 mb-1 min-w-0">
+                            <h3
+                              className="font-semibold text-[#1F2937] text-base truncate max-w-[320px] sm:max-w-[450px] lg:max-w-[600px]"
+                              title={product.name}
+                            >
                               {product.name}
                             </h3>
                             {product.ourProduct && (
-                              <Badge className="bg-[#EFF6FF] text-[#3B82F6] border-[#DBEAFE] text-xs">
+                              <Badge className="bg-[#EFF6FF] text-[#3B82F6] border-[#DBEAFE] text-xs shrink-0">
                                 {t("products.list.status.our_product")}
                               </Badge>
                             )}
                           </div>
+
                           <div className="flex items-center gap-3 flex-wrap">
                             {/* Category - Hidden on mobile */}
                             <div className="hidden md:flex items-center gap-1.5 flex-wrap">
