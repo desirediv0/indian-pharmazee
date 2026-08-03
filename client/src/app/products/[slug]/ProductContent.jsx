@@ -616,7 +616,7 @@ export default function ProductContent({ slug }) {
               
               <div>
                 <div className="flex items-center justify-between mb-3">
-                  <span className="text-xs font-bold text-red-500 uppercase tracking-wider">Similar Products</span>
+                  <span className="text-xs font-bold text-green-600 uppercase tracking-wider">Similar Products</span>
                   {product.subCategories?.length > 0 && (
                     <Link 
                       href={`/subcategory/${product.subCategories[0].slug}`} 

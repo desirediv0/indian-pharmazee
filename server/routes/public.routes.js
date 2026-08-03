@@ -58,4 +58,11 @@ router.get("/filter-attributes", getFilterAttributes);
 // Price Visibility Settings
 router.get("/price-visibility-settings", getPriceVisibilitySettings);
 
+import { uploadPrescription } from "../controllers/prescription.controller.js";
+import { uploadFiles } from "../middlewares/multer.middlerware.js";
+
+// Prescription Upload Route
+router.post("/prescriptions", uploadFiles.single("file"), uploadPrescription);
+
 export default router;
+

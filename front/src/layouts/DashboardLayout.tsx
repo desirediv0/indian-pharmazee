@@ -26,8 +26,10 @@ import {
   Eye,
   Truck,
   Shield,
+  FileText,
   // Upload,
 } from "lucide-react";
+
 import { Button } from "@/components/ui/button";
 import { SafeRender } from "@/components/SafeRender";
 import InventoryAlertNotification from "@/components/ui/InventoryAlertNotification";
@@ -246,7 +248,8 @@ export default function DashboardLayout() {
         support: false,
         settings: false,
       });
-    } else if (path.startsWith("/contact-management") || path.startsWith("/reviews-management") || path.startsWith("/faq-management")) {
+    } else if (path.startsWith("/contact-management") || path.startsWith("/reviews-management") || path.startsWith("/faq-management") || path.startsWith("/prescriptions")) {
+
       setOpenSections({
         products: false,
         orders: false,
@@ -507,7 +510,14 @@ export default function DashboardLayout() {
                 onToggle={() => toggleSection("support")}
                 children={[
                   {
+                    href: "/prescriptions",
+                    title: "Prescriptions",
+                    icon: <FileText className="h-3 w-3" />,
+                    hasPermission: true,
+                  },
+                  {
                     href: "/contact-management",
+
                     title: t("nav.contact"),
                     icon: <Mail className="h-3 w-3" />,
                     hasPermission: hasPermissionFor(
@@ -882,7 +892,14 @@ export default function DashboardLayout() {
                 onClick={toggleMobileMenu}
                 children={[
                   {
+                    href: "/prescriptions",
+                    title: "Prescriptions",
+                    icon: <FileText className="h-3 w-3" />,
+                    hasPermission: true,
+                  },
+                  {
                     href: "/contact-management",
+
                     title: t("nav.contact"),
                     icon: <Mail className="h-3 w-3" />,
                     hasPermission: hasPermissionFor(

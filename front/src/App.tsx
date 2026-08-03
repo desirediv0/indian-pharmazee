@@ -19,6 +19,8 @@ import AdminPermissionsPage from "./pages/AdminPermissionsPage";
 import RoleManagementPage from "./pages/RoleManagementPage";
 import RolePermissionsPage from "./pages/RolePermissionsPage";
 import ContactManagementPage from "./pages/ContactManagementPage";
+import PrescriptionsPage from "./pages/PrescriptionsPage";
+
 import ReviewsManagementPage from "./pages/ReviewsManagementPage";
 import FAQManagementPage from "./pages/FAQManagementPage";
 import FAQCreatePage from "./pages/FAQCreatePage";
@@ -573,7 +575,17 @@ const App = () => {
             />
 
             <Route
+              path="prescriptions"
+              element={
+                <ProtectedRoute>
+                  <PrescriptionsPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
               path="contact-management"
+
               element={
                 <ProtectedRoute resource={Resource.CONTACT} action={Action.READ}>
                   <ContactManagementPage />

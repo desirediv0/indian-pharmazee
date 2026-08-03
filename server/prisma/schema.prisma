@@ -1186,3 +1186,22 @@ model ShiprocketPickupAddress {
 
   @@index([isDefault])
 }
+
+model Prescription {
+  id           String   @id @default(uuid())
+  name         String
+  phone        String
+  email        String?
+  notes        String?
+  fileUrl      String
+  fileType     String   // "image" or "pdf"
+  originalName String?
+  fileSize     Int?     // in bytes
+  status       String   @default("PENDING") // PENDING, REVIEWED, COMPLETED
+  createdAt    DateTime @default(now())
+  updatedAt    DateTime @updatedAt
+
+  @@index([phone])
+  @@index([createdAt])
+}
+

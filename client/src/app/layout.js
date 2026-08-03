@@ -4,6 +4,7 @@ import { Footer } from "@/components/layout/Footer";
 import { CartProvider } from "@/lib/cart-context";
 import { AuthProvider } from "@/lib/auth-context";
 import FloatingWhatsApp from "@/components/ui/FloatingWhatsApp";
+import FloatingPrescriptionModal from "@/components/ui/FloatingPrescriptionModal";
 
 
 export const metadata = {
@@ -31,8 +32,10 @@ export default function RootLayout({ children }) {
               {children}
             </main>
             <Footer />
+            <FloatingPrescriptionModal />
             <FloatingWhatsApp />
           </CartProvider>
+
         </AuthProvider>
       </body>
     </html>

@@ -1292,3 +1292,17 @@ export const pricingSlabs = {
     });
   },
 };
+
+// Prescription Service
+export const prescriptionService = {
+  getPrescriptions: (params?: { page?: number; limit?: number; search?: string; status?: string }) => {
+    return api.get("/api/admin/prescriptions", { params });
+  },
+  updateStatus: (id: string, status: string) => {
+    return api.patch(`/api/admin/prescriptions/${id}/status`, { status });
+  },
+  deletePrescription: (id: string) => {
+    return api.delete(`/api/admin/prescriptions/${id}`);
+  },
+};
+
