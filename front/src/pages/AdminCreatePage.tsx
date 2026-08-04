@@ -566,8 +566,10 @@ export default function AdminCreatePage() {
                       );
                     })}
                   </div>
+                </div>
               )}
-            )}
+            </div>
+          )}
           </CardContent>
 
           <CardFooter className="flex justify-between bg-slate-50/80 border-t border-slate-200 p-6 rounded-b-xl">
