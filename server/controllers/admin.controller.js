@@ -54,6 +54,14 @@ export const registerAdmin = asyncHandler(async (req, res) => {
   // Hash password
   const hashedPassword = await bcrypt.hash(password, 10);
 
+  let finalRole = role || "ADMIN";
+  let finalRoleId = roleData ? roleData.id : null;
+  if (finalRole === "SUPER_ADMIN") {
+    finalRoleId = null;
+  } else if (finalRoleId) {
+    finalRole = "ADMIN";
+  }
+
   // Create admin with permissions
   const newAdmin = await prisma.$transaction(async (tx) => {
     // Create the admin user
@@ -63,8 +71,8 @@ export const registerAdmin = asyncHandler(async (req, res) => {
         password: hashedPassword,
         firstName,
         lastName,
-        role: role || "ADMIN",
-        roleId: roleData ? roleData.id : null,
+        role: finalRole,
+        roleId: finalRoleId,
         lastLogin: new Date(),
       },
     });
@@ -346,7 +354,7 @@ export const getAllAdmins = asyncHandler(async (req, res, next) => {
   }
 
   const admins = await prisma.admin.findMany({
-    include: { permissions: true },
+    include: { permissions: true, assignedRole: true },
     orderBy: { createdAt: "desc" },
   });
 
@@ -371,7 +379,7 @@ export const getAllAdmins = asyncHandler(async (req, res, next) => {
 // Update admin role (super admin only)
 export const updateAdminRole = asyncHandler(async (req, res, next) => {
   const { adminId } = req.params;
-  const { role, isActive } = req.body;
+  const { role, roleId, isActive } = req.body;
 
   // Check if current admin is a super admin
   if (req.admin.role !== "SUPER_ADMIN") {
@@ -379,8 +387,22 @@ export const updateAdminRole = asyncHandler(async (req, res, next) => {
   }
 
   // Prevent self-demotion
-  if (adminId === req.admin.id) {
-    throw new ApiError(400, "You cannot modify your own role");
+  if (adminId === req.admin.id && (role === "ADMIN" || roleId)) {
+    throw new ApiError(400, "You cannot modify your own Super Admin role");
+  }
+
+  let finalRole = role;
+  let finalRoleId = roleId;
+
+  if (role === "SUPER_ADMIN") {
+    finalRole = "SUPER_ADMIN";
+    finalRoleId = null;
+  } else if (roleId) {
+    finalRole = "ADMIN";
+    finalRoleId = roleId;
+  } else if (role === "ADMIN") {
+    finalRole = "ADMIN";
+    finalRoleId = null;
   }
 
   const updatedAdmin = await prisma.$transaction(async (tx) => {
@@ -388,13 +410,14 @@ export const updateAdminRole = asyncHandler(async (req, res, next) => {
     const admin = await tx.admin.update({
       where: { id: adminId },
       data: {
-        ...(role && { role }),
+        ...(finalRole && { role: finalRole }),
+        ...(finalRoleId !== undefined && { roleId: finalRoleId }),
         ...(isActive !== undefined && { isActive }),
       },
     });
 
-    // If role changed, update permissions
-    if (role) {
+    // Update permissions
+    if (finalRole || finalRoleId !== undefined) {
       // Delete existing permissions
       await tx.permission.deleteMany({
         where: { adminId },
@@ -408,10 +431,10 @@ export const updateAdminRole = asyncHandler(async (req, res, next) => {
         if (roleData && Array.isArray(roleData.permissions)) {
           permissionsToCreate = roleData.permissions;
         } else {
-          permissionsToCreate = getDefaultPermissionsForRole(role);
+          permissionsToCreate = getDefaultPermissionsForRole(admin.role);
         }
       } else {
-        permissionsToCreate = getDefaultPermissionsForRole(role);
+        permissionsToCreate = getDefaultPermissionsForRole(admin.role);
       }
 
       for (const perm of permissionsToCreate) {

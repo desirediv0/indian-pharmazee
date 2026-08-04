@@ -449,25 +449,31 @@ export default function AdminCreatePage() {
             </div>
 
             {/* Fine-Grain Custom Permissions Toggle */}
-            <div className="border-t border-slate-200 pt-5">
-              <div className="flex items-center space-x-3 mb-4">
-                <Checkbox
-                  id="customPermissions"
-                  checked={useCustomPermissions}
-                  onCheckedChange={(checked) =>
-                    setUseCustomPermissions(!!checked)
-                  }
-                />
-                <Label htmlFor="customPermissions" className="font-semibold text-slate-800 cursor-pointer">
-                  Customize granular page permissions manually for this user
-                </Label>
+            {selectedRoleOption === "SUPER_ADMIN" ? (
+              <div className="bg-amber-50 border border-amber-200 rounded-lg p-3 text-xs text-amber-800 font-medium flex items-center gap-2">
+                <span>👑</span>
+                <span><strong>Super Admin Selected:</strong> This user will automatically have full access to all pages and permissions. Granular permission overrides are not required.</span>
               </div>
+            ) : (
+              <div className="border-t border-slate-200 pt-5">
+                <div className="flex items-center space-x-3 mb-4">
+                  <Checkbox
+                    id="customPermissions"
+                    checked={useCustomPermissions}
+                    onCheckedChange={(checked) =>
+                      setUseCustomPermissions(!!checked)
+                    }
+                  />
+                  <Label htmlFor="customPermissions" className="font-semibold text-slate-800 cursor-pointer">
+                    Customize granular page permissions manually for this user
+                  </Label>
+                </div>
 
-              {useCustomPermissions && (
-                <div className="space-y-4 pt-2">
-                  <p className="text-xs text-slate-500">
-                    Check the exact actions (Create, Read, Update, Delete) this admin is allowed to perform for each page.
-                  </p>
+                {useCustomPermissions && (
+                  <div className="space-y-4 pt-2">
+                    <p className="text-xs text-slate-500">
+                      Check the exact actions (Create, Read, Update, Delete) this admin is allowed to perform for each page.
+                    </p>
 
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     {Object.values(Resource).map((resource) => {
@@ -560,9 +566,8 @@ export default function AdminCreatePage() {
                       );
                     })}
                   </div>
-                </div>
               )}
-            </div>
+            )}
           </CardContent>
 
           <CardFooter className="flex justify-between bg-slate-50/80 border-t border-slate-200 p-6 rounded-b-xl">

@@ -134,9 +134,16 @@ export default function AdminsPage() {
     }
   };
 
-  const updateAdminRole = async (adminId: string, role: string) => {
+  const updateAdminRole = async (
+    adminId: string,
+    role: string,
+    roleId: string | null = null
+  ) => {
     try {
-      const response = await adminUsers.updateAdminRole(adminId, { role });
+      const response = await adminUsers.updateAdminRole(adminId, {
+        role,
+        roleId,
+      });
 
       if (response.data.success) {
         toast.success("Admin role updated successfully");
@@ -173,6 +180,17 @@ export default function AdminsPage() {
     } catch (error) {
       console.error("Error assigning role:", error);
       toast.error("Error assigning role");
+    }
+  };
+
+  const handleUnifiedRoleChange = async (adminId: string, value: string) => {
+    if (value === "SUPER_ADMIN") {
+      await updateAdminRole(adminId, "SUPER_ADMIN", null);
+    } else if (value.startsWith("custom_")) {
+      const roleId = value.replace("custom_", "");
+      await assignCustomRole(adminId, roleId);
+    } else {
+      await updateAdminRole(adminId, "ADMIN", null);
     }
   };
 
@@ -254,8 +272,20 @@ export default function AdminsPage() {
                   <CardTitle className="text-lg">
                     {admin.firstName} {admin.lastName}
                   </CardTitle>
-                  <Badge className={getRoleBadgeColor(admin.role)}>
-                    {admin.role}
+                  <Badge
+                    className={
+                      admin.role === "SUPER_ADMIN"
+                        ? getRoleBadgeColor("SUPER_ADMIN")
+                        : admin.assignedRole
+                        ? "bg-purple-600 hover:bg-purple-700"
+                        : getRoleBadgeColor("ADMIN")
+                    }
+                  >
+                    {admin.role === "SUPER_ADMIN"
+                      ? "SUPER_ADMIN"
+                      : admin.assignedRole
+                      ? admin.assignedRole.name
+                      : "ADMIN"}
                   </Badge>
                 </div>
                 <p className="text-sm text-muted-foreground">{admin.email}</p>
@@ -281,7 +311,7 @@ export default function AdminsPage() {
 
                   {admin.assignedRole && (
                     <p className="mb-1">
-                      <span className="font-medium">Custom Role: </span>
+                      <span className="font-medium">Assigned Role: </span>
                       <Badge variant="secondary">
                         {admin.assignedRole.name}
                       </Badge>
@@ -347,37 +377,40 @@ export default function AdminsPage() {
                       </Button>
 
                       {admin.id !== currentAdmin?.id && (
-                        <div className="flex flex-col gap-1 w-full mt-1">
+                        <div className="flex flex-col gap-1 w-full mt-2">
+                          <label className="text-xs font-semibold text-slate-600">
+                            Role & Access Level:
+                          </label>
                           <select
-                            className="px-2 py-1 text-sm border rounded"
-                            value={admin.role}
+                            className="px-2.5 py-1.5 text-sm border border-slate-300 rounded-md bg-white font-medium shadow-sm focus:ring-2 focus:ring-[#2E7D32]"
+                            value={
+                              admin.roleId
+                                ? `custom_${admin.roleId}`
+                                : admin.role === "SUPER_ADMIN"
+                                ? "SUPER_ADMIN"
+                                : "ADMIN"
+                            }
                             onChange={(e) =>
-                              updateAdminRole(admin.id, e.target.value)
+                              handleUnifiedRoleChange(admin.id, e.target.value)
                             }
                           >
-                            {Object.keys(Role).map((role) => (
-                              <option key={role} value={role}>
-                                {role.replace("_", " ")}
-                              </option>
-                            ))}
-                          </select>
+                            <option value="ADMIN">
+                              Standard Admin (Default permissions)
+                            </option>
+                            <option value="SUPER_ADMIN">
+                              👑 Super Admin (Full Access to Everything)
+                            </option>
 
-                          {customRoles.length > 0 && (
-                            <select
-                              className="px-2 py-1 text-sm border rounded"
-                              value={admin.roleId || ""}
-                              onChange={(e) =>
-                                assignCustomRole(admin.id, e.target.value)
-                              }
-                            >
-                              <option value="">No Custom Role</option>
-                              {customRoles.map((role) => (
-                                <option key={role.id} value={role.id}>
-                                  {role.name}
-                                </option>
-                              ))}
-                            </select>
-                          )}
+                            {customRoles.length > 0 && (
+                              <optgroup label="✨ Custom Roles">
+                                {customRoles.map((role) => (
+                                  <option key={role.id} value={`custom_${role.id}`}>
+                                    {role.name}
+                                  </option>
+                                ))}
+                              </optgroup>
+                            )}
+                          </select>
                         </div>
                       )}
                     </div>

@@ -276,9 +276,9 @@ export const assignRoleToAdmin = asyncHandler(async (req, res) => {
     throw new ApiError(404, "Admin not found");
   }
 
-  // Prevent changing SUPER_ADMIN's role
-  if (admin.role === "SUPER_ADMIN") {
-    throw new ApiError(400, "Cannot change Super Admin's role");
+  // Prevent self-demotion
+  if (adminId === req.admin.id) {
+    throw new ApiError(400, "You cannot modify your own Super Admin role");
   }
 
   // Check if role exists (if roleId is provided)
@@ -295,10 +295,11 @@ export const assignRoleToAdmin = asyncHandler(async (req, res) => {
 
   // Update admin's role AND permissions in a transaction
   const updatedAdmin = await prisma.$transaction(async (tx) => {
-    // Update roleId on admin
+    // Update role and roleId on admin (assigning custom role or removing custom role makes them role: ADMIN)
     const admin = await tx.admin.update({
       where: { id: adminId },
       data: {
+        role: "ADMIN",
         roleId: roleId || null,
       },
     });

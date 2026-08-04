@@ -111,7 +111,7 @@ export const adminUsers = {
   },
   updateAdminRole: (
     adminId: string,
-    data: { role: string; isActive?: boolean }
+    data: { role?: string; roleId?: string | null; isActive?: boolean }
   ) => {
     return api.patch(`/api/admin/admins/${adminId}`, data);
   },
