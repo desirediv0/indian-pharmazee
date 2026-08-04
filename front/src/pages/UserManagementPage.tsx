@@ -336,6 +336,10 @@ const DeleteConfirmDialog = ({
           </Button>
         </DialogFooter>
       </DialogContent>
+    </Dialog>
+  );
+};
+
 // Reset password dialog for user
 const ResetUserPasswordDialog = ({
   user,
