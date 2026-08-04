@@ -2,7 +2,7 @@ import { ApiError } from "../utils/ApiError.js";
 import { ApiResponsive } from "../utils/ApiResponsive.js";
 import { asyncHandler } from "../utils/asyncHandler.js";
 import { prisma } from "../config/db.js";
-import { getDefaultPermissionsForRole } from "./admin.controller.js";
+import { getDefaultPermissionsForRole, deduplicatePermissions } from "./admin.controller.js";
 
 // Get all roles
 export const getAllRoles = asyncHandler(async (req, res) => {
@@ -98,22 +98,30 @@ const syncAdminsPermissionsForRole = async (tx, roleId, permissions) => {
     select: { id: true },
   });
 
+  const uniquePermissions = deduplicatePermissions(permissions);
+
   for (const admin of admins) {
     await tx.permission.deleteMany({
       where: { adminId: admin.id },
     });
 
-    if (Array.isArray(permissions)) {
-      for (const perm of permissions) {
-        if (perm.resource && perm.action) {
-          await tx.permission.create({
-            data: {
+    for (const perm of uniquePermissions) {
+      if (perm.resource && perm.action) {
+        await tx.permission.upsert({
+          where: {
+            adminId_resource_action: {
               adminId: admin.id,
               resource: perm.resource,
               action: perm.action,
             },
-          });
-        }
+          },
+          update: {},
+          create: {
+            adminId: admin.id,
+            resource: perm.resource,
+            action: perm.action,
+          },
+        });
       }
     }
   }
@@ -309,27 +317,28 @@ export const assignRoleToAdmin = asyncHandler(async (req, res) => {
       where: { adminId },
     });
 
-    // If a role is assigned, copy its permissions to the admin
-    if (roleData) {
-      if (Array.isArray(roleData.permissions)) {
-        for (const perm of roleData.permissions) {
-          if (perm.resource && perm.action) {
-            await tx.permission.create({
-              data: {
-                adminId,
-                resource: perm.resource,
-                action: perm.action,
-              },
-            });
-          }
-        }
-      }
+    // Determine permissions to create
+    let permissionsToCreate = [];
+    if (roleData && Array.isArray(roleData.permissions)) {
+      permissionsToCreate = roleData.permissions;
     } else {
-      // No custom role assigned - give default permissions for admin.role
-      const defaultPerms = getDefaultPermissionsForRole(admin.role);
-      for (const perm of defaultPerms) {
-        await tx.permission.create({
-          data: {
+      permissionsToCreate = getDefaultPermissionsForRole(admin.role);
+    }
+
+    permissionsToCreate = deduplicatePermissions(permissionsToCreate);
+
+    for (const perm of permissionsToCreate) {
+      if (perm.resource && perm.action) {
+        await tx.permission.upsert({
+          where: {
+            adminId_resource_action: {
+              adminId,
+              resource: perm.resource,
+              action: perm.action,
+            },
+          },
+          update: {},
+          create: {
             adminId,
             resource: perm.resource,
             action: perm.action,

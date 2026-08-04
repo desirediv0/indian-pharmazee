@@ -87,11 +87,21 @@ export const registerAdmin = asyncHandler(async (req, res) => {
       permissionsToCreate = getDefaultPermissionsForRole(role || "ADMIN");
     }
 
+    permissionsToCreate = deduplicatePermissions(permissionsToCreate);
+
     // Add permissions
     for (const perm of permissionsToCreate) {
       if (perm.resource && perm.action) {
-        await tx.permission.create({
-          data: {
+        await tx.permission.upsert({
+          where: {
+            adminId_resource_action: {
+              adminId: admin.id,
+              resource: perm.resource,
+              action: perm.action,
+            },
+          },
+          update: {},
+          create: {
             adminId: admin.id,
             resource: perm.resource,
             action: perm.action,
@@ -437,10 +447,20 @@ export const updateAdminRole = asyncHandler(async (req, res, next) => {
         permissionsToCreate = getDefaultPermissionsForRole(admin.role);
       }
 
+      permissionsToCreate = deduplicatePermissions(permissionsToCreate);
+
       for (const perm of permissionsToCreate) {
         if (perm.resource && perm.action) {
-          await tx.permission.create({
-            data: {
+          await tx.permission.upsert({
+            where: {
+              adminId_resource_action: {
+                adminId,
+                resource: perm.resource,
+                action: perm.action,
+              },
+            },
+            update: {},
+            create: {
               adminId,
               resource: perm.resource,
               action: perm.action,
@@ -517,12 +537,21 @@ export const updateAdminPermissions = asyncHandler(async (req, res) => {
       where: { adminId },
     });
 
-    // 2. Add new permissions
+    // 2. Add new permissions (deduplicated)
+    const uniquePermissions = deduplicatePermissions(permissions);
     const createdPermissions = [];
-    for (const permission of permissions) {
+    for (const permission of uniquePermissions) {
       if (permission.resource && permission.action) {
-        const createdPermission = await tx.permission.create({
-          data: {
+        const createdPermission = await tx.permission.upsert({
+          where: {
+            adminId_resource_action: {
+              adminId,
+              resource: permission.resource,
+              action: permission.action,
+            },
+          },
+          update: {},
+          create: {
             adminId,
             resource: permission.resource,
             action: permission.action,
@@ -655,6 +684,26 @@ export const getLowStockAlerts = asyncHandler(async (req, res) => {
   );
 });
 
+// Helper function to deduplicate array of permissions by (resource, action)
+export const deduplicatePermissions = (permissions) => {
+  if (!Array.isArray(permissions)) return [];
+  const seen = new Set();
+  const result = [];
+  for (const perm of permissions) {
+    if (perm && perm.resource && perm.action) {
+      const key = `${String(perm.resource).toLowerCase().trim()}:${String(perm.action).toLowerCase().trim()}`;
+      if (!seen.has(key)) {
+        seen.add(key);
+        result.push({
+          resource: perm.resource,
+          action: perm.action,
+        });
+      }
+    }
+  }
+  return result;
+};
+
 // Helper function to get default permissions based on role
 export const getDefaultPermissionsForRole = (role) => {
   const permissions = [];
@@ -735,7 +784,6 @@ export const getDefaultPermissionsForRole = (role) => {
       { resource: "flavors", action: "update" },
       { resource: "weights", action: "read" },
       { resource: "weights", action: "create" },
-      { resource: "weights", action: "create" },
       { resource: "weights", action: "update" },
       { resource: "settings", action: "read" },
       { resource: "settings", action: "update" }
@@ -778,7 +826,7 @@ export const getDefaultPermissionsForRole = (role) => {
     );
   }
 
-  return permissions;
+  return deduplicatePermissions(permissions);
 };
 
 // Get users with pagination and search
