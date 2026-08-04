@@ -309,20 +309,22 @@ export const assignRoleToAdmin = asyncHandler(async (req, res) => {
     });
 
     // If a role is assigned, copy its permissions to the admin
-    if (roleData && Array.isArray(roleData.permissions) && roleData.permissions.length > 0) {
-      for (const perm of roleData.permissions) {
-        if (perm.resource && perm.action) {
-          await tx.permission.create({
-            data: {
-              adminId,
-              resource: perm.resource,
-              action: perm.action,
-            },
-          });
+    if (roleData) {
+      if (Array.isArray(roleData.permissions)) {
+        for (const perm of roleData.permissions) {
+          if (perm.resource && perm.action) {
+            await tx.permission.create({
+              data: {
+                adminId,
+                resource: perm.resource,
+                action: perm.action,
+              },
+            });
+          }
         }
       }
     } else {
-      // No role assigned - give default ADMIN permissions
+      // No custom role assigned - give default permissions for admin.role
       const defaultPerms = getDefaultPermissionsForRole(admin.role);
       for (const perm of defaultPerms) {
         await tx.permission.create({

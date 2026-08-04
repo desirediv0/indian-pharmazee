@@ -513,7 +513,11 @@ export default function DashboardLayout() {
                     href: "/prescriptions",
                     title: "Prescriptions",
                     icon: <FileText className="h-3 w-3" />,
-                    hasPermission: true,
+                    hasPermission: hasPermissionFor(
+                      admin,
+                      Resource.USERS,
+                      Action.READ
+                    ),
                   },
                   {
                     href: "/contact-management",
@@ -895,7 +899,11 @@ export default function DashboardLayout() {
                     href: "/prescriptions",
                     title: "Prescriptions",
                     icon: <FileText className="h-3 w-3" />,
-                    hasPermission: true,
+                    hasPermission: hasPermissionFor(
+                      admin,
+                      Resource.USERS,
+                      Action.READ
+                    ),
                   },
                   {
                     href: "/contact-management",

@@ -71,10 +71,10 @@ export const registerAdmin = asyncHandler(async (req, res) => {
 
     // Determine permissions to create
     let permissionsToCreate = [];
-    if (Array.isArray(customPermissions) && customPermissions.length > 0) {
+    if (Array.isArray(customPermissions)) {
       permissionsToCreate = customPermissions;
-    } else if (roleData && Array.isArray(roleData.permissions) && roleData.permissions.length > 0) {
-      permissionsToCreate = roleData.permissions;
+    } else if (roleData) {
+      permissionsToCreate = Array.isArray(roleData.permissions) ? roleData.permissions : [];
     } else {
       permissionsToCreate = getDefaultPermissionsForRole(role || "ADMIN");
     }
@@ -400,17 +400,30 @@ export const updateAdminRole = asyncHandler(async (req, res, next) => {
         where: { adminId },
       });
 
-      // Add new permissions based on role
-      const defaultPermissions = getDefaultPermissionsForRole(role);
-
-      for (const perm of defaultPermissions) {
-        await tx.permission.create({
-          data: {
-            adminId,
-            resource: perm.resource,
-            action: perm.action,
-          },
+      let permissionsToCreate = [];
+      if (admin.roleId) {
+        const roleData = await tx.adminRole_.findUnique({
+          where: { id: admin.roleId },
         });
+        if (roleData && Array.isArray(roleData.permissions)) {
+          permissionsToCreate = roleData.permissions;
+        } else {
+          permissionsToCreate = getDefaultPermissionsForRole(role);
+        }
+      } else {
+        permissionsToCreate = getDefaultPermissionsForRole(role);
+      }
+
+      for (const perm of permissionsToCreate) {
+        if (perm.resource && perm.action) {
+          await tx.permission.create({
+            data: {
+              adminId,
+              resource: perm.resource,
+              action: perm.action,
+            },
+          });
+        }
       }
     }
 

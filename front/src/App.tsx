@@ -577,7 +577,7 @@ const App = () => {
             <Route
               path="prescriptions"
               element={
-                <ProtectedRoute>
+                <ProtectedRoute resource={Resource.USERS} action={Action.READ}>
                   <PrescriptionsPage />
                 </ProtectedRoute>
               }
