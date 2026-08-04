@@ -100,8 +100,14 @@ export function Navbar() {
   const [activeDropdown, setActiveDropdown] = useState(null);
   const [isScrolled, setIsScrolled] = useState(false);
 
+  // Live Debounced Search States
+  const [liveSearchResults, setLiveSearchResults] = useState([]);
+  const [isSearchingLive, setIsSearchingLive] = useState(false);
+  const [showLiveDropdown, setShowLiveDropdown] = useState(false);
+
   const searchInputRef = useRef(null);
   const navbarRef = useRef(null);
+  const searchContainerRef = useRef(null);
 
   useEffect(() => {
     const onScroll = () => setIsScrolled(window.scrollY > 10);
@@ -109,10 +115,61 @@ export function Navbar() {
     return () => window.removeEventListener("scroll", onScroll);
   }, []);
 
+  // 300ms Debounced Search Effect
+  useEffect(() => {
+    const q = searchQuery.trim();
+    if (!q || q.length < 2) {
+      setLiveSearchResults([]);
+      setIsSearchingLive(false);
+      setShowLiveDropdown(false);
+      return;
+    }
+
+    setIsSearchingLive(true);
+    setShowLiveDropdown(true);
+
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetchApi(
+          `/public/products?search=${encodeURIComponent(q)}&limit=6`
+        );
+        if (res?.data?.products) {
+          setLiveSearchResults(res.data.products);
+        } else if (res?.products) {
+          setLiveSearchResults(res.products);
+        } else {
+          setLiveSearchResults([]);
+        }
+      } catch (err) {
+        console.error("Debounced search error:", err);
+        setLiveSearchResults([]);
+      } finally {
+        setIsSearchingLive(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
+  // Click outside to close live search dropdown
+  useEffect(() => {
+    const handleOutsideClick = (e) => {
+      if (
+        searchContainerRef.current &&
+        !searchContainerRef.current.contains(e.target)
+      ) {
+        setShowLiveDropdown(false);
+      }
+    };
+    document.addEventListener("mousedown", handleOutsideClick);
+    return () => document.removeEventListener("mousedown", handleOutsideClick);
+  }, []);
+
   useEffect(() => {
     setIsMenuOpen(false);
     setIsSearchOpen(false);
     setActiveDropdown(null);
+    setShowLiveDropdown(false);
   }, [pathname]);
 
   useEffect(() => {
@@ -135,10 +192,11 @@ export function Navbar() {
   }, []);
 
   const handleSearch = (e) => {
-    e.preventDefault();
+    if (e && e.preventDefault) e.preventDefault();
     if (!searchQuery.trim()) return;
-    router.push(`/products?search=${encodeURIComponent(searchQuery)}`);
+    router.push(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
     setIsSearchOpen(false);
+    setShowLiveDropdown(false);
     setSearchQuery("");
   };
 
@@ -238,7 +296,7 @@ export function Navbar() {
               </Link>
 
               {/* SEARCH BAR — desktop center */}
-              <div className="hidden lg:flex flex-1 max-w-xl mx-6">
+              <div ref={searchContainerRef} className="hidden lg:flex flex-1 max-w-xl mx-6 relative">
                 <form
                   onSubmit={handleSearch}
                   className="relative w-full group"
@@ -251,6 +309,9 @@ export function Navbar() {
                     placeholder="Search medicines, IVF, oncology..."
                     value={searchQuery}
                     onChange={(e) => setSearchQuery(e.target.value)}
+                    onFocus={() => {
+                      if (searchQuery.trim().length >= 2) setShowLiveDropdown(true);
+                    }}
                     className="w-full h-11 pl-11 pr-24 text-sm rounded-xl border focus:outline-none focus:ring-2 transition-all placeholder:text-gray-400"
                     style={{
                       borderColor: "#DCE7F2",
@@ -266,6 +327,20 @@ export function Navbar() {
                     Search
                   </button>
                 </form>
+
+                {showLiveDropdown && (
+                  <SearchResultsDropdown
+                    results={liveSearchResults}
+                    loading={isSearchingLive}
+                    query={searchQuery}
+                    onSelectProduct={(slug) => {
+                      setShowLiveDropdown(false);
+                      setSearchQuery("");
+                      router.push(`/products/${slug}`);
+                    }}
+                    onViewAll={handleSearch}
+                  />
+                )}
               </div>
 
               {/* RIGHT ACTIONS */}
@@ -633,8 +708,139 @@ function AccountDropdown({ user, isAuthenticated, activeDropdown, setActiveDropd
   );
 }
 
+/* ── Live Search Dropdown Component ────────── */
+function SearchResultsDropdown({
+  results,
+  loading,
+  query,
+  onSelectProduct,
+  onViewAll,
+}) {
+  if (!query.trim() || query.trim().length < 2) return null;
+
+  return (
+    <div className="absolute left-0 right-0 top-full mt-2 bg-white rounded-2xl border border-slate-200 shadow-2xl overflow-hidden z-50 animate-in fade-in duration-150">
+      {loading ? (
+        <div className="p-4 text-center text-xs text-slate-500 flex items-center justify-center gap-2">
+          <div className="w-4 h-4 border-2 border-[#005EB8] border-t-transparent rounded-full animate-spin" />
+          <span>Searching for &quot;{query}&quot;...</span>
+        </div>
+      ) : results.length > 0 ? (
+        <div>
+          <div className="px-4 py-2 bg-slate-50 border-b border-slate-100 flex items-center justify-between text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+            <span>Matching Products ({results.length})</span>
+            <span className="text-[10px] text-[#005EB8] font-normal">Instant Search</span>
+          </div>
+
+          <div className="divide-y divide-slate-100 max-h-[360px] overflow-y-auto">
+            {results.map((product) => {
+              const imgUrl =
+                product.image ||
+                product.images?.[0]?.url ||
+                "/placeholder-medicine.png";
+              const displayPrice =
+                product.salePrice || product.price || product.basePrice || product.variants?.[0]?.price;
+
+              return (
+                <div
+                  key={product.id}
+                  onClick={() => onSelectProduct(product.slug)}
+                  className="p-3 hover:bg-blue-50/70 transition-colors flex items-center gap-3 cursor-pointer group"
+                >
+                  <div className="w-10 h-10 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden flex-shrink-0 flex items-center justify-center p-0.5">
+                    {imgUrl ? (
+                      <img
+                        src={imgUrl}
+                        alt={product.name}
+                        className="w-full h-full object-contain"
+                      />
+                    ) : (
+                      <Pill className="w-5 h-5 text-[#005EB8]" />
+                    )}
+                  </div>
+
+                  <div className="flex-1 min-w-0">
+                    <h4 className="text-xs font-bold text-slate-800 truncate group-hover:text-[#005EB8] transition-colors">
+                      {product.name}
+                    </h4>
+                    <p className="text-[10px] text-slate-500 truncate mt-0.5">
+                      {product.brand?.name || product.categories?.[0]?.category?.name || "Medicine"}
+                    </p>
+                  </div>
+
+                  {displayPrice && (
+                    <div className="text-right flex-shrink-0">
+                      <span className="text-xs font-bold text-[#005EB8]">
+                        ₹{Number(displayPrice).toLocaleString("en-IN")}
+                      </span>
+                    </div>
+                  )}
+                </div>
+              );
+            })}
+          </div>
+
+          <button
+            type="button"
+            onClick={onViewAll}
+            className="w-full py-2.5 bg-blue-50 hover:bg-blue-100 text-[#005EB8] text-xs font-bold text-center transition-colors border-t border-slate-100 flex items-center justify-center gap-1"
+          >
+            <span>View All Results for &quot;{query}&quot;</span>
+            <FiChevronRight className="w-3.5 h-3.5" />
+          </button>
+        </div>
+      ) : (
+        <div className="p-6 text-center space-y-1">
+          <p className="text-xs font-semibold text-slate-700">
+            No products found for &quot;{query}&quot;
+          </p>
+          <p className="text-[11px] text-slate-400">
+            Try checking spelling or search by general category
+          </p>
+        </div>
+      )}
+    </div>
+  );
+}
+
 /* ── Search Dialog ──────────────────────────── */
 function SearchDialog({ open, onOpenChange, searchQuery, setSearchQuery, handleSearch, searchInputRef, categories }) {
+  const router = useRouter();
+  const [dialogResults, setDialogResults] = useState([]);
+  const [isSearching, setIsSearching] = useState(false);
+
+  useEffect(() => {
+    const q = searchQuery.trim();
+    if (!q || q.length < 2) {
+      setDialogResults([]);
+      setIsSearching(false);
+      return;
+    }
+
+    setIsSearching(true);
+    const timer = setTimeout(async () => {
+      try {
+        const res = await fetchApi(
+          `/public/products?search=${encodeURIComponent(q)}&limit=6`
+        );
+        if (res?.data?.products) {
+          setDialogResults(res.data.products);
+        } else if (res?.products) {
+          setDialogResults(res.products);
+        } else {
+          setDialogResults([]);
+        }
+      } catch (err) {
+        console.error("Search dialog fetch error:", err);
+        setDialogResults([]);
+      } finally {
+        setIsSearching(false);
+      }
+    }, 300);
+
+    return () => clearTimeout(timer);
+  }, [searchQuery]);
+
   return (
     <Dialog open={open} onOpenChange={onOpenChange}>
       <DialogContent className="sm:max-w-[580px] bg-white p-0 overflow-hidden border shadow-2xl rounded-2xl" style={{ borderColor: "#DCE7F2" }}>
@@ -679,6 +885,81 @@ function SearchDialog({ open, onOpenChange, searchQuery, setSearchQuery, handleS
               </button>
             </div>
           </form>
+
+          {/* Instant Live Results inside Search Modal */}
+          {searchQuery.trim().length >= 2 && (
+            <div className="mt-4 border rounded-xl overflow-hidden" style={{ borderColor: "#DCE7F2" }}>
+              {isSearching ? (
+                <div className="p-4 text-center text-xs text-slate-500 flex items-center justify-center gap-2">
+                  <div className="w-4 h-4 border-2 border-[#005EB8] border-t-transparent rounded-full animate-spin" />
+                  <span>Searching for &quot;{searchQuery}&quot;...</span>
+                </div>
+              ) : dialogResults.length > 0 ? (
+                <div>
+                  <div className="px-4 py-2 bg-slate-50 border-b border-slate-100 flex items-center justify-between text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
+                    <span>Products Found ({dialogResults.length})</span>
+                    <span className="text-[10px] text-[#005EB8] font-normal">Live Search</span>
+                  </div>
+
+                  <div className="divide-y divide-slate-100 max-h-[280px] overflow-y-auto">
+                    {dialogResults.map((product) => {
+                      const imgUrl =
+                        product.image ||
+                        product.images?.[0]?.url ||
+                        "/placeholder-medicine.png";
+                      const displayPrice =
+                        product.salePrice || product.price || product.basePrice || product.variants?.[0]?.price;
+
+                      return (
+                        <div
+                          key={product.id}
+                          onClick={() => {
+                            onOpenChange(false);
+                            setSearchQuery("");
+                            router.push(`/products/${product.slug}`);
+                          }}
+                          className="p-3 hover:bg-blue-50/70 transition-colors flex items-center gap-3 cursor-pointer group"
+                        >
+                          <div className="w-10 h-10 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden flex-shrink-0 flex items-center justify-center p-0.5">
+                            {imgUrl ? (
+                              <img
+                                src={imgUrl}
+                                alt={product.name}
+                                className="w-full h-full object-contain"
+                              />
+                            ) : (
+                              <Pill className="w-5 h-5 text-[#005EB8]" />
+                            )}
+                          </div>
+
+                          <div className="flex-1 min-w-0">
+                            <h4 className="text-xs font-bold text-slate-800 truncate group-hover:text-[#005EB8] transition-colors">
+                              {product.name}
+                            </h4>
+                            <p className="text-[10px] text-slate-500 truncate mt-0.5">
+                              {product.brand?.name || product.categories?.[0]?.category?.name || "Medicine"}
+                            </p>
+                          </div>
+
+                          {displayPrice && (
+                            <div className="text-right flex-shrink-0">
+                              <span className="text-xs font-bold text-[#005EB8]">
+                                ₹{Number(displayPrice).toLocaleString("en-IN")}
+                              </span>
+                            </div>
+                          )}
+                        </div>
+                      );
+                    })}
+                  </div>
+                </div>
+              ) : (
+                <div className="p-4 text-center text-xs text-slate-500">
+                  No products found for &quot;{searchQuery}&quot;
+                </div>
+              )}
+            </div>
+          )}
 
           {categories.length > 0 && (
             <div className="mt-5">

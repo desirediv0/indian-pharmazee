@@ -27,14 +27,20 @@ export const getAllProducts = asyncHandler(async (req, res) => {
   // The actual sort field for Prisma: price isn't on Product model
   const effectiveSort = isPriceSort ? "createdAt" : sort;
 
-  // Normalize search: treat + as space (when querystrings use + for spaces)
-  const normalizedSearch =
-    typeof search === "string" ? search.replace(/\+/g, " ") : "";
+  // Normalize search: treat + as space and trim whitespace
+  const rawSearch = typeof search === "string" ? search.replace(/\+/g, " ").trim() : "";
+  const normalizedSearch = rawSearch;
+
+  // Case variations for tag array matching
+  const searchLower = rawSearch.toLowerCase();
+  const searchUpper = rawSearch.toUpperCase();
+  const searchCapitalized = rawSearch.length > 0 ? rawSearch.charAt(0).toUpperCase() + rawSearch.slice(1).toLowerCase() : "";
+  const tagWords = rawSearch.split(/\s+/).filter((t) => t.length >= 2);
 
   // Build filter conditions
   const whereConditions = {
     isActive: true,
-    // Search in name or description
+    // Search in name, description, category, brand, variant SKU, attribute values, or tags
     ...(normalizedSearch && {
       OR: [
         { name: { contains: normalizedSearch, mode: "insensitive" } },
@@ -58,14 +64,39 @@ export const getAllProducts = asyncHandler(async (req, res) => {
             name: { contains: normalizedSearch, mode: "insensitive" },
           },
         },
-        // Also allow searching by tags
+        // Also allow searching by variant SKU or attribute value (e.g. 500mg, 100ml)
         {
-          tags: { hasSome: normalizedSearch.split(" ").filter(t => t.length > 2) }
+          variants: {
+            some: {
+              OR: [
+                { sku: { contains: normalizedSearch, mode: "insensitive" } },
+                {
+                  attributes: {
+                    some: {
+                      attributeValue: {
+                        value: { contains: normalizedSearch, mode: "insensitive" },
+                      },
+                    },
+                  },
+                },
+              ],
+            },
+          },
         },
-        // Handle full string match in tags too
+        // Handle case-insensitive tag array matching
         {
-          tags: { has: normalizedSearch }
-        }
+          tags: {
+            hasSome: [
+              rawSearch,
+              searchLower,
+              searchUpper,
+              searchCapitalized,
+              ...tagWords,
+              ...tagWords.map((w) => w.toLowerCase()),
+              ...tagWords.map((w) => w.toUpperCase()),
+            ],
+          },
+        },
       ],
     }),
     // Filter by category
