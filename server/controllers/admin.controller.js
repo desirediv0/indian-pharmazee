@@ -16,9 +16,20 @@ export const registerAdmin = asyncHandler(async (req, res) => {
     throw new ApiError(403, "Only Super Admins can create new admins");
   }
 
-  // Check if admin already exists
-  const existingAdmin = await prisma.admin.findUnique({
-    where: { email },
+  const cleanEmail = email ? email.trim().toLowerCase() : "";
+
+  if (!cleanEmail) {
+    throw new ApiError(400, "Email is required");
+  }
+
+  // Check if admin already exists (case-insensitive check)
+  const existingAdmin = await prisma.admin.findFirst({
+    where: {
+      OR: [
+        { email: cleanEmail },
+        { email: { equals: email.trim(), mode: "insensitive" } },
+      ],
+    },
   });
 
   if (existingAdmin) {
@@ -48,7 +59,7 @@ export const registerAdmin = asyncHandler(async (req, res) => {
     // Create the admin user
     const admin = await tx.admin.create({
       data: {
-        email,
+        email: cleanEmail,
         password: hashedPassword,
         firstName,
         lastName,
@@ -103,9 +114,20 @@ export const registerAdmin = asyncHandler(async (req, res) => {
 export const loginAdmin = asyncHandler(async (req, res, next) => {
   const { email, password } = req.body;
 
-  // Find admin
-  const admin = await prisma.admin.findUnique({
-    where: { email },
+  if (!email || !password) {
+    throw new ApiError(400, "Email and password are required");
+  }
+
+  const cleanEmail = email.trim().toLowerCase();
+
+  // Find admin case-insensitively
+  const admin = await prisma.admin.findFirst({
+    where: {
+      OR: [
+        { email: cleanEmail },
+        { email: { equals: email.trim(), mode: "insensitive" } },
+      ],
+    },
     include: {
       permissions: true,
     },
@@ -116,8 +138,8 @@ export const loginAdmin = asyncHandler(async (req, res, next) => {
   }
 
   // Check if admin account is active
-  if (!admin.isActive) {
-    throw new ApiError(403, "Your account has been deactivated");
+  if (admin.isActive === false) {
+    throw new ApiError(403, "Your account has been deactivated. Please contact Super Admin.");
   }
 
   // Verify password
@@ -247,6 +269,73 @@ export const changeAdminPassword = asyncHandler(async (req, res, next) => {
   res
     .status(200)
     .json(new ApiResponsive(200, {}, "Password changed successfully"));
+});
+
+// Reset password for an admin account (Super Admin only)
+export const resetAdminPassword = asyncHandler(async (req, res) => {
+  const { adminId } = req.params;
+  const { newPassword } = req.body;
+
+  // Check if current admin is a super admin
+  if (req.admin.role !== "SUPER_ADMIN") {
+    throw new ApiError(403, "Only Super Admins can reset passwords of admin users");
+  }
+
+  if (!newPassword || newPassword.length < 6) {
+    throw new ApiError(400, "Password must be at least 6 characters long");
+  }
+
+  const targetAdmin = await prisma.admin.findUnique({
+    where: { id: adminId },
+  });
+
+  if (!targetAdmin) {
+    throw new ApiError(404, "Admin account not found");
+  }
+
+  // Hash new password
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+  // Update password
+  await prisma.admin.update({
+    where: { id: adminId },
+    data: { password: hashedPassword },
+  });
+
+  res
+    .status(200)
+    .json(new ApiResponsive(200, {}, `Password for admin ${targetAdmin.email} has been reset successfully`));
+});
+
+// Reset password for a customer user account
+export const resetUserPassword = asyncHandler(async (req, res) => {
+  const { userId } = req.params;
+  const { newPassword } = req.body;
+
+  if (!newPassword || newPassword.length < 6) {
+    throw new ApiError(400, "Password must be at least 6 characters long");
+  }
+
+  const targetUser = await prisma.user.findUnique({
+    where: { id: userId },
+  });
+
+  if (!targetUser) {
+    throw new ApiError(404, "User account not found");
+  }
+
+  // Hash new password
+  const hashedPassword = await bcrypt.hash(newPassword, 10);
+
+  // Update password
+  await prisma.user.update({
+    where: { id: userId },
+    data: { password: hashedPassword },
+  });
+
+  res
+    .status(200)
+    .json(new ApiResponsive(200, {}, `Password for user ${targetUser.email} has been reset successfully`));
 });
 
 // Get all admins (super admin only)

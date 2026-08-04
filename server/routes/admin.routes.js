@@ -5,6 +5,8 @@ import {
   getAdminProfile,
   updateAdminProfile,
   changeAdminPassword,
+  resetAdminPassword,
+  resetUserPassword,
   getAllAdmins,
   updateAdminRole,
   deleteAdmin,
@@ -54,6 +56,21 @@ router.post("/register", verifyAdminJWT, hasRole("SUPER_ADMIN"), registerAdmin);
 router.get("/profile", verifyAdminJWT, getAdminProfile);
 router.patch("/profile", verifyAdminJWT, updateAdminProfile);
 router.post("/change-password", verifyAdminJWT, changeAdminPassword);
+
+// Reset password routes
+router.patch(
+  "/admins/:adminId/reset-password",
+  verifyAdminJWT,
+  hasRole("SUPER_ADMIN"),
+  resetAdminPassword
+);
+
+router.patch(
+  "/users/:userId/reset-password",
+  verifyAdminJWT,
+  hasPermission("users", "update"),
+  resetUserPassword
+);
 
 // Dashboard Routes
 router.get(

@@ -141,11 +141,11 @@ export const FloatingPrescriptionModal = () => {
       {/* Floating Button right above WhatsApp button */}
       <button
         onClick={() => setIsOpen(true)}
-        className="fixed bottom-[146px] md:bottom-24 right-4 md:right-6 z-40 group flex items-center justify-center md:justify-start w-14 h-14 md:w-auto md:h-auto bg-gradient-to-r from-[#03360E] to-[#0A5618] hover:from-[#022409] hover:to-[#073c10] border border-white/20 md:pr-2 md:pl-4 md:py-1 rounded-full shadow-2xl hover:shadow-emerald-950/20 hover:scale-110 active:scale-95 transition-all duration-300 cursor-pointer gap-4"
+        className="fixed bottom-[146px] md:bottom-24 right-4 md:right-6 z-40 group flex items-center justify-center md:justify-start w-14 h-14 md:w-auto md:h-auto bg-gradient-to-r from-[#2563eb] to-[#1d4ed8] hover:from-[#1d4ed8] hover:to-[#1e40af] border border-white/20 md:pr-2 md:pl-4 md:py-1 rounded-full shadow-2xl hover:shadow-blue-900/30 hover:scale-110 active:scale-95 transition-all duration-300 cursor-pointer gap-4"
         aria-label="Upload Prescription"
       >
-        {/* Pulse Glow Effect (matching WhatsApp button) */}
-        <div className="absolute inset-0 rounded-full bg-emerald-500/20 animate-pulse pointer-events-none" />
+        {/* Pulse Glow Effect */}
+        <div className="absolute inset-0 rounded-full bg-blue-500/25 animate-pulse pointer-events-none" />
 
         {/* Text on Left */}
         <div className="hidden md:flex flex-col items-start leading-tight">
@@ -158,12 +158,10 @@ export const FloatingPrescriptionModal = () => {
         </div>
 
         {/* Icon on Right */}
-        <div className="w-9 h-9 md:w-11 md:h-11 rounded-full bg-white/10 flex items-center justify-center text-white shrink-0">
+        <div className="w-9 h-9 md:w-11 md:h-11 rounded-full bg-white/20 flex items-center justify-center text-white shrink-0">
           <FileText className="w-5 h-5 md:w-6 md:h-6" />
         </div>
       </button>
-
-
 
       {/* Modal Backdrop & Dialog */}
       {isOpen && (
@@ -173,21 +171,21 @@ export const FloatingPrescriptionModal = () => {
             onClick={(e) => e.stopPropagation()}
           >
             {/* Modal Header */}
-            <div className="bg-gradient-to-r from-[#0A3B3F] to-[#12585E] text-white p-5 flex items-center justify-between shrink-0">
+            <div className="bg-gradient-to-r from-[#1e3a8a] to-[#2563eb] text-white p-5 flex items-center justify-between shrink-0">
               <div className="flex items-center gap-3">
-                <div className="p-2.5 bg-emerald-500/20 rounded-xl border border-emerald-400/30">
-                  <FileText className="w-6 h-6 text-emerald-300" />
+                <div className="p-2.5 bg-blue-500/20 rounded-xl border border-blue-400/30">
+                  <FileText className="w-6 h-6 text-blue-200" />
                 </div>
                 <div>
                   <h3 className="text-lg font-bold tracking-tight">Upload Prescription</h3>
-                  <p className="text-xs text-emerald-100 font-normal">
+                  <p className="text-xs text-blue-100 font-normal">
                     Quick upload for medication pricing & availability
                   </p>
                 </div>
               </div>
               <button
                 onClick={closeModal}
-                className="p-1.5 rounded-lg text-emerald-100 hover:text-white hover:bg-white/10 transition-colors"
+                className="p-1.5 rounded-lg text-blue-100 hover:text-white hover:bg-white/10 transition-colors"
                 aria-label="Close"
               >
                 <X className="w-5 h-5" />
@@ -198,7 +196,7 @@ export const FloatingPrescriptionModal = () => {
             <div className="p-6 overflow-y-auto space-y-4">
               {isSuccess ? (
                 <div className="py-8 text-center space-y-4">
-                  <div className="w-16 h-16 bg-emerald-100 text-emerald-600 rounded-full flex items-center justify-center mx-auto animate-bounce">
+                  <div className="w-16 h-16 bg-blue-100 text-blue-600 rounded-full flex items-center justify-center mx-auto animate-bounce">
                     <CheckCircle2 className="w-10 h-10" />
                   </div>
                   <div>
@@ -209,7 +207,7 @@ export const FloatingPrescriptionModal = () => {
                   </div>
                   <button
                     onClick={closeModal}
-                    className="mt-4 px-6 py-2.5 bg-emerald-600 hover:bg-emerald-700 text-white font-medium rounded-xl transition-all shadow-md hover:shadow-lg"
+                    className="mt-4 px-6 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-xl transition-all shadow-md hover:shadow-lg"
                   >
                     Done
                   </button>
@@ -229,7 +227,7 @@ export const FloatingPrescriptionModal = () => {
                         value={formData.name}
                         onChange={handleInputChange}
                         placeholder="Enter your name"
-                        className="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                        className="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                       />
                     </div>
 
@@ -244,7 +242,7 @@ export const FloatingPrescriptionModal = () => {
                         value={formData.phone}
                         onChange={handleInputChange}
                         placeholder="10-digit mobile number"
-                        className="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                        className="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                       />
                     </div>
                   </div>
@@ -260,7 +258,7 @@ export const FloatingPrescriptionModal = () => {
                       value={formData.email}
                       onChange={handleInputChange}
                       placeholder="your.email@example.com"
-                      className="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all"
+                      className="w-full px-3.5 py-2.5 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all"
                     />
                   </div>
 
@@ -277,10 +275,10 @@ export const FloatingPrescriptionModal = () => {
                       onDrop={handleDrop}
                       onClick={() => fileInputRef.current?.click()}
                       className={`relative border-2 border-dashed rounded-xl p-5 text-center cursor-pointer transition-all ${dragActive
-                          ? "border-emerald-500 bg-emerald-50/50"
+                          ? "border-blue-500 bg-blue-50/50"
                           : file
-                            ? "border-emerald-300 bg-emerald-50/30"
-                            : "border-slate-300 hover:border-emerald-400 hover:bg-slate-50"
+                            ? "border-blue-300 bg-blue-50/30"
+                            : "border-slate-300 hover:border-blue-400 hover:bg-slate-50"
                         }`}
                     >
                       <input
@@ -292,9 +290,9 @@ export const FloatingPrescriptionModal = () => {
                       />
 
                       {file ? (
-                        <div className="flex items-center justify-between bg-white p-3 rounded-lg border border-emerald-200 shadow-sm">
+                        <div className="flex items-center justify-between bg-white p-3 rounded-lg border border-blue-200 shadow-sm">
                           <div className="flex items-center gap-3 overflow-hidden text-left">
-                            <div className="p-2 bg-emerald-100 text-emerald-700 rounded-lg shrink-0">
+                            <div className="p-2 bg-blue-100 text-blue-700 rounded-lg shrink-0">
                               <FileText className="w-5 h-5" />
                             </div>
                             <div className="truncate">
@@ -319,7 +317,7 @@ export const FloatingPrescriptionModal = () => {
                         </div>
                       ) : (
                         <div className="space-y-1.5">
-                          <div className="w-10 h-10 rounded-full bg-emerald-100 text-emerald-600 flex items-center justify-center mx-auto">
+                          <div className="w-10 h-10 rounded-full bg-blue-100 text-blue-600 flex items-center justify-center mx-auto">
                             <Upload className="w-5 h-5" />
                           </div>
                           <p className="text-xs font-medium text-slate-700">
@@ -344,7 +342,7 @@ export const FloatingPrescriptionModal = () => {
                       value={formData.notes}
                       onChange={handleInputChange}
                       placeholder="Specify medicine names, quantity, or special instructions..."
-                      className="w-full px-3.5 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-emerald-500 focus:border-emerald-500 outline-none transition-all resize-none"
+                      className="w-full px-3.5 py-2 text-sm border border-slate-300 rounded-xl focus:ring-2 focus:ring-blue-500 focus:border-blue-500 outline-none transition-all resize-none"
                     />
                   </div>
 
@@ -352,7 +350,7 @@ export const FloatingPrescriptionModal = () => {
                   <button
                     type="submit"
                     disabled={loading}
-                    className="w-full py-3 px-4 bg-gradient-to-r from-emerald-600 to-teal-700 hover:from-emerald-700 hover:to-teal-800 text-white font-semibold text-sm rounded-xl shadow-lg hover:shadow-emerald-900/20 active:scale-[0.99] transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
+                    className="w-full py-3 px-4 bg-gradient-to-r from-blue-600 to-indigo-700 hover:from-blue-700 hover:to-indigo-800 text-white font-semibold text-sm rounded-xl shadow-lg hover:shadow-blue-900/20 active:scale-[0.99] transition-all flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
                   >
                     {loading ? (
                       <>

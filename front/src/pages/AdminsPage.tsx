@@ -1,14 +1,23 @@
 import { useState, useEffect } from "react";
 import { useNavigate } from "react-router-dom";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { adminUsers } from "@/api/adminService";
 import { Admin, Role, AdminRole_ } from "@/types/admin";
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Badge } from "@/components/ui/badge";
 import { Separator } from "@/components/ui/separator";
+import {
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+} from "@/components/ui/dialog";
 import { useAuth } from "@/context/AuthContext";
 import { toast } from "sonner";
-import { Shield, Loader2, Plus } from "lucide-react";
+import { Shield, Loader2, Plus, Key } from "lucide-react";
 
 export default function AdminsPage() {
   const [admins, setAdmins] = useState<Admin[]>([]);
@@ -16,6 +25,12 @@ export default function AdminsPage() {
   const [loading, setLoading] = useState(true);
   const { admin: currentAdmin } = useAuth();
   const navigate = useNavigate();
+
+  // Reset Password Dialog States
+  const [resetAdminId, setResetAdminId] = useState<string | null>(null);
+  const [resetAdminEmail, setResetAdminEmail] = useState<string>("");
+  const [newPassword, setNewPassword] = useState("");
+  const [isResetting, setIsResetting] = useState(false);
 
   const isSuperAdmin = currentAdmin?.role === "SUPER_ADMIN";
 
@@ -59,6 +74,42 @@ export default function AdminsPage() {
       }
     } catch (error) {
       console.error("Error fetching custom roles:", error);
+    }
+  };
+
+  const handleResetPassword = async () => {
+    if (!resetAdminId || !newPassword) {
+      toast.error("Please enter a valid password");
+      return;
+    }
+    if (newPassword.length < 6) {
+      toast.error("Password must be at least 6 characters long");
+      return;
+    }
+
+    try {
+      setIsResetting(true);
+      const response = await adminUsers.resetAdminPassword(
+        resetAdminId,
+        newPassword
+      );
+
+      if (response.data.success) {
+        toast.success(
+          response.data.message || "Password reset successfully!"
+        );
+        setResetAdminId(null);
+        setNewPassword("");
+      } else {
+        toast.error(response.data.message || "Failed to reset password");
+      }
+    } catch (error: any) {
+      console.error("Reset password error:", error);
+      toast.error(
+        error.response?.data?.message || "Error resetting admin password"
+      );
+    } finally {
+      setIsResetting(false);
     }
   };
 
@@ -152,7 +203,7 @@ export default function AdminsPage() {
       case "MANAGER":
         return "bg-primary hover:bg-primary/90";
       case "CONTENT_EDITOR":
-        return "bg-purple-500 hover:bg-purple-600";
+        return "bg-[#2E7D32] hover:bg-[#1b5e20]";
       case "SUPPORT_AGENT":
         return "bg-yellow-500 hover:bg-yellow-600";
       default:
@@ -239,33 +290,37 @@ export default function AdminsPage() {
 
                   <Separator className="my-2" />
 
-                  {isSuperAdmin && admin.id !== currentAdmin?.id && (
+                  {isSuperAdmin && (
                     <div className="flex flex-wrap gap-2 mt-3">
-                      {admin.isActive !== false ? (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => updateAdminStatus(admin.id, false)}
-                        >
-                          Deactivate
-                        </Button>
-                      ) : (
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={() => updateAdminStatus(admin.id, true)}
-                        >
-                          Activate
-                        </Button>
-                      )}
+                      {admin.id !== currentAdmin?.id && (
+                        <>
+                          {admin.isActive !== false ? (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => updateAdminStatus(admin.id, false)}
+                            >
+                              Deactivate
+                            </Button>
+                          ) : (
+                            <Button
+                              variant="outline"
+                              size="sm"
+                              onClick={() => updateAdminStatus(admin.id, true)}
+                            >
+                              Activate
+                            </Button>
+                          )}
 
-                      <Button
-                        variant="destructive"
-                        size="sm"
-                        onClick={() => deleteAdmin(admin.id)}
-                      >
-                        Delete
-                      </Button>
+                          <Button
+                            variant="destructive"
+                            size="sm"
+                            onClick={() => deleteAdmin(admin.id)}
+                          >
+                            Delete
+                          </Button>
+                        </>
+                      )}
 
                       <Button
                         variant="secondary"
@@ -277,38 +332,54 @@ export default function AdminsPage() {
                         Permissions
                       </Button>
 
-                      <div className="flex flex-col gap-1">
-                        <select
-                          className="px-2 py-1 text-sm border rounded"
-                          value={admin.role}
-                          onChange={(e) =>
-                            updateAdminRole(admin.id, e.target.value)
-                          }
-                        >
-                          {Object.keys(Role).map((role) => (
-                            <option key={role} value={role}>
-                              {role.replace("_", " ")}
-                            </option>
-                          ))}
-                        </select>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="border-amber-400 text-amber-700 hover:bg-amber-50"
+                        onClick={() => {
+                          setResetAdminId(admin.id);
+                          setResetAdminEmail(admin.email);
+                          setNewPassword("");
+                        }}
+                      >
+                        <Key className="mr-1 h-3.5 w-3.5" />
+                        Reset Password
+                      </Button>
 
-                        {customRoles.length > 0 && (
+                      {admin.id !== currentAdmin?.id && (
+                        <div className="flex flex-col gap-1 w-full mt-1">
                           <select
                             className="px-2 py-1 text-sm border rounded"
-                            value={admin.roleId || ""}
+                            value={admin.role}
                             onChange={(e) =>
-                              assignCustomRole(admin.id, e.target.value)
+                              updateAdminRole(admin.id, e.target.value)
                             }
                           >
-                            <option value="">No Custom Role</option>
-                            {customRoles.map((role) => (
-                              <option key={role.id} value={role.id}>
-                                {role.name}
+                            {Object.keys(Role).map((role) => (
+                              <option key={role} value={role}>
+                                {role.replace("_", " ")}
                               </option>
                             ))}
                           </select>
-                        )}
-                      </div>
+
+                          {customRoles.length > 0 && (
+                            <select
+                              className="px-2 py-1 text-sm border rounded"
+                              value={admin.roleId || ""}
+                              onChange={(e) =>
+                                assignCustomRole(admin.id, e.target.value)
+                              }
+                            >
+                              <option value="">No Custom Role</option>
+                              {customRoles.map((role) => (
+                                <option key={role.id} value={role.id}>
+                                  {role.name}
+                                </option>
+                              ))}
+                            </select>
+                          )}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
@@ -317,6 +388,69 @@ export default function AdminsPage() {
           ))}
         </div>
       )}
+
+      {/* Reset Password Dialog */}
+      <Dialog
+        open={!!resetAdminId}
+        onOpenChange={(open) => {
+          if (!open) {
+            setResetAdminId(null);
+            setNewPassword("");
+          }
+        }}
+      >
+        <DialogContent className="sm:max-w-md">
+          <DialogHeader>
+            <DialogTitle className="flex items-center gap-2">
+              <Key className="h-5 w-5 text-amber-600" />
+              Reset Admin Password
+            </DialogTitle>
+            <DialogDescription>
+              Set a new password for <strong>{resetAdminEmail}</strong>.
+            </DialogDescription>
+          </DialogHeader>
+
+          <div className="space-y-4 py-2">
+            <div className="space-y-2">
+              <label className="text-sm font-medium text-slate-700">
+                New Password
+              </label>
+              <Input
+                type="text"
+                placeholder="Enter new password (min 6 chars)"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+              />
+            </div>
+          </div>
+
+          <DialogFooter>
+            <Button
+              variant="outline"
+              onClick={() => {
+                setResetAdminId(null);
+                setNewPassword("");
+              }}
+            >
+              Cancel
+            </Button>
+            <Button
+              disabled={isResetting}
+              onClick={handleResetPassword}
+              className="bg-[#2E7D32] hover:bg-[#1b5e20] text-white"
+            >
+              {isResetting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Resetting...
+                </>
+              ) : (
+                "Save New Password"
+              )}
+            </Button>
+          </DialogFooter>
+        </DialogContent>
+      </Dialog>
 
       {!isSuperAdmin && (
         <div className="rounded-lg border bg-amber-50 p-4 mt-4">

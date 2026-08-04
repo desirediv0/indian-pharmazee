@@ -38,6 +38,7 @@ import {
   Eye,
   AlertTriangle,
   Loader2,
+  Key,
 } from "lucide-react";
 import { toast } from "sonner";
 import { formatDate } from "@/lib/utils";
@@ -335,6 +336,94 @@ const DeleteConfirmDialog = ({
           </Button>
         </DialogFooter>
       </DialogContent>
+// Reset password dialog for user
+const ResetUserPasswordDialog = ({
+  user,
+  open,
+  onClose,
+  onReset,
+  isResetting,
+}: {
+  user: User | null;
+  open: boolean;
+  onClose: () => void;
+  onReset: (userId: string, newPassword: string) => void;
+  isResetting: boolean;
+}) => {
+  const [newPassword, setNewPassword] = useState("");
+
+  const handleSubmit = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!newPassword || newPassword.length < 6) {
+      toast.error("Password must be at least 6 characters long");
+      return;
+    }
+    if (user) {
+      onReset(user.id, newPassword);
+    }
+  };
+
+  if (!user) return null;
+
+  return (
+    <Dialog open={open} onOpenChange={onClose}>
+      <DialogContent className="bg-[#FFFFFF] border-[#E5E7EB] max-w-md">
+        <DialogHeader>
+          <DialogTitle className="text-xl font-semibold text-[#1F2937] flex items-center gap-2">
+            <Key className="h-5 w-5 text-amber-600" />
+            Reset User Password
+          </DialogTitle>
+          <DialogDescription className="text-[#9CA3AF]">
+            Set a new password for user <strong>{user.email}</strong>.
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit}>
+          <div className="space-y-4 py-4">
+            <div className="space-y-2">
+              <label
+                htmlFor="newPassword"
+                className="block text-sm font-medium text-[#4B5563]"
+              >
+                New Password
+              </label>
+              <Input
+                id="newPassword"
+                type="text"
+                value={newPassword}
+                onChange={(e) => setNewPassword(e.target.value)}
+                placeholder="Enter new password (min 6 characters)"
+                className="border-[#E5E7EB] focus:border-primary"
+                required
+                minLength={6}
+              />
+            </div>
+          </div>
+          <DialogFooter className="gap-3">
+            <Button
+              variant="outline"
+              type="button"
+              className="border-[#E5E7EB] hover:bg-[#F3F7F6]"
+              onClick={onClose}
+            >
+              Cancel
+            </Button>
+            <Button
+              type="submit"
+              disabled={isResetting}
+              className="bg-[#2E7D32] hover:bg-[#1b5e20] text-white"
+            >
+              {isResetting ? (
+                <>
+                  <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                  Resetting...
+                </>
+              ) : (
+                "Save Password"
+              )}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
     </Dialog>
   );
 };
@@ -359,8 +448,10 @@ export default function UserManagementPage() {
   const [viewDialogOpen, setViewDialogOpen] = useState(false);
   const [editDialogOpen, setEditDialogOpen] = useState(false);
   const [deleteDialogOpen, setDeleteDialogOpen] = useState(false);
+  const [resetPasswordDialogOpen, setResetPasswordDialogOpen] = useState(false);
   const [isUpdating, setIsUpdating] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
+  const [isResettingPassword, setIsResettingPassword] = useState(false);
 
   // Fetch users on mount and when page changes
   useEffect(() => {
@@ -524,6 +615,36 @@ export default function UserManagementPage() {
       toast.error(error.message || t("user_management.messages.delete_exception"));
     } finally {
       setIsDeleting(false);
+    }
+  };
+
+  // Handle reset user password
+  const handleResetUserPassword = async (
+    userId: string,
+    newPassword: string
+  ) => {
+    try {
+      setIsResettingPassword(true);
+      const response = await customerUsers.resetUserPassword(
+        userId,
+        newPassword
+      );
+
+      if (response.data.success) {
+        toast.success(
+          response.data.message || "User password reset successfully!"
+        );
+        setResetPasswordDialogOpen(false);
+      } else {
+        toast.error(response.data.message || "Failed to reset password");
+      }
+    } catch (error: any) {
+      console.error("Error resetting user password:", error);
+      toast.error(
+        error.response?.data?.message || "Error resetting user password"
+      );
+    } finally {
+      setIsResettingPassword(false);
     }
   };
 
@@ -713,6 +834,18 @@ export default function UserManagementPage() {
                               {t("user_management.actions.edit")}
                             </DropdownMenuItem>
                           )}
+                          {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("users:update")) && (
+                            <DropdownMenuItem
+                              className="text-amber-700 hover:bg-amber-50"
+                              onClick={() => {
+                                setSelectedUser(user);
+                                setResetPasswordDialogOpen(true);
+                              }}
+                            >
+                              <Key className="h-4 w-4 mr-2" />
+                              Reset Password
+                            </DropdownMenuItem>
+                          )}
                           {!user.emailVerified && (admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("users:update")) && (
                             <DropdownMenuItem
                               className="text-[#1F2937] hover:bg-[#F3F7F6]"
@@ -808,6 +941,15 @@ export default function UserManagementPage() {
         onClose={() => setEditDialogOpen(false)}
         onSave={handleEditUser}
         isSaving={isUpdating}
+      />
+
+      {/* Reset user password dialog */}
+      <ResetUserPasswordDialog
+        user={selectedUser}
+        open={resetPasswordDialogOpen}
+        onClose={() => setResetPasswordDialogOpen(false)}
+        onReset={handleResetUserPassword}
+        isResetting={isResettingPassword}
       />
 
       {/* Delete confirmation dialog */}

@@ -135,6 +135,11 @@ export const adminUsers = {
   ) => {
     return api.post(`/api/admin/admins/${adminId}/update-permissions`, data);
   },
+  resetAdminPassword: (adminId: string, newPassword: string) => {
+    return api.patch(`/api/admin/admins/${adminId}/reset-password`, {
+      newPassword,
+    });
+  },
 };
 
 // Customer Users Management
@@ -161,6 +166,11 @@ export const customerUsers = {
     data: { name?: string; phone?: string; email?: string }
   ) => {
     return api.patch(`/api/admin/users/${userId}`, data);
+  },
+  resetUserPassword: (userId: string, newPassword: string) => {
+    return api.patch(`/api/admin/users/${userId}/reset-password`, {
+      newPassword,
+    });
   },
 };
 
