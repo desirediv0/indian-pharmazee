@@ -852,11 +852,12 @@ export const createOrder = asyncHandler(async (req, res, next) => {
     });
   }
 
-  // Calculate tax and total
-  const taxAmount = 0; // Set tax to 0
-  const shippingAmount = 0; // Set shipping to 0
+  // Calculate tax and total with 5% GST
   const discountAmount = parseFloat(discount) || 0;
-  const total = subTotal - discountAmount; // Calculate total without tax and shipping
+  const taxableAmount = Math.max(0, subTotal - discountAmount);
+  const taxAmount = Math.round((taxableAmount * 0.05) * 100) / 100;
+  const shippingAmount = 0; // Set shipping to 0
+  const total = subTotal + taxAmount - discountAmount;
 
   // Create order with transaction to handle inventory
   const order = await prisma.$transaction(async (tx) => {

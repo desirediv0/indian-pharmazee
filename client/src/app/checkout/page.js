@@ -255,8 +255,8 @@ export default function CheckoutPage() {
         setError("");
 
         try {
-            // Get checkout amount
-            const calculatedAmount = totals.total;
+            // Get checkout amount (including COD charge if cash)
+            const calculatedAmount = totals.total + (paymentMethod === "CASH" ? (paymentSettings.codCharge || 0) : 0);
             // Fix: Keep 2 decimal places instead of rounding to preserve exact amount
             const amount = Math.max(parseFloat(calculatedAmount.toFixed(2)), 1);
 
@@ -1040,7 +1040,11 @@ export default function CheckoutPage() {
                                     </div>
                                 )}
 
-                                {/* Tax removed */}
+                                {/* GST 5% Tax */}
+                                <div className="flex justify-between text-gray-600">
+                                    <span>GST (5%)</span>
+                                    <span className="font-medium">{formatCurrency(totals.tax)}</span>
+                                </div>
 
                                 {/* Free shipping progress message */}
                                 {totals.shipping > 0 && cart.freeShippingThreshold > 0 && (

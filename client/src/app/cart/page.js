@@ -678,6 +678,13 @@ export default function CartPage() {
                                 )}
 
                                 <div className="flex justify-between items-center py-1">
+                                    <span className="text-gray-600 font-medium">GST (5%)</span>
+                                    <span className="font-semibold text-gray-900">
+                                        {formatCurrency(totals.tax)}
+                                    </span>
+                                </div>
+
+                                <div className="flex justify-between items-center py-1">
                                     <span className="text-gray-600 font-medium">Shipping</span>
                                     {totals.shipping > 0 ? (
                                         <span className="text-gray-900 font-bold">

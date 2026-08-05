@@ -889,9 +889,13 @@ export default function OrderDetailsPage() {
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">
-                  <span className="text-[#4B5563]">{t('orders.details.tax')} (0%):</span>
+                  <span className="text-[#4B5563]">GST (5%):</span>
                   <span className="font-medium text-[#1F2937]">
-                    {formatCurrency(0)}
+                    {formatCurrency(
+                      typeof orderDetails.tax === 'string'
+                        ? parseFloat(orderDetails.tax)
+                        : (orderDetails.tax || 0)
+                    )}
                   </span>
                 </div>
                 <div className="flex justify-between text-sm">

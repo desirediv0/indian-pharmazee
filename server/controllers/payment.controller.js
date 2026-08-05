@@ -590,8 +590,9 @@ export const paymentVerification = asyncHandler(async (req, res) => {
       }
     }
 
-    // Tax is 0% now
-    tax = 0;
+    // Calculate 5% GST tax on taxable amount
+    const taxableAmount = Math.max(0, subTotal - discount);
+    tax = Math.round((taxableAmount * 0.05) * 100) / 100;
 
     // Generate order number
     const orderNumber = `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
@@ -618,7 +619,7 @@ export const paymentVerification = asyncHandler(async (req, res) => {
           paymentGateway,
           paymentMode,
           paymentOwnerId,
-          total: (subTotal + shippingCost - discount).toFixed(2),
+          total: (subTotal + tax + shippingCost - discount).toFixed(2),
           shippingAddressId,
           billingAddressSameAsShipping,
           billingAddress: !billingAddressSameAsShipping
@@ -1709,7 +1710,9 @@ export const createCashOrder = asyncHandler(async (req, res) => {
       if (requestDiscount) discount = parseFloat(requestDiscount);
     }
 
-    tax = 0;
+    // Calculate 5% GST tax on taxable amount
+    const taxableAmount = Math.max(0, subTotal - discount);
+    tax = Math.round((taxableAmount * 0.05) * 100) / 100;
 
     // Generate order number
     const orderNumber = `ORD-${Date.now()}-${Math.floor(Math.random() * 1000)}`;
@@ -1729,7 +1732,7 @@ export const createCashOrder = asyncHandler(async (req, res) => {
           shippingCost: shippingCost.toFixed(2),
           discount,
           codCharge: codCharge.toFixed(2),
-          total: (subTotal + shippingCost + codCharge - discount).toFixed(2),
+          total: (subTotal + tax + shippingCost + codCharge - discount).toFixed(2),
           paymentMethod: "CASH",
           shippingAddressId,
           billingAddressSameAsShipping,

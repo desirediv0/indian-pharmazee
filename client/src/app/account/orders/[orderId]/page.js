@@ -299,7 +299,7 @@ export default function OrderDetailPage() {
                                 <span>{order.shippingCost > 0 ? formatCurrency(order.shippingCost) : "Free"}</span>
                             </div>
                             <div className="flex justify-between text-sm">
-                                <span className="text-gray-600">Tax</span>
+                                <span className="text-gray-600">GST (5%)</span>
                                 <span>{formatCurrency(order.tax)}</span>
                             </div>
                             {order.codCharge > 0 && (

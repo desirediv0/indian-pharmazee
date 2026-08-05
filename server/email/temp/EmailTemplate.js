@@ -291,7 +291,7 @@ export const getOrderConfirmationTemplate = (data, storeConfig = null) => {
                 <div class="summary-row"><span style="color:#666;">Subtotal</span><span>₹${parseFloat(data.subtotal).toFixed(2)}</span></div>
                 ${hasDiscount ? `<div class="summary-row discount-row"><span>Discount ${hasCoupon ? `(${data.couponCode})` : ""}</span><span>-₹${parseFloat(data.discount).toFixed(2)}</span></div>` : ""}
                 <div class="summary-row"><span style="color:#666;">Shipping</span><span>${parseFloat(data.shipping) > 0 ? `₹${parseFloat(data.shipping).toFixed(2)}` : "FREE"}</span></div>
-                <div class="summary-row"><span style="color:#666;">Tax</span><span>₹${parseFloat(data.tax).toFixed(2)}</span></div>
+                <div class="summary-row"><span style="color:#666;">GST (5%)</span><span>₹${parseFloat(data.tax).toFixed(2)}</span></div>
                 ${parseFloat(data.codCharge) > 0 ? `<div class="summary-row"><span style="color:#666;">COD Surcharge</span><span>₹${parseFloat(data.codCharge).toFixed(2)}</span></div>` : ""}
                 <div class="summary-row total-row"><span>Total</span><span class="summary-value">₹${parseFloat(data.total).toFixed(2)}</span></div>
             </div>

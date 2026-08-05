@@ -496,19 +496,20 @@ export function CartProvider({ children }) {
         fetchCart().catch(() => { });
     };
 
-    // Calculate totals
+    // Calculate totals with 5% GST tax
     const getCartTotals = () => {
         const subtotal = parseFloat(cart.subtotal || 0);
         const discount = coupon ? parseFloat(coupon.discountAmount || 0) : 0;
         const shipping = parseFloat(cart.shippingTotal || 0);
-        const tax = 0; // No tax
+        const taxableAmount = Math.max(0, subtotal - discount);
+        const tax = Math.round((taxableAmount * 0.05) * 100) / 100;
 
         return {
             subtotal,
             discount,
             shipping,
             tax,
-            total: subtotal - discount + shipping + tax,
+            total: Math.round((subtotal - discount + shipping + tax) * 100) / 100,
         };
     };
 
