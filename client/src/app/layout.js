@@ -1,4 +1,5 @@
 import "./globals.css";
+import Script from "next/script";
 import { Navbar } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { CartProvider } from "@/lib/cart-context";
@@ -12,6 +13,9 @@ export const metadata = {
   description: "Indian Pharmazee provides genuine branded medicines and healthcare products — IVF, oncology, transplant, sexual wellness, chronic care, temp-controlled delivery across India.",
   keywords: "Indian Pharmazee, specialty medicines, oncology medicines, IVF medicines, transplant medicines, temp-controlled delivery, genuine medicines India, pharmaceutical ecommerce",
   authors: [{ name: "Indian Pharmazee" }],
+  verification: {
+    google: "AhIUN5UjwjmL_ZHO9jGjCjTdo5fiAY_dBuRHhsFk9qY",
+  },
   openGraph: {
     title: "Indian Pharmazee | Trusted Specialty Medicines Across India",
     description: "Genuine branded medicines, oncology care, IVF solutions, chronic care treatments with reliable delivery across India. Temp-controlled 2°C–8°C support.",
@@ -24,6 +28,21 @@ export const metadata = {
 export default function RootLayout({ children }) {
   return (
     <html lang="en">
+      <head>
+        <meta name="google-site-verification" content="AhIUN5UjwjmL_ZHO9jGjCjTdo5fiAY_dBuRHhsFk9qY" />
+        <Script
+          src="https://www.googletagmanager.com/gtag/js?id=G-F2125423JN"
+          strategy="afterInteractive"
+        />
+        <Script id="google-analytics" strategy="afterInteractive">
+          {`
+            window.dataLayer = window.dataLayer || [];
+            function gtag(){dataLayer.push(arguments);}
+            gtag('js', new Date());
+            gtag('config', 'G-F2125423JN');
+          `}
+        </Script>
+      </head>
       <body className="antialiased">
         <AuthProvider>
           <CartProvider>
