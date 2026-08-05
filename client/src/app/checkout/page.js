@@ -1087,7 +1087,6 @@ export default function CheckoutPage() {
                                     <span className="flex items-center justify-center">
                                         <IndianRupee className="mr-2 h-4 w-4" />
                                         Place Order •{" "}
-                                        Place Order •{" "}
                                         {formatCurrency(
                                             totals.total + (paymentMethod === "CASH" ? (paymentSettings.codCharge || 0) : 0)
                                         )}
