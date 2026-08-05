@@ -184,19 +184,22 @@ model Address {
 }
 
 model Category {
-  id            String            @id @default(uuid())
-  name          String            @unique
-  description   String?
-  image         String?
-  slug          String            @unique
-  position      Int               @default(0)
-  isDefault     Boolean           @default(false)
-  createdBy     String?
-  createdAt     DateTime          @default(now())
-  updatedAt     DateTime          @updatedAt
-  products      ProductCategory[]
-  coupons       CouponCategory[]
-  subCategories SubCategory[]
+  id              String            @id @default(uuid())
+  name            String            @unique
+  description     String?
+  image           String?
+  slug            String            @unique
+  position        Int               @default(0)
+  isDefault       Boolean           @default(false)
+  createdBy       String?
+  metaTitle       String?
+  metaDescription String?
+  keywords        String?
+  createdAt       DateTime          @default(now())
+  updatedAt       DateTime          @updatedAt
+  products        ProductCategory[]
+  coupons         CouponCategory[]
+  subCategories   SubCategory[]
 }
 
 model SubCategory {

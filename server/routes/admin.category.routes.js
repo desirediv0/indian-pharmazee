@@ -204,7 +204,7 @@ router.post(
   upload.single("image"),
   async (req, res) => {
     try {
-      const { name, description, position } = req.body;
+      const { name, description, position, metaTitle, metaDescription, keywords } = req.body;
 
       if (!name) {
         return res.status(400).json({
@@ -274,6 +274,9 @@ router.post(
           slug,
           image: imageKey,
           position: targetPosition,
+          metaTitle: metaTitle || null,
+          metaDescription: metaDescription || null,
+          keywords: keywords || null,
         },
       });
 
@@ -313,8 +316,7 @@ router.patch(
   upload.single("image"),
   async (req, res) => {
     try {
-      const { id } = req.params;
-      const { name, description, position } = req.body;
+      const { name, description, position, metaTitle, metaDescription, keywords } = req.body;
 
       // Check if category exists
       const existingCategory = await prisma.category.findUnique({
@@ -341,6 +343,16 @@ router.patch(
       }
 
       const updateData = {};
+
+      if (metaTitle !== undefined) {
+        updateData.metaTitle = metaTitle || null;
+      }
+      if (metaDescription !== undefined) {
+        updateData.metaDescription = metaDescription || null;
+      }
+      if (keywords !== undefined) {
+        updateData.keywords = keywords || null;
+      }
 
       // Update name and slug if provided
       if (name) {

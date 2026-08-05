@@ -651,7 +651,7 @@ export const getCategoryById = asyncHandler(async (req, res) => {
 
 // Create a new category
 export const createCategory = asyncHandler(async (req, res) => {
-  const { name, description, position } = req.body;
+  const { name, description, position, metaTitle, metaDescription, keywords } = req.body;
 
   if (!name) {
     throw new ApiError(400, "Category name is required");
@@ -695,6 +695,9 @@ export const createCategory = asyncHandler(async (req, res) => {
       slug,
       image: imageUrl,
       position: targetPosition,
+      metaTitle: metaTitle || null,
+      metaDescription: metaDescription || null,
+      keywords: keywords || null,
     },
   });
 
@@ -723,7 +726,7 @@ export const createCategory = asyncHandler(async (req, res) => {
 // Update category
 export const updateCategory = asyncHandler(async (req, res) => {
   const { categoryId } = req.params;
-  const { name, description, position } = req.body;
+  const { name, description, position, metaTitle, metaDescription, keywords } = req.body;
 
   // Check if category exists
   const category = await prisma.category.findUnique({
@@ -736,6 +739,16 @@ export const updateCategory = asyncHandler(async (req, res) => {
 
   // Prepare update data
   const updateData = {};
+
+  if (metaTitle !== undefined) {
+    updateData.metaTitle = metaTitle || null;
+  }
+  if (metaDescription !== undefined) {
+    updateData.metaDescription = metaDescription || null;
+  }
+  if (keywords !== undefined) {
+    updateData.keywords = keywords || null;
+  }
 
   // Update slug if name is changed
   if (name && name !== category.name) {

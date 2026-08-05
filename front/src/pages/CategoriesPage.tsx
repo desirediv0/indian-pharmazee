@@ -657,6 +657,9 @@ function CategoryForm({
     name: "",
     description: "",
     position: "",
+    metaTitle: "",
+    metaDescription: "",
+    keywords: "",
   });
   const [imagePreview, setImagePreview] = useState<string | null>(null);
   const [imageFile, setImageFile] = useState<File | null>(null);
@@ -700,6 +703,9 @@ function CategoryForm({
               name: categoryData.name || "",
               description: categoryData.description || "",
               position: categoryData.position !== undefined ? String(categoryData.position) : "",
+              metaTitle: categoryData.metaTitle || "",
+              metaDescription: categoryData.metaDescription || "",
+              keywords: categoryData.keywords || "",
             });
             if (categoryData.image) {
               setImagePreview(categoryData.image);
@@ -928,6 +934,18 @@ function CategoryForm({
         formData.append("position", category.position);
       }
 
+      if (category.metaTitle !== undefined) {
+        formData.append("metaTitle", category.metaTitle);
+      }
+
+      if (category.metaDescription !== undefined) {
+        formData.append("metaDescription", category.metaDescription);
+      }
+
+      if (category.keywords !== undefined) {
+        formData.append("keywords", category.keywords);
+      }
+
       if (imageFile) {
         formData.append("image", imageFile);
       }
@@ -1094,6 +1112,65 @@ function CategoryForm({
                     <ImageIcon className="h-8 w-8 text-[#9CA3AF]" />
                   )}
                 </div>
+              </div>
+            </div>
+
+            {/* SEO Settings */}
+            <div className="pt-6 border-t border-[#E5E7EB] space-y-4">
+              <div>
+                <h3 className="text-base font-semibold text-[#1F2937] flex items-center gap-2">
+                  <Tags className="w-4 h-4 text-primary" />
+                  Search Engine Optimization (SEO)
+                </h3>
+                <p className="text-xs text-[#9CA3AF] mt-0.5">
+                  Optimize category title, description, and keywords for search engine rankings.
+                </p>
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="metaTitle" className="text-sm font-medium text-[#4B5563]">
+                  Meta Title
+                </Label>
+                <Input
+                  id="metaTitle"
+                  name="metaTitle"
+                  value={category.metaTitle || ""}
+                  onChange={handleChange}
+                  placeholder="e.g. IVF - In Vitro Fertilization Medicines Online | Indian Pharmazee"
+                  className="border-[#E5E7EB] focus:border-primary"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="metaDescription" className="text-sm font-medium text-[#4B5563]">
+                  Meta Description
+                </Label>
+                <Textarea
+                  id="metaDescription"
+                  name="metaDescription"
+                  value={category.metaDescription || ""}
+                  onChange={handleChange}
+                  placeholder="e.g. Buy high quality IVF and fertility treatment medicines online at best prices with pan-India express shipping."
+                  rows={3}
+                  className="border-[#E5E7EB] focus:border-primary"
+                />
+              </div>
+
+              <div className="space-y-2">
+                <Label htmlFor="keywords" className="text-sm font-medium text-[#4B5563]">
+                  Meta Keywords
+                </Label>
+                <Input
+                  id="keywords"
+                  name="keywords"
+                  value={category.keywords || ""}
+                  onChange={handleChange}
+                  placeholder="e.g. ivf medicines, fertility drugs, in vitro fertilization, online pharmacy"
+                  className="border-[#E5E7EB] focus:border-primary"
+                />
+                <p className="text-xs text-[#9CA3AF]">
+                  Separate keywords with commas.
+                </p>
               </div>
             </div>
           </CardContent>
