@@ -32,7 +32,8 @@ export default function OrderDetailsPage() {
     totalAmount: number;
     subTotal: string | number;
     shippingAmount: number;
-    taxAmount: number;
+    taxAmount?: number;
+    tax?: string | number;
     discount?: string | number;
     codCharge?: string | number;
     createdAt: string;
@@ -894,7 +895,7 @@ export default function OrderDetailsPage() {
                     {formatCurrency(
                       typeof orderDetails.tax === 'string'
                         ? parseFloat(orderDetails.tax)
-                        : (orderDetails.tax || 0)
+                        : (orderDetails.tax || orderDetails.taxAmount || 0)
                     )}
                   </span>
                 </div>
