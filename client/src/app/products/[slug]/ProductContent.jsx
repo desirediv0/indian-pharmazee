@@ -575,34 +575,50 @@ export default function ProductContent({ slug }) {
               {product.name}
             </h1>
 
-            {/* Rating + Net Qty */}
-            <div className="flex flex-wrap items-center gap-2 mb-6 pb-6 border-b border-gray-100">
-              {(() => {
-                // find a "qty" or "weight" or "unit" type attribute for Net Qty display
-                const qtyAttr = selectedVariant?.attributes?.find((a) => {
-                  const name = (a.attribute?.name ?? a.attribute ?? "").toLowerCase();
-                  return name.includes("qty") || name.includes("unit") || name.includes("net");
-                });
-                const qtyVal = qtyAttr ? (qtyAttr.attributeValue?.value ?? qtyAttr.value) : null;
-                return qtyVal ? (
-                  <span className="text-sm text-gray-500">Net Qty: {qtyVal}</span>
-                ) : null;
-              })()}
-              {(() => {
-                const qtyAttr = selectedVariant?.attributes?.find((a) => {
-                  const name = (a.attribute?.name ?? a.attribute ?? "").toLowerCase();
-                  return name.includes("qty") || name.includes("unit") || name.includes("net");
-                });
-                return qtyAttr ? <span className="text-gray-300">•</span> : null;
-              })()}
-              <div className="flex gap-0.5">
-                {[1, 2, 3, 4, 5].map((s) => (
-                  <Star key={s} className={`h-4 w-4 ${s <= Math.round(product.avgRating || 0) ? "fill-amber-400 text-amber-400" : "fill-gray-200 text-gray-200"}`} />
-                ))}
-              </div>
-              <span className="text-sm text-gray-500">
-                {product.avgRating ? `${product.avgRating} (${product.reviewCount}k)` : "No reviews yet"}
-              </span>
+            {/* SKU + Category + SubCategories + Brand + Composition */}
+            <div className="mb-6 pb-6 border-b border-gray-100 space-y-2">
+              {selectedVariant?.sku && (
+                <div className="flex gap-3 text-sm">
+                  <span className="w-28 text-gray-400 flex-shrink-0">SKU</span>
+                  <span className="text-gray-700">{selectedVariant.sku}</span>
+                </div>
+              )}
+              {product.category && (
+                <div className="flex gap-3 text-sm">
+                  <span className="w-28 text-gray-400 flex-shrink-0">Category</span>
+                  <Link href={`/category/${product.category.slug}`} className="text-primary hover:underline">
+                    {product.category.name}
+                  </Link>
+                </div>
+              )}
+              {product.subCategories?.length > 0 && (
+                <div className="flex gap-3 text-sm">
+                  <span className="w-28 text-gray-400 flex-shrink-0">Sub-category</span>
+                  <div className="flex flex-wrap gap-1.5">
+                    {product.subCategories.map((sc) => (
+                      <Link
+                        key={sc.id}
+                        href={`/subcategory/${sc.slug}`}
+                        className="text-primary hover:underline"
+                      >
+                        {sc.name}
+                      </Link>
+                    ))}
+                  </div>
+                </div>
+              )}
+              {(product.brandName || product.brand?.name) && (
+                <div className="flex gap-3 text-sm">
+                  <span className="w-28 text-gray-400 flex-shrink-0">Brand</span>
+                  <span className="text-gray-700 font-medium">{product.brandName || product.brand?.name}</span>
+                </div>
+              )}
+              {product.composition && (
+                <div className="flex gap-3 text-sm">
+                  <span className="w-28 text-gray-400 flex-shrink-0">Composition</span>
+                  <span className="text-gray-700 font-medium">{product.composition}</span>
+                </div>
+              )}
             </div>
 
             {/* Prescription & Similar Products Section */}
@@ -881,50 +897,34 @@ export default function ProductContent({ slug }) {
                 ))}
             </div>
 
-            {/* SKU + Category + SubCategories */}
-            <div className="pt-4 border-t border-gray-100 space-y-2">
-              {selectedVariant?.sku && (
-                <div className="flex gap-3 text-sm">
-                  <span className="w-28 text-gray-400 flex-shrink-0">SKU</span>
-                  <span className="text-gray-700">{selectedVariant.sku}</span>
-                </div>
-              )}
-              {product.category && (
-                <div className="flex gap-3 text-sm">
-                  <span className="w-28 text-gray-400 flex-shrink-0">Category</span>
-                  <Link href={`/category/${product.category.slug}`} className="text-primary hover:underline">
-                    {product.category.name}
-                  </Link>
-                </div>
-              )}
-              {product.subCategories?.length > 0 && (
-                <div className="flex gap-3 text-sm">
-                  <span className="w-28 text-gray-400 flex-shrink-0">Sub-category</span>
-                  <div className="flex flex-wrap gap-1.5">
-                    {product.subCategories.map((sc) => (
-                      <Link
-                        key={sc.id}
-                        href={`/subcategory/${sc.slug}`}
-                        className="text-primary hover:underline"
-                      >
-                        {sc.name}
-                      </Link>
-                    ))}
-                  </div>
-                </div>
-              )}
-              {(product.brandName || product.brand?.name) && (
-                <div className="flex gap-3 text-sm">
-                  <span className="w-28 text-gray-400 flex-shrink-0">Brand</span>
-                  <span className="text-gray-700 font-medium">{product.brandName || product.brand?.name}</span>
-                </div>
-              )}
-              {product.composition && (
-                <div className="flex gap-3 text-sm">
-                  <span className="w-28 text-gray-400 flex-shrink-0">Composition</span>
-                  <span className="text-gray-700 font-medium">{product.composition}</span>
-                </div>
-              )}
+            {/* Rating + Net Qty */}
+            <div className="pt-4 border-t border-gray-100 flex flex-wrap items-center gap-2">
+              {(() => {
+                // find a "qty" or "weight" or "unit" type attribute for Net Qty display
+                const qtyAttr = selectedVariant?.attributes?.find((a) => {
+                  const name = (a.attribute?.name ?? a.attribute ?? "").toLowerCase();
+                  return name.includes("qty") || name.includes("unit") || name.includes("net");
+                });
+                const qtyVal = qtyAttr ? (qtyAttr.attributeValue?.value ?? qtyAttr.value) : null;
+                return qtyVal ? (
+                  <span className="text-sm text-gray-500">Net Qty: {qtyVal}</span>
+                ) : null;
+              })()}
+              {(() => {
+                const qtyAttr = selectedVariant?.attributes?.find((a) => {
+                  const name = (a.attribute?.name ?? a.attribute ?? "").toLowerCase();
+                  return name.includes("qty") || name.includes("unit") || name.includes("net");
+                });
+                return qtyAttr ? <span className="text-gray-300">•</span> : null;
+              })()}
+              <div className="flex gap-0.5">
+                {[1, 2, 3, 4, 5].map((s) => (
+                  <Star key={s} className={`h-4 w-4 ${s <= Math.round(product.avgRating || 0) ? "fill-amber-400 text-amber-400" : "fill-gray-200 text-gray-200"}`} />
+                ))}
+              </div>
+              <span className="text-sm text-gray-500">
+                {product.avgRating ? `${product.avgRating} (${product.reviewCount}k)` : "No reviews yet"}
+              </span>
             </div>
 
           </div>
