@@ -228,13 +228,7 @@ function ProductsContent() {
 
     /* ── Scroll top on page change ── */
     useEffect(() => {
-        const t = setTimeout(() => {
-            const gridTop = document.getElementById("products-grid-anchor");
-            if (gridTop) {
-                gridTop.scrollIntoView({ behavior: "smooth", block: "start" });
-            }
-        }, 100);
-        return () => clearTimeout(t);
+        window.scrollTo({ top: 0, behavior: "smooth" });
     }, [pagination.page]);
 
     /* ── Handlers ── */
@@ -288,6 +282,7 @@ function ProductsContent() {
         const params = new URLSearchParams(searchParams.toString());
         p > 1 ? params.set("page", p) : params.delete("page");
         router.push(`${window.location.pathname}?${params.toString()}`, { scroll: false });
+        window.scrollTo({ top: 0, behavior: "smooth" });
     };
 
     /* ── Active filter count ── */
