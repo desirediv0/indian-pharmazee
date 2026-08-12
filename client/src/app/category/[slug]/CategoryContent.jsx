@@ -75,6 +75,9 @@ export default function CategoryContent() {
                 setError(err.message);
             } finally {
                 setLoading(false);
+                setTimeout(() => {
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                }, 60);
             }
         };
 

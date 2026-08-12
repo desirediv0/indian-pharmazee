@@ -198,6 +198,9 @@ function ProductsContent() {
                 setError(err.message);
             } finally {
                 setLoading(false);
+                setTimeout(() => {
+                    window.scrollTo({ top: 0, behavior: "smooth" });
+                }, 60);
             }
         };
         fetchProducts();
@@ -228,8 +231,10 @@ function ProductsContent() {
 
     /* ── Scroll top on page change ── */
     useEffect(() => {
-        window.scrollTo({ top: 0, behavior: "smooth" });
-    }, [pagination.page]);
+        if (typeof window !== "undefined") {
+            window.scrollTo({ top: 0, behavior: "smooth" });
+        }
+    }, [pagination.page, products]);
 
     /* ── Handlers ── */
     const handleFilterChange = (name, value) => {
