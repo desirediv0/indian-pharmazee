@@ -316,6 +316,7 @@ router.patch(
   upload.single("image"),
   async (req, res) => {
     try {
+      const { id } = req.params;
       const { name, description, position, metaTitle, metaDescription, keywords } = req.body;
 
       // Check if category exists

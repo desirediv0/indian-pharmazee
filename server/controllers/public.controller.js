@@ -695,3 +695,83 @@ export const getPriceVisibilitySettings = asyncHandler(async (req, res) => {
     )
   );
 });
+
+// Generate dynamic sitemap XML directly from database
+export const getSitemapXml = asyncHandler(async (req, res) => {
+  const baseUrl = "https://www.indianpharmazee.com";
+  const currentDate = new Date().toISOString();
+
+  const [categories, subCategories, products] = await Promise.all([
+    prisma.category.findMany({
+      select: { slug: true, updatedAt: true },
+    }),
+    prisma.subCategory.findMany({
+      select: { slug: true, updatedAt: true },
+    }),
+    prisma.product.findMany({
+      where: { isActive: true },
+      select: { slug: true, updatedAt: true },
+    }),
+  ]);
+
+  const staticPages = [
+    { url: `${baseUrl}/`, priority: "1.0", changefreq: "daily" },
+    { url: `${baseUrl}/products`, priority: "0.9", changefreq: "daily" },
+    { url: `${baseUrl}/categories`, priority: "0.9", changefreq: "daily" },
+    { url: `${baseUrl}/about`, priority: "0.8", changefreq: "monthly" },
+    { url: `${baseUrl}/contact`, priority: "0.8", changefreq: "monthly" },
+    { url: `${baseUrl}/faqs`, priority: "0.8", changefreq: "weekly" },
+    { url: `${baseUrl}/why-us`, priority: "0.8", changefreq: "monthly" },
+    { url: `${baseUrl}/shipping-policy`, priority: "0.6", changefreq: "monthly" },
+    { url: `${baseUrl}/return-policy`, priority: "0.6", changefreq: "monthly" },
+    { url: `${baseUrl}/privacy-policy`, priority: "0.6", changefreq: "monthly" },
+    { url: `${baseUrl}/terms`, priority: "0.6", changefreq: "monthly" },
+  ];
+
+  const categoryUrls = categories.map((cat) => ({
+    url: `${baseUrl}/category/${cat.slug}`,
+    lastmod: cat.updatedAt ? new Date(cat.updatedAt).toISOString() : currentDate,
+    priority: "0.9",
+    changefreq: "daily",
+  }));
+
+  const subcategoryUrls = subCategories.map((sub) => ({
+    url: `${baseUrl}/subcategory/${sub.slug}`,
+    lastmod: sub.updatedAt ? new Date(sub.updatedAt).toISOString() : currentDate,
+    priority: "0.8",
+    changefreq: "daily",
+  }));
+
+  const productUrls = products.map((prod) => ({
+    url: `${baseUrl}/products/${prod.slug}`,
+    lastmod: prod.updatedAt ? new Date(prod.updatedAt).toISOString() : currentDate,
+    priority: "0.9",
+    changefreq: "daily",
+  }));
+
+  const allUrls = [
+    ...staticPages.map((p) => ({ ...p, lastmod: currentDate })),
+    ...categoryUrls,
+    ...subcategoryUrls,
+    ...productUrls,
+  ];
+
+  const xml = `<?xml version="1.0" encoding="UTF-8"?>
+<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
+${allUrls
+  .map(
+    (item) => `  <url>
+    <loc>${item.url}</loc>
+    <lastmod>${item.lastmod}</lastmod>
+    <changefreq>${item.changefreq}</changefreq>
+    <priority>${item.priority}</priority>
+  </url>`
+  )
+  .join("\n")}
+</urlset>`;
+
+  res.header("Content-Type", "application/xml");
+  res.header("Cache-Control", "public, max-age=3600, s-maxage=3600");
+  return res.status(200).send(xml);
+});
+

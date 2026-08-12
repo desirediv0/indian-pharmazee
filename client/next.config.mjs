@@ -14,7 +14,17 @@ const nextConfig = {
     },
     experimental: {
         webpackBuildWorker: false,
-    }
+    },
+    async rewrites() {
+        const apiUrl = process.env.NEXT_PUBLIC_API_URL || "https://api.indianpharmazee.com/api";
+        const cleanApiUrl = apiUrl.endsWith("/api") ? apiUrl : `${apiUrl}/api`;
+        return [
+            {
+                source: "/sitemap.xml",
+                destination: `${cleanApiUrl}/public/sitemap.xml`,
+            },
+        ];
+    },
 };
 
 export default nextConfig;

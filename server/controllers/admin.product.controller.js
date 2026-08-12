@@ -1215,18 +1215,7 @@ export const updateProduct = asyncHandler(async (req, res, next) => {
     throw new ApiError(404, "Product not found");
   }
 
-  // Validate at least one image exists for simple products
-  const isUpdateVariantProduct = hasVariants === "true" || hasVariants === true;
-  if (!isUpdateVariantProduct) {
-    const existingProductImages = product.images && product.images.length > 0;
-    const hasNewImages = (req.files && req.files.length > 0) || req.file;
-    if (!existingProductImages && !hasNewImages) {
-      throw new ApiError(
-        400,
-        "At least one product image is required. Please upload at least one image."
-      );
-    }
-  }
+  // Note: Image validation removed on update so products without images can still have their metadata/details updated
 
   // Declare variantIdsWithOrders in outer scope so it's available after the transaction
   let variantIdsWithOrders = [];

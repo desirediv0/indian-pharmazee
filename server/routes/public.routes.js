@@ -19,11 +19,16 @@ import {
   getBrandBySlug,
   getFilterAttributes,
   getPriceVisibilitySettings,
+  getSitemapXml,
 } from "../controllers/public.controller.js";
 import { getPublishedBanners } from "../controllers/admin.banner.controller.js";
 import { getActiveFlashSales, getActiveProductSections } from "../controllers/public.controller.js";
 
 const router = express.Router();
+
+// Sitemap
+router.get("/sitemap.xml", getSitemapXml);
+router.get("/sitemap", getSitemapXml);
 
 // Categories
 router.get("/categories", getAllCategories);

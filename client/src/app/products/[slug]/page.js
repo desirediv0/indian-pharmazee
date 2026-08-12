@@ -37,6 +37,9 @@ export async function generateMetadata({ params }) {
     return {
         title,
         description,
+        alternates: {
+            canonical: `https://www.indianpharmazee.com/products/${slug}`,
+        },
         openGraph: {
             title,
             description,

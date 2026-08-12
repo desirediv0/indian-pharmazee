@@ -9,6 +9,10 @@ import FloatingPrescriptionModal from "@/components/ui/FloatingPrescriptionModal
 
 
 export const metadata = {
+  metadataBase: new URL("https://www.indianpharmazee.com"),
+  alternates: {
+    canonical: "/",
+  },
   title: "Indian Pharmazee | Trusted Specialty Medicines Across India",
   description: "Indian Pharmazee provides genuine branded medicines and healthcare products — IVF, oncology, transplant, sexual wellness, chronic care, temp-controlled delivery across India.",
   keywords: "Indian Pharmazee, specialty medicines, oncology medicines, IVF medicines, transplant medicines, temp-controlled delivery, genuine medicines India, pharmaceutical ecommerce",
@@ -29,6 +33,7 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
+        <link rel="canonical" href="https://www.indianpharmazee.com/" />
         <meta name="google-site-verification" content="AhIUN5UjwjmL_ZHO9jGjCjTdo5fiAY_dBuRHhsFk9qY" />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-F2125423JN"
