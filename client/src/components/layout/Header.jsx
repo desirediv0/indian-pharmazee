@@ -723,13 +723,13 @@ function SearchResultsDropdown({
       {loading ? (
         <div className="p-4 text-center text-xs text-slate-500 flex items-center justify-center gap-2">
           <div className="w-4 h-4 border-2 border-[#005EB8] border-t-transparent rounded-full animate-spin" />
-          <span>Searching for &quot;{query}&quot;...</span>
+          <span>Searching medicines & subcategories for &quot;{query}&quot;...</span>
         </div>
       ) : results.length > 0 ? (
         <div>
           <div className="px-4 py-2 bg-slate-50 border-b border-slate-100 flex items-center justify-between text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
-            <span>Matching Products ({results.length})</span>
-            <span className="text-[10px] text-[#005EB8] font-normal">Instant Search</span>
+            <span>Matching Medicines ({results.length})</span>
+            <span className="text-[10px] text-[#005EB8] font-medium">By Title & Subcategory</span>
           </div>
 
           <div className="divide-y divide-slate-100 max-h-[360px] overflow-y-auto">
@@ -740,6 +740,14 @@ function SearchResultsDropdown({
                 "/placeholder-medicine.png";
               const displayPrice =
                 product.salePrice || product.price || product.basePrice || product.variants?.[0]?.price;
+              const subCategoryName =
+                product.subCategory?.name ||
+                product.subCategories?.[0]?.name ||
+                product.subCategories?.[0]?.subCategory?.name;
+              const categoryName =
+                product.category?.name ||
+                product.categories?.[0]?.category?.name ||
+                product.categories?.[0]?.name;
 
               return (
                 <div
@@ -763,9 +771,23 @@ function SearchResultsDropdown({
                     <h4 className="text-xs font-bold text-slate-800 truncate group-hover:text-[#005EB8] transition-colors">
                       {product.name}
                     </h4>
-                    <p className="text-[10px] text-slate-500 truncate mt-0.5">
-                      {product.brand?.name || product.categories?.[0]?.category?.name || "Medicine"}
-                    </p>
+                    <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                      {subCategoryName && (
+                        <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/70">
+                          {subCategoryName}
+                        </span>
+                      )}
+                      {categoryName && (
+                        <span className="text-[10px] text-slate-400 truncate">
+                          {categoryName}
+                        </span>
+                      )}
+                      {product.brand?.name && !subCategoryName && (
+                        <span className="text-[10px] text-slate-400 truncate">
+                          {product.brand.name}
+                        </span>
+                      )}
+                    </div>
                   </div>
 
                   {displayPrice && (
@@ -795,7 +817,7 @@ function SearchResultsDropdown({
             No products found for &quot;{query}&quot;
           </p>
           <p className="text-[11px] text-slate-400">
-            Try checking spelling or search by general category
+            Search by medicine title or subcategory (e.g. Oncology, IVF, Tablets)
           </p>
         </div>
       )}
@@ -859,7 +881,7 @@ function SearchDialog({ open, onOpenChange, searchQuery, setSearchQuery, handleS
             <input
               ref={searchInputRef}
               type="text"
-              placeholder="Search medicines, categories, brands..."
+              placeholder="Search by title, subcategory, category..."
               value={searchQuery}
               onChange={(e) => setSearchQuery(e.target.value)}
               className="w-full h-12 pl-11 pr-28 text-sm rounded-xl border focus:outline-none focus:ring-2 transition-all placeholder:text-gray-400"
@@ -892,13 +914,13 @@ function SearchDialog({ open, onOpenChange, searchQuery, setSearchQuery, handleS
               {isSearching ? (
                 <div className="p-4 text-center text-xs text-slate-500 flex items-center justify-center gap-2">
                   <div className="w-4 h-4 border-2 border-[#005EB8] border-t-transparent rounded-full animate-spin" />
-                  <span>Searching for &quot;{searchQuery}&quot;...</span>
+                  <span>Searching medicines & subcategories for &quot;{searchQuery}&quot;...</span>
                 </div>
               ) : dialogResults.length > 0 ? (
                 <div>
                   <div className="px-4 py-2 bg-slate-50 border-b border-slate-100 flex items-center justify-between text-[11px] font-semibold text-slate-500 uppercase tracking-wider">
                     <span>Products Found ({dialogResults.length})</span>
-                    <span className="text-[10px] text-[#005EB8] font-normal">Live Search</span>
+                    <span className="text-[10px] text-[#005EB8] font-medium">Live Search</span>
                   </div>
 
                   <div className="divide-y divide-slate-100 max-h-[280px] overflow-y-auto">
@@ -909,6 +931,14 @@ function SearchDialog({ open, onOpenChange, searchQuery, setSearchQuery, handleS
                         "/placeholder-medicine.png";
                       const displayPrice =
                         product.salePrice || product.price || product.basePrice || product.variants?.[0]?.price;
+                      const subCategoryName =
+                        product.subCategory?.name ||
+                        product.subCategories?.[0]?.name ||
+                        product.subCategories?.[0]?.subCategory?.name;
+                      const categoryName =
+                        product.category?.name ||
+                        product.categories?.[0]?.category?.name ||
+                        product.categories?.[0]?.name;
 
                       return (
                         <div
@@ -936,9 +966,23 @@ function SearchDialog({ open, onOpenChange, searchQuery, setSearchQuery, handleS
                             <h4 className="text-xs font-bold text-slate-800 truncate group-hover:text-[#005EB8] transition-colors">
                               {product.name}
                             </h4>
-                            <p className="text-[10px] text-slate-500 truncate mt-0.5">
-                              {product.brand?.name || product.categories?.[0]?.category?.name || "Medicine"}
-                            </p>
+                            <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
+                              {subCategoryName && (
+                                <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/70">
+                                  {subCategoryName}
+                                </span>
+                              )}
+                              {categoryName && (
+                                <span className="text-[10px] text-slate-400 truncate">
+                                  {categoryName}
+                                </span>
+                              )}
+                              {product.brand?.name && !subCategoryName && (
+                                <span className="text-[10px] text-slate-400 truncate">
+                                  {product.brand.name}
+                                </span>
+                              )}
+                            </div>
                           </div>
 
                           {displayPrice && (
@@ -952,6 +996,18 @@ function SearchDialog({ open, onOpenChange, searchQuery, setSearchQuery, handleS
                       );
                     })}
                   </div>
+
+                  <button
+                    type="button"
+                    onClick={(e) => {
+                      onOpenChange(false);
+                      handleSearch(e);
+                    }}
+                    className="w-full py-2.5 bg-blue-50 hover:bg-blue-100 text-[#005EB8] text-xs font-bold text-center transition-colors border-t border-slate-100 flex items-center justify-center gap-1"
+                  >
+                    <span>View All Results for &quot;{searchQuery}&quot;</span>
+                    <FiChevronRight className="w-3.5 h-3.5" />
+                  </button>
                 </div>
               ) : (
                 <div className="p-4 text-center text-xs text-slate-500">

@@ -12,6 +12,7 @@ export const getAllProducts = asyncHandler(async (req, res) => {
     limit = 12,
     search = "",
     category = "",
+    subCategory = "",
     sort = "createdAt",
     order = "desc",
     minPrice,
@@ -40,12 +41,25 @@ export const getAllProducts = asyncHandler(async (req, res) => {
   // Build filter conditions
   const whereConditions = {
     isActive: true,
-    // Search in name, description, category, brand, variant SKU, attribute values, or tags
+    // Search in product name (title), subcategory, category, brand, description, variant SKU, attribute values, or tags
     ...(normalizedSearch && {
       OR: [
+        // 1. Search in title / product name
         { name: { contains: normalizedSearch, mode: "insensitive" } },
-        { description: { contains: normalizedSearch, mode: "insensitive" } },
-        // Also allow searching by category name or slug
+        // 2. Search in subcategory name or slug
+        {
+          subCategories: {
+            some: {
+              subCategory: {
+                OR: [
+                  { name: { contains: normalizedSearch, mode: "insensitive" } },
+                  { slug: { contains: normalizedSearch, mode: "insensitive" } },
+                ],
+              },
+            },
+          },
+        },
+        // 3. Search in category name or slug
         {
           categories: {
             some: {
@@ -58,13 +72,15 @@ export const getAllProducts = asyncHandler(async (req, res) => {
             },
           },
         },
-        // Also allow searching by brand name
+        // 4. Search in brand name
         {
           brand: {
             name: { contains: normalizedSearch, mode: "insensitive" },
           },
         },
-        // Also allow searching by variant SKU or attribute value (e.g. 500mg, 100ml)
+        // 5. Search in description
+        { description: { contains: normalizedSearch, mode: "insensitive" } },
+        // 6. Search in variant SKU or attribute value (e.g. 500mg, 100ml)
         {
           variants: {
             some: {
@@ -83,7 +99,7 @@ export const getAllProducts = asyncHandler(async (req, res) => {
             },
           },
         },
-        // Handle case-insensitive tag array matching
+        // 7. Handle case-insensitive tag array matching
         {
           tags: {
             hasSome: [
@@ -105,6 +121,20 @@ export const getAllProducts = asyncHandler(async (req, res) => {
         some: {
           category: {
             OR: [{ id: category }, { slug: category }],
+          },
+        },
+      },
+    }),
+    // Filter by subcategory
+    ...(subCategory && {
+      subCategories: {
+        some: {
+          subCategory: {
+            OR: [
+              { id: subCategory },
+              { slug: subCategory },
+              { name: { equals: subCategory, mode: "insensitive" } },
+            ],
           },
         },
       },
@@ -215,9 +245,15 @@ export const getAllProducts = asyncHandler(async (req, res) => {
   const products = await prisma.product.findMany({
     where: whereConditions,
     include: {
+      brand: true,
       categories: {
         include: {
           category: true,
+        },
+      },
+      subCategories: {
+        include: {
+          subCategory: true,
         },
       },
       images: {
@@ -299,7 +335,9 @@ export const getAllProducts = asyncHandler(async (req, res) => {
   const formattedProducts = products.map((product) => {
     // Get primary category (first in the list)
     const primaryCategory =
-      product.categories.length > 0 ? product.categories[0].category : null;
+      product.categories && product.categories.length > 0 ? product.categories[0].category : null;
+    const primarySubCategory =
+      product.subCategories && product.subCategories.length > 0 ? product.subCategories[0].subCategory : null;
 
     // Get image with fallback logic
     let imageUrl = null;
@@ -354,6 +392,34 @@ export const getAllProducts = asyncHandler(async (req, res) => {
           id: primaryCategory.id,
           name: primaryCategory.name,
           slug: primaryCategory.slug,
+        }
+        : null,
+      subCategory: primarySubCategory
+        ? {
+          id: primarySubCategory.id,
+          name: primarySubCategory.name,
+          slug: primarySubCategory.slug,
+        }
+        : null,
+      subCategories: product.subCategories
+        ? product.subCategories.map((psc) => ({
+          id: psc.subCategory.id,
+          name: psc.subCategory.name,
+          slug: psc.subCategory.slug,
+        }))
+        : [],
+      categories: product.categories
+        ? product.categories.map((pc) => ({
+          id: pc.category.id,
+          name: pc.category.name,
+          slug: pc.category.slug,
+        }))
+        : [],
+      brand: product.brand
+        ? {
+          id: product.brand.id,
+          name: product.brand.name,
+          slug: product.brand.slug,
         }
         : null,
       image: imageUrl ? getFileUrl(imageUrl) : null,

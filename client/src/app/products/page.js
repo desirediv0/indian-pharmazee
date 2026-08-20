@@ -88,6 +88,7 @@ function ProductsContent() {
     const decodePlus = (s) => (s ? s.replace(/\+/g, " ") : "");
     const searchQuery = decodePlus(searchParams.get("search") || "");
     const categorySlug = searchParams.get("category") || "";
+    const subCategorySlug = searchParams.get("subCategory") || "";
     const productType = searchParams.get("productType") || "";
     const colorId = searchParams.get("color") || "";
     const sizeId = searchParams.get("size") || "";
@@ -115,7 +116,7 @@ function ProductsContent() {
     const [pagination, setPagination] = useState({ page: pageParam, limit: 20, total: 0, pages: 0 });
 
     const [filters, setFilters] = useState({
-        search: searchQuery, category: categorySlug, productType,
+        search: searchQuery, category: categorySlug, subCategory: subCategorySlug, productType,
         color: colorId, size: sizeId, minPrice, maxPrice,
         sort: sortParam, order: orderParam,
     });
@@ -126,7 +127,7 @@ function ProductsContent() {
     /* ── Sync URL → filters ── */
     useEffect(() => {
         const fromURL = {
-            search: searchQuery, category: categorySlug, productType,
+            search: searchQuery, category: categorySlug, subCategory: subCategorySlug, productType,
             color: colorId, size: sizeId, minPrice, maxPrice,
             sort: sortParam, order: orderParam, page: pageParam
         };
@@ -140,7 +141,7 @@ function ProductsContent() {
             }
         }
         // eslint-disable-next-line react-hooks/exhaustive-deps
-    }, [searchQuery, categorySlug, productType, colorId, sizeId, minPrice, maxPrice, sortParam, orderParam]);
+    }, [searchQuery, categorySlug, subCategorySlug, productType, colorId, sizeId, minPrice, maxPrice, sortParam, orderParam]);
 
     /* ── URL builder ── */
     const updateURL = (f) => {
@@ -149,7 +150,7 @@ function ProductsContent() {
             if (v !== undefined && v !== null && v !== "")
                 pairs.push(`${encodeURIComponent(k)}=${encodeURIComponent(String(v)).replace(/%20/g, "+")}`);
         };
-        add("search", f.search); add("category", f.category); add("productType", f.productType);
+        add("search", f.search); add("category", f.category); add("subCategory", f.subCategory); add("productType", f.productType);
         add("color", f.color); add("size", f.size);
         add("minPrice", f.minPrice); add("maxPrice", f.maxPrice);
         if (f.sort !== "createdAt" || f.order !== "desc") { add("sort", f.sort); add("order", f.order); }
@@ -178,6 +179,7 @@ function ProductsContent() {
                     });
                     if (filters.search) q.append("search", filters.search);
                     if (filters.category) q.append("category", filters.category);
+                    if (filters.subCategory) q.append("subCategory", filters.subCategory);
                     if (filters.minPrice) q.append("minPrice", filters.minPrice);
                     if (filters.maxPrice) q.append("maxPrice", filters.maxPrice);
 
