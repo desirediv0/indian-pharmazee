@@ -241,8 +241,8 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
       {/* ── Image section ── */}
       <Link
         href={`/products/${product.slug}`}
-        className="relative block overflow-hidden bg-[#f7f8fc]"
-        style={{ aspectRatio: "1/1" }}
+        className="relative block overflow-hidden bg-[#f7f8fc] aspect-[9/16]"
+        style={{ aspectRatio: "9/16" }}
       >
         {/* Discount badge — top left */}
         {discountPercent > 0 && (

@@ -21,7 +21,7 @@ import CategoriesCarousel from "@/components/sections/CategoriesCarousel";
 function ProductCardSkeleton() {
     return (
         <div className="bg-white rounded-2xl border border-gray-100 overflow-hidden animate-pulse shadow-sm">
-            <div className="aspect-square bg-gray-50 relative">
+            <div className="aspect-[9/16] bg-gray-50 relative">
                 <div className="absolute top-2 right-2 w-10 h-4 bg-gray-100 rounded-full" />
             </div>
             <div className="p-3.5 space-y-3">
@@ -740,7 +740,7 @@ const FALLBACK = (
             <div className="grid grid-cols-2 sm:grid-cols-3 xl:grid-cols-4 gap-3">
                 {[...Array(12)].map((_, i) => (
                     <div key={i} className="bg-white rounded-2xl border border-gray-100 overflow-hidden shadow-sm">
-                        <div className="aspect-square bg-gray-50" />
+                        <div className="aspect-[9/16] bg-gray-50" />
                         <div className="p-3.5 space-y-3">
                             <div className="h-4 bg-gray-100 rounded-full w-full" />
                             <div className="h-3 bg-gray-50 rounded-full w-2/3" />

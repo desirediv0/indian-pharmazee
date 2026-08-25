@@ -471,8 +471,8 @@ export default function ProductContent({ slug }) {
 
               {/* Main image */}
               <div
-                className="relative flex-1 aspect-square rounded-2xl overflow-hidden bg-white border cursor-zoom-in group"
-                style={{ borderColor: "#DCE7F2" }}
+                className="relative flex-1 aspect-[9/16] rounded-2xl overflow-hidden bg-white border cursor-zoom-in group"
+                style={{ borderColor: "#DCE7F2", aspectRatio: "9/16" }}
                 onMouseEnter={() => setIsZoomed(true)}
                 onMouseLeave={() => setIsZoomed(false)}
                 onMouseMove={handleMouseMove}
@@ -516,8 +516,8 @@ export default function ProductContent({ slug }) {
             {/* Mobile: main image top + horizontal thumbnails below */}
             <div className="sm:hidden">
               <div
-                className="relative aspect-square w-full rounded-2xl overflow-hidden bg-white border mb-3 cursor-pointer"
-                style={{ borderColor: "#DCE7F2" }}
+                className="relative aspect-[9/16] w-full rounded-2xl overflow-hidden bg-white border mb-3 cursor-pointer"
+                style={{ borderColor: "#DCE7F2", aspectRatio: "9/16" }}
                 onClick={openLightbox}
               >
                 {images.length > 0 ? (
