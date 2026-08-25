@@ -67,7 +67,7 @@ export const ProductCarousel = ({ products, title, subtitle, viewAllLink = "/pro
                                 <div className="group relative bg-card rounded-2xl overflow-hidden card-shadow hover:shadow-2xl transition-all duration-300 border border-border hover:border-primary/30">
                                     {/* Image */}
                                     <Link href={`/products/${product.slug}`}>
-                                        <div className="aspect-[9/16] bg-gradient-to-br from-muted to-muted/50 relative overflow-hidden">
+                                        <div className="aspect-square bg-gradient-to-br from-muted to-muted/50 relative overflow-hidden">
                                             <div className="absolute inset-0 flex items-center justify-center">
                                                 <div className="w-24 h-24 bg-muted-foreground/10 rounded-full flex items-center justify-center group-hover:scale-110 transition-transform duration-500">
                                                     <ShoppingCart className="h-10 w-10 text-muted-foreground/30" />
