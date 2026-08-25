@@ -278,6 +278,14 @@ export const getAllProducts = asyncHandler(async (req, res) => {
         },
         orderBy: { price: "asc" },
       },
+      reviews: {
+        where: {
+          status: "APPROVED",
+        },
+        select: {
+          rating: true,
+        },
+      },
       _count: {
         select: {
           reviews: {
@@ -438,6 +446,15 @@ export const getAllProducts = asyncHandler(async (req, res) => {
       regularPrice,
       variantCount: product._count.variants,
       reviewCount: product._count.reviews,
+      avgRating:
+        product.reviews && product.reviews.length > 0
+          ? parseFloat(
+              (
+                product.reviews.reduce((sum, r) => sum + r.rating, 0) /
+                product.reviews.length
+              ).toFixed(1)
+            )
+          : 0,
       // Flash sale data
       flashSale: flashSale ? {
         ...flashSale,

@@ -17,7 +17,6 @@ const QUICK_LINKS = [
   { label: "Contact Us", href: "/contact" },
   { label: "Why Choose Us", href: "/why-us" },
   { label: "FAQs", href: "/faqs" },
-  { label: "Sitemap", href: "/sitemap" },
 ];
 
 const POLICY_LINKS = [
@@ -25,7 +24,6 @@ const POLICY_LINKS = [
   { label: "Return Policy", href: "/return-policy" },
   { label: "Privacy Policy", href: "/privacy-policy" },
   { label: "Terms of Use", href: "/terms" },
-  { label: "HTML Sitemap", href: "/sitemap" },
 ];
 
 const SPECIALTIES = [
@@ -268,8 +266,6 @@ export const Footer = () => {
             <Link href="/terms" className="text-xs text-slate-500 hover:text-slate-900 transition-colors">Terms</Link>
             <span className="text-slate-300 text-xs">·</span>
             <Link href="/shipping-policy" className="text-xs text-slate-500 hover:text-slate-900 transition-colors">Shipping</Link>
-            <span className="text-slate-300 text-xs">·</span>
-            <Link href="/sitemap" className="text-xs text-slate-500 hover:text-slate-900 transition-colors">Sitemap</Link>
           </div>
         </div>
       </div>

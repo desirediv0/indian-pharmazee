@@ -15,6 +15,13 @@ import { useRouter } from "next/navigation";
 import ReviewSection from "./ReviewSection";
 import { useAddVariantToCart } from "@/lib/cart-utils";
 import { ProductCard } from "@/components/products/ProductCard";
+import {
+  Carousel,
+  CarouselContent,
+  CarouselItem,
+  CarouselNext,
+  CarouselPrevious,
+} from "@/components/ui/carousel";
 
 /* ─────────────────────────────────────────────
    UTIL
@@ -50,10 +57,15 @@ export default function ProductContent({ slug }) {
   const [isAddingToWishlist, setIsAddingToWishlist] = useState(false);
   const [isInWishlist, setIsInWishlist] = useState(false);
   const [isAddingToCart, setIsAddingToCart] = useState(false);
+  const [isBuyingNow, setIsBuyingNow] = useState(false);
   const [cartSuccess, setCartSuccess] = useState(false);
   const [availableCombinations, setAvailableCombinations] = useState([]);
   const [initialLoading, setInitialLoading] = useState(true);
   const [priceSettings, setPriceSettings] = useState(null);
+
+  // Carousel & Slide States
+  const [carouselApi, setCarouselApi] = useState(null);
+  const [currentSlide, setCurrentSlide] = useState(0);
 
   // Zoom & Lightbox States
   const [zoomPos, setZoomPos] = useState({ x: 0, y: 0 });
@@ -64,6 +76,18 @@ export default function ProductContent({ slug }) {
   const { isAuthenticated } = useAuth();
   const router = useRouter();
   const { addVariantToCart } = useAddVariantToCart();
+
+  useEffect(() => {
+    if (!carouselApi) return;
+    setCurrentSlide(carouselApi.selectedScrollSnap());
+    const onSelect = () => {
+      setCurrentSlide(carouselApi.selectedScrollSnap());
+    };
+    carouselApi.on("select", onSelect);
+    return () => {
+      carouselApi.off("select", onSelect);
+    };
+  }, [carouselApi]);
 
   // Prevent background scrolling when lightbox is open
   useEffect(() => {
@@ -84,11 +108,18 @@ export default function ProductContent({ slug }) {
     setZoomPos({ x, y });
   };
 
-  const openLightbox = () => {
+  const openLightbox = (indexToOpen) => {
     if (!images?.length) return;
-    const index = images.findIndex((img) => img.url === primary?.url);
-    setLightboxIndex(index >= 0 ? index : 0);
+    const idx = typeof indexToOpen === "number" ? indexToOpen : currentSlide;
+    setLightboxIndex(idx >= 0 && idx < images.length ? idx : 0);
     setIsLightboxOpen(true);
+  };
+
+  const handleThumbnailClick = (idx, img) => {
+    setMainImage(img);
+    if (carouselApi) {
+      carouselApi.scrollTo(idx);
+    }
   };
 
   /* ── Slab pricing ── */
@@ -223,6 +254,23 @@ export default function ProductContent({ slug }) {
       if (result.success) { setCartSuccess(true); setTimeout(() => setCartSuccess(false), 3000); }
     } catch (err) { console.error(err); }
     finally { setIsAddingToCart(false); }
+  };
+
+  /* ── Buy Now ── */
+  const handleBuyNow = async () => {
+    const v = selectedVariant || product?.variants?.[0];
+    if (!v) return;
+    setIsBuyingNow(true);
+    try {
+      const result = await addVariantToCart(v, quantity, product.name);
+      if (result?.success) {
+        router.push("/checkout");
+      }
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setIsBuyingNow(false);
+    }
   };
 
   /* ── Wishlist ── */
@@ -447,113 +495,143 @@ export default function ProductContent({ slug }) {
         {/* ─── Main product grid ─── */}
         <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 xl:gap-12 mb-16">
 
-          {/* ── LEFT: Image gallery ── */}
+          {/* ── LEFT: Image gallery (Swiper / Carousel on Desktop & Mobile) ── */}
           <div>
-            {/* Desktop: thumbnails left + main image right */}
-            <div className="hidden sm:flex gap-3">
-              {/* Vertical thumbnails */}
+            <div className="flex flex-col sm:flex-row gap-3 items-start">
+              {/* Desktop Vertical Thumbnails */}
               {images.length > 1 && (
-                <div className="flex flex-col gap-2 flex-shrink-0 max-h-[480px] overflow-y-auto">
+                <div className="hidden sm:flex flex-col gap-2 flex-shrink-0 max-h-[480px] overflow-y-auto pr-1">
                   {images.map((img, idx) => {
-                    const active = primary?.url === img.url;
+                    const active = currentSlide === idx;
                     return (
                       <button
                         key={idx}
-                        onClick={() => setMainImage(img)}
-                        className={`relative flex-shrink-0 w-[64px] h-[64px] rounded-xl overflow-hidden border-2 transition-all duration-150 bg-gray-50 ${active ? "border-primary shadow-sm" : "border-gray-200 hover:border-gray-400"}`}
+                        onClick={() => handleThumbnailClick(idx, img)}
+                        className={`relative flex-shrink-0 w-[64px] h-[64px] rounded-xl overflow-hidden border-2 transition-all duration-150 bg-white ${
+                          active
+                            ? "border-primary shadow-sm ring-2 ring-primary/20"
+                            : "border-gray-200 hover:border-gray-400 opacity-70 hover:opacity-100"
+                        }`}
                       >
-                        <Image src={getImageUrl(img.url)} alt="" fill className="object-contain p-1" sizes="64px" />
+                        <Image
+                          src={getImageUrl(img.url)}
+                          alt={`Thumbnail ${idx + 1}`}
+                          fill
+                          className="object-contain p-1"
+                          sizes="64px"
+                        />
                       </button>
                     );
                   })}
                 </div>
               )}
 
-              {/* Main image */}
-              <div
-                className="relative flex-1 aspect-square rounded-2xl overflow-hidden bg-white border cursor-zoom-in group"
-                style={{ borderColor: "#DCE7F2", aspectRatio: "1/1" }}
-                onMouseEnter={() => setIsZoomed(true)}
-                onMouseLeave={() => setIsZoomed(false)}
-                onMouseMove={handleMouseMove}
-                onClick={openLightbox}
-              >
-                {images.length > 0 ? (
-                  <Image
-                    src={getImageUrl(primary?.url)}
-                    alt={product.name}
-                    fill
-                    className="object-contain p-6 transition-transform duration-75 ease-out"
-                    priority
-                    sizes="(max-width: 1024px) 80vw, 45vw"
-                    style={{
-                      transform: isZoomed ? "scale(2.2)" : "scale(1)",
-                      transformOrigin: isZoomed ? `${zoomPos.x}% ${zoomPos.y}%` : "center",
+              {/* Main Carousel Container (Desktop + Mobile) */}
+              <div className="flex-1 w-full min-w-0">
+                <Carousel
+                  setApi={setCarouselApi}
+                  opts={{
+                    loop: images.length > 1,
+                    align: "start",
+                  }}
+                  className="w-full relative group rounded-2xl overflow-hidden bg-white border"
+                  style={{ borderColor: "#DCE7F2" }}
+                >
+                  <CarouselContent className="-ml-0">
+                    {images.length > 0 ? (
+                      images.map((img, idx) => (
+                        <CarouselItem key={idx} className="pl-0">
+                          <div
+                            className="relative aspect-square w-full rounded-2xl overflow-hidden bg-white cursor-zoom-in flex items-center justify-center select-none"
+                            style={{ aspectRatio: "1/1" }}
+                            onMouseEnter={() => setIsZoomed(true)}
+                            onMouseLeave={() => setIsZoomed(false)}
+                            onMouseMove={handleMouseMove}
+                            onClick={() => openLightbox(idx)}
+                          >
+                            <Image
+                              src={getImageUrl(img.url)}
+                              alt={`${product.name} image ${idx + 1}`}
+                              fill
+                              className="object-contain p-6 transition-transform duration-75 ease-out"
+                              priority={idx === 0}
+                              sizes="(max-width: 1024px) 95vw, 45vw"
+                              style={{
+                                transform: isZoomed && currentSlide === idx ? "scale(2.2)" : "scale(1)",
+                                transformOrigin: isZoomed && currentSlide === idx ? `${zoomPos.x}% ${zoomPos.y}%` : "center",
+                              }}
+                            />
+                          </div>
+                        </CarouselItem>
+                      ))
+                    ) : (
+                      <CarouselItem className="pl-0">
+                        <div className="relative aspect-square w-full rounded-2xl overflow-hidden bg-white" style={{ aspectRatio: "1/1" }}>
+                          <Image src="/fallback.png" alt={product.name} fill className="object-contain p-6" />
+                        </div>
+                      </CarouselItem>
+                    )}
+                  </CarouselContent>
+
+                  {/* Flash Sale Badge */}
+                  {product.flashSale?.isActive && (
+                    <div className="absolute top-3 left-3 z-20 flex items-center gap-1 px-2.5 py-1 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-full text-[10px] font-extrabold uppercase tracking-widest pointer-events-none shadow-sm">
+                      <Zap className="h-3 w-3 fill-white animate-pulse" />
+                      FLASH SALE — {product.flashSale.discountPercentage}% OFF
+                    </div>
+                  )}
+
+                  {/* Wishlist Button */}
+                  <button
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      handleWishlist();
                     }}
-                  />
-                ) : (
-                  <Image src="/fallback.png" alt={product.name} fill className="object-contain" />
-                )}
-                {product.flashSale?.isActive && (
-                  <div className="absolute top-3 left-3 flex items-center gap-1 px-2.5 py-1 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-full text-[10px] font-extrabold uppercase tracking-widest pointer-events-none">
-                    <Zap className="h-3 w-3 fill-white animate-pulse" />
-                    FLASH SALE — {product.flashSale.discountPercentage}% OFF
-                  </div>
-                )}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleWishlist();
-                  }}
-                  disabled={isAddingToWishlist}
-                  className={`absolute top-3 right-3 w-9 h-9 rounded-full shadow-sm flex items-center justify-center transition-all ${isInWishlist ? "bg-red-50 text-red-500" : "bg-white/90 text-gray-400 hover:text-red-400"}`}
-                >
-                  <Heart className={`h-4 w-4 ${isInWishlist ? "fill-red-500" : ""}`} />
-                </button>
-              </div>
-            </div>
+                    disabled={isAddingToWishlist}
+                    className={`absolute top-3 right-3 z-20 w-9 h-9 rounded-full shadow-sm flex items-center justify-center transition-all ${
+                      isInWishlist ? "bg-red-50 text-red-500" : "bg-white/90 text-gray-400 hover:text-red-400"
+                    }`}
+                    title={isInWishlist ? "Remove from wishlist" : "Add to wishlist"}
+                  >
+                    <Heart className={`h-4 w-4 ${isInWishlist ? "fill-red-500" : ""}`} />
+                  </button>
 
-            {/* Mobile: main image top + horizontal thumbnails below */}
-            <div className="sm:hidden">
-              <div
-                className="relative aspect-square w-full rounded-2xl overflow-hidden bg-white border mb-3 cursor-pointer"
-                style={{ borderColor: "#DCE7F2", aspectRatio: "1/1" }}
-                onClick={openLightbox}
-              >
-                {images.length > 0 ? (
-                  <Image src={getImageUrl(primary?.url)} alt={product.name} fill className="object-contain p-6 transition-all duration-300" priority sizes="95vw" />
-                ) : (
-                  <Image src="/fallback.png" alt={product.name} fill className="object-contain" />
-                )}
-                {product.flashSale?.isActive && (
-                  <div className="absolute top-3 left-3 flex items-center gap-1 px-2.5 py-1 bg-gradient-to-r from-amber-400 to-orange-500 text-white rounded-full text-[10px] font-extrabold uppercase tracking-widest pointer-events-none">
-                    <Zap className="h-3 w-3 fill-white animate-pulse" />
-                    {product.flashSale.discountPercentage}% OFF
+                  {/* Navigation Arrows (Visible when multiple images) */}
+                  {images.length > 1 && (
+                    <>
+                      <CarouselPrevious className="absolute left-3 top-1/2 -translate-y-1/2 z-20 h-9 w-9 bg-white/90 hover:bg-white text-gray-700 shadow-md border border-gray-200 opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity" />
+                      <CarouselNext className="absolute right-3 top-1/2 -translate-y-1/2 z-20 h-9 w-9 bg-white/90 hover:bg-white text-gray-700 shadow-md border border-gray-200 opacity-90 sm:opacity-0 sm:group-hover:opacity-100 transition-opacity" />
+                    </>
+                  )}
+
+                  {/* Image Counter Indicator */}
+                  {images.length > 1 && (
+                    <div className="absolute bottom-3 right-3 z-20 px-2.5 py-1 rounded-full bg-black/60 backdrop-blur-sm text-white text-[11px] font-medium pointer-events-none">
+                      {currentSlide + 1} / {images.length}
+                    </div>
+                  )}
+                </Carousel>
+
+                {/* Mobile Horizontal Thumbnails */}
+                {images.length > 1 && (
+                  <div className="sm:hidden flex gap-2 overflow-x-auto pt-3 pb-1">
+                    {images.map((img, idx) => {
+                      const active = currentSlide === idx;
+                      return (
+                        <button
+                          key={idx}
+                          onClick={() => handleThumbnailClick(idx, img)}
+                          className={`relative flex-shrink-0 w-[60px] h-[60px] rounded-xl overflow-hidden border-2 transition-all bg-white ${
+                            active ? "border-primary ring-2 ring-primary/20" : "border-gray-200 opacity-70"
+                          }`}
+                        >
+                          <Image src={getImageUrl(img.url)} alt={`Thumb ${idx + 1}`} fill className="object-contain p-1" sizes="60px" />
+                        </button>
+                      );
+                    })}
                   </div>
                 )}
-                <button
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    handleWishlist();
-                  }}
-                  disabled={isAddingToWishlist}
-                  className={`absolute top-3 right-3 w-9 h-9 rounded-full shadow-sm flex items-center justify-center transition-all ${isInWishlist ? "bg-red-50 text-red-500" : "bg-white/90 text-gray-400 hover:text-red-400"}`}
-                >
-                  <Heart className={`h-4 w-4 ${isInWishlist ? "fill-red-500" : ""}`} />
-                </button>
               </div>
-              {images.length > 1 && (
-                <div className="flex gap-2 overflow-x-auto pb-1">
-                  {images.map((img, idx) => {
-                    const active = primary?.url === img.url;
-                    return (
-                      <button key={idx} onClick={() => setMainImage(img)} className={`relative flex-shrink-0 w-[60px] h-[60px] rounded-xl overflow-hidden border-2 transition-all bg-gray-50 ${active ? "border-primary" : "border-gray-200"}`}>
-                        <Image src={getImageUrl(img.url)} alt="" fill className="object-contain p-1" sizes="60px" />
-                      </button>
-                    );
-                  })}
-                </div>
-              )}
             </div>
           </div>
 
@@ -828,25 +906,39 @@ export default function ProductContent({ slug }) {
                 </div>
               </div>
 
-              {/* Row 2: Add to Cart + Wishlist */}
-              <div className="flex gap-3">
+              {/* Row 2: Add to Cart + Buy Now + Wishlist */}
+              <div className="flex gap-2.5 sm:gap-3">
                 <button
                   onClick={handleAddToCart}
-                  disabled={isAddingToCart || outOfStock || (!selectedVariant && !product?.variants?.length)}
-                  className={`flex-1 h-12 flex items-center justify-center gap-2 rounded-xl text-base font-bold transition-all active:scale-[.98] disabled:opacity-50 disabled:cursor-not-allowed ${cartSuccess ? "bg-green-600 text-white" : "bg-primary text-white hover:bg-primary/90"}`}
+                  disabled={isAddingToCart || isBuyingNow || outOfStock || (!selectedVariant && !product?.variants?.length)}
+                  className={`flex-1 h-12 flex items-center justify-center gap-2 rounded-xl text-sm sm:text-base font-bold transition-all active:scale-[.98] disabled:opacity-50 disabled:cursor-not-allowed border-2 border-primary text-primary hover:bg-primary/5 ${cartSuccess ? "bg-green-50 border-green-600 text-green-700" : ""}`}
                 >
                   {isAddingToCart ? (
-                    <><div className="h-4 w-4 border-2 border-white/60 border-t-white rounded-full animate-spin" />Adding…</>
+                    <><div className="h-4 w-4 border-2 border-primary/60 border-t-primary rounded-full animate-spin" />Adding…</>
                   ) : cartSuccess ? (
-                    <><CheckCircle className="h-5 w-5" />Added!</>
+                    <><CheckCircle className="h-5 w-5 text-green-600" />Added!</>
                   ) : (
                     <><ShoppingCart className="h-5 w-5" />Add to Cart</>
                   )}
                 </button>
+
+                <button
+                  onClick={handleBuyNow}
+                  disabled={isBuyingNow || isAddingToCart || outOfStock || (!selectedVariant && !product?.variants?.length)}
+                  className="flex-1 h-12 flex items-center justify-center gap-2 rounded-xl text-sm sm:text-base font-bold text-white bg-primary hover:bg-primary/90 transition-all active:scale-[.98] disabled:opacity-50 disabled:cursor-not-allowed shadow-md shadow-primary/25"
+                >
+                  {isBuyingNow ? (
+                    <><div className="h-4 w-4 border-2 border-white/60 border-t-white rounded-full animate-spin" />Processing…</>
+                  ) : (
+                    <><Zap className="h-5 w-5 fill-white" />Buy Now</>
+                  )}
+                </button>
+
                 <button
                   onClick={handleWishlist}
                   disabled={isAddingToWishlist}
                   className={`w-12 h-12 flex-shrink-0 flex items-center justify-center rounded-xl border-2 transition-all ${isInWishlist ? "border-red-200 bg-red-50 text-red-500" : "border-gray-200 text-gray-400 hover:border-red-200 hover:text-red-400"}`}
+                  title={isInWishlist ? "Remove from wishlist" : "Add to wishlist"}
                 >
                   <Heart className={`h-5 w-5 ${isInWishlist ? "fill-red-500" : ""}`} />
                 </button>
@@ -917,7 +1009,7 @@ export default function ProductContent({ slug }) {
                 ))}
               </div>
               <span className="text-sm text-gray-500">
-                {product.avgRating ? `${product.avgRating} (${product.reviewCount}k)` : "No reviews yet"}
+                {product.avgRating ? `${product.avgRating} (${product.reviewCount || 0} reviews)` : "No reviews yet"}
               </span>
             </div>
 

@@ -13,6 +13,7 @@
     "studio": "prisma studio",
     "push": "prisma db push",
     "seed": "node -r dotenv/config --experimental-json-modules prisma/seed.js",
+    "seed:reviews": "node -r dotenv/config scripts/seedProductReviews.js",
     "seed:bulk-check": "node -r dotenv/config scripts/seedBulkProductCheck.js",
     "seed:bulk-demo": "node -r dotenv/config scripts/seedBulkDemoProducts.js",
     "update-permissions": "node -r dotenv/config --experimental-json-modules scripts/updateAdminPermissions.js",
