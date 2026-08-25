@@ -471,8 +471,8 @@ export default function ProductContent({ slug }) {
 
               {/* Main image */}
               <div
-                className="relative flex-1 aspect-[9/16] rounded-2xl overflow-hidden bg-white border cursor-zoom-in group"
-                style={{ borderColor: "#DCE7F2", aspectRatio: "9/16" }}
+                className="relative flex-1 aspect-square rounded-2xl overflow-hidden bg-white border cursor-zoom-in group"
+                style={{ borderColor: "#DCE7F2", aspectRatio: "1/1" }}
                 onMouseEnter={() => setIsZoomed(true)}
                 onMouseLeave={() => setIsZoomed(false)}
                 onMouseMove={handleMouseMove}
@@ -516,8 +516,8 @@ export default function ProductContent({ slug }) {
             {/* Mobile: main image top + horizontal thumbnails below */}
             <div className="sm:hidden">
               <div
-                className="relative aspect-[9/16] w-full rounded-2xl overflow-hidden bg-white border mb-3 cursor-pointer"
-                style={{ borderColor: "#DCE7F2", aspectRatio: "9/16" }}
+                className="relative aspect-square w-full rounded-2xl overflow-hidden bg-white border mb-3 cursor-pointer"
+                style={{ borderColor: "#DCE7F2", aspectRatio: "1/1" }}
                 onClick={openLightbox}
               >
                 {images.length > 0 ? (
@@ -575,31 +575,25 @@ export default function ProductContent({ slug }) {
               {product.name}
             </h1>
 
-            {/* SKU + Category + SubCategories + Brand + Composition */}
+            {/* Category + SubCategories + Brand + Composition */}
             <div className="mb-6 pb-6 border-b border-gray-100 space-y-2">
-              {selectedVariant?.sku && (
-                <div className="flex gap-3 text-sm">
-                  <span className="w-28 text-gray-400 flex-shrink-0">SKU</span>
-                  <span className="text-gray-700">{selectedVariant.sku}</span>
-                </div>
-              )}
               {product.category && (
                 <div className="flex gap-3 text-sm">
-                  <span className="w-28 text-gray-400 flex-shrink-0">Category</span>
-                  <Link href={`/category/${product.category.slug}`} className="text-primary hover:underline">
+                  <span className="w-28 font-bold text-black flex-shrink-0">Category</span>
+                  <Link href={`/category/${product.category.slug}`} className="text-primary hover:underline font-medium">
                     {product.category.name}
                   </Link>
                 </div>
               )}
               {product.subCategories?.length > 0 && (
                 <div className="flex gap-3 text-sm">
-                  <span className="w-28 text-gray-400 flex-shrink-0">Sub-category</span>
+                  <span className="w-28 font-bold text-black flex-shrink-0">Sub-category</span>
                   <div className="flex flex-wrap gap-1.5">
                     {product.subCategories.map((sc) => (
                       <Link
                         key={sc.id}
                         href={`/subcategory/${sc.slug}`}
-                        className="text-primary hover:underline"
+                        className="text-primary hover:underline font-medium"
                       >
                         {sc.name}
                       </Link>
@@ -609,13 +603,13 @@ export default function ProductContent({ slug }) {
               )}
               {(product.brandName || product.brand?.name) && (
                 <div className="flex gap-3 text-sm">
-                  <span className="w-28 text-gray-400 flex-shrink-0">Brand</span>
+                  <span className="w-28 font-bold text-black flex-shrink-0">Brand</span>
                   <span className="text-gray-700 font-medium">{product.brandName || product.brand?.name}</span>
                 </div>
               )}
               {product.composition && (
                 <div className="flex gap-3 text-sm">
-                  <span className="w-28 text-gray-400 flex-shrink-0">Composition</span>
+                  <span className="w-28 font-bold text-black flex-shrink-0">Composition</span>
                   <span className="text-gray-700 font-medium">{product.composition}</span>
                 </div>
               )}

@@ -78,7 +78,7 @@ const FlashSaleProductCard = ({ product, discountPercentage }) => {
                 </div>
 
                 {/* Image Container */}
-                <div className="relative aspect-square overflow-hidden bg-gray-50 p-4">
+                <div className="relative aspect-[9/16] overflow-hidden bg-gray-50 p-4">
                     <Image
                         src={getImageUrl(product.image)}
                         alt={product.name}

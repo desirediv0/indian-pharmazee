@@ -183,7 +183,7 @@ export default function ProductQuickView({ product, open, onOpenChange }) {
 
           {/* ══ LEFT: Image ══ */}
           <div className="md:w-[44%] bg-gray-50 flex flex-col flex-shrink-0">
-            <div className="relative" style={{ aspectRatio: "1 / 1" }}>
+            <div className="relative aspect-[9/16]" style={{ aspectRatio: "9 / 16" }}>
               {/* Badge */}
               {hasFlashSale && (
                 <span className="absolute top-3 left-3 z-10 flex items-center gap-1 px-2.5 py-1 rounded-full text-[10px] font-bold bg-orange-500 text-white shadow-sm">

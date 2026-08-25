@@ -17,7 +17,7 @@ const getImageUrl = (image) => {
 function ProductCardSkeleton() {
   return (
     <div className="bg-white rounded-xl overflow-hidden animate-pulse border border-gray-100">
-      <div className="h-52 w-full bg-gray-100" />
+      <div className="aspect-[9/16] w-full bg-gray-100" />
       <div className="p-4 space-y-2">
         <div className="h-3 bg-gray-100 rounded w-1/2 mx-auto" />
         <div className="h-4 bg-gray-100 rounded w-full" />
