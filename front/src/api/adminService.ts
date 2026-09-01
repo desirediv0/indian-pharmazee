@@ -1316,3 +1316,57 @@ export const prescriptionService = {
   },
 };
 
+// Contact Management Types & Service
+export interface ContactSubmission {
+  id: string;
+  name: string;
+  email: string;
+  phone: string | null;
+  subject: string | null;
+  message: string;
+  status: "NEW" | "IN_PROGRESS" | "RESOLVED" | "SPAM";
+  notes: string | null;
+  createdAt: string;
+  updatedAt: string;
+}
+
+export interface ContactSubmissionsResponse {
+  submissions: ContactSubmission[];
+  counts?: {
+    total: number;
+    all?: number;
+    new: number;
+    inProgress: number;
+    resolved: number;
+    spam: number;
+  };
+  pagination: {
+    page: number;
+    limit: number;
+    totalPages: number;
+    totalSubmissions: number;
+  };
+}
+
+export const contactService = {
+  getSubmissions: (params?: {
+    page?: number;
+    limit?: number;
+    status?: string | null;
+    search?: string;
+  }) => {
+    return api.get("/api/admin/contact", { params });
+  },
+  getSubmissionById: (id: string) => {
+    return api.get(`/api/admin/contact/${id}`);
+  },
+  updateStatus: (id: string, data: { status: string; notes?: string }) => {
+    return api.put(`/api/admin/contact/${id}/status`, data);
+  },
+  deleteSubmission: (id: string) => {
+    return api.delete(`/api/admin/contact/${id}`);
+  },
+};
+
+export const contact = contactService;
+

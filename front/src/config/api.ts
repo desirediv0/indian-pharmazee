@@ -1,5 +1,8 @@
 // API base URL configuration
-export const API_URL =
-  import.meta.env.MODE === "production"
-    ? "https://www.indianpharmazee.com/api"
-    : "http://localhost:4004/api";
+const base =
+  import.meta.env.VITE_API_URL ||
+  (import.meta.env.MODE === "production"
+    ? "https://api.indianpharmazee.com"
+    : "http://localhost:4004");
+
+export const API_URL = base.endsWith("/api") ? base : `${base}/api`;

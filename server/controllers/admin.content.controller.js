@@ -818,16 +818,37 @@ const getContactSubmissions = asyncHandler(async (req, res) => {
   const limit = parseInt(req.query.limit, 10) || 10;
   const skip = (page - 1) * limit;
   const status = req.query.status;
+  const search = req.query.search?.trim();
 
   try {
-    // Build where clause based on filters
-    const where = {};
-    if (status) {
+    // Base search filter
+    const baseWhere = {};
+    if (search) {
+      baseWhere.OR = [
+        { name: { contains: search, mode: "insensitive" } },
+        { email: { contains: search, mode: "insensitive" } },
+        { phone: { contains: search, mode: "insensitive" } },
+        { subject: { contains: search, mode: "insensitive" } },
+        { message: { contains: search, mode: "insensitive" } },
+      ];
+    }
+
+    // Build where clause based on status filter
+    const where = { ...baseWhere };
+    if (status && status !== "ALL") {
       where.status = status;
     }
 
-    // Get total count for pagination
-    const totalSubmissions = await prisma.contactSubmission.count({ where });
+    // Get counts in parallel for status badges and pagination
+    const [totalSubmissions, allCount, newCount, inProgressCount, resolvedCount, spamCount] =
+      await Promise.all([
+        prisma.contactSubmission.count({ where }),
+        prisma.contactSubmission.count({ where: baseWhere }),
+        prisma.contactSubmission.count({ where: { ...baseWhere, status: "NEW" } }),
+        prisma.contactSubmission.count({ where: { ...baseWhere, status: "IN_PROGRESS" } }),
+        prisma.contactSubmission.count({ where: { ...baseWhere, status: "RESOLVED" } }),
+        prisma.contactSubmission.count({ where: { ...baseWhere, status: "SPAM" } }),
+      ]);
 
     // Get submissions with pagination, most recent first
     const submissions = await prisma.contactSubmission.findMany({
@@ -840,6 +861,14 @@ const getContactSubmissions = asyncHandler(async (req, res) => {
     return res.status(200).json(
       new ApiResponsive(200, {
         submissions,
+        counts: {
+          total: totalSubmissions,
+          all: allCount,
+          new: newCount,
+          inProgress: inProgressCount,
+          resolved: resolvedCount,
+          spam: spamCount,
+        },
         pagination: {
           page,
           limit,
