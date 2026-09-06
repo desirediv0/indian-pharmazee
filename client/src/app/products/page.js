@@ -151,6 +151,7 @@ function ProductsContent() {
                 pairs.push(`${encodeURIComponent(k)}=${encodeURIComponent(String(v)).replace(/%20/g, "+")}`);
         };
         add("search", f.search); add("category", f.category); add("subCategory", f.subCategory); add("productType", f.productType);
+        if (f.search && searchParams.get("searchScope") === "basic") add("searchScope", "basic");
         add("color", f.color); add("size", f.size);
         add("minPrice", f.minPrice); add("maxPrice", f.maxPrice);
         if (f.sort !== "createdAt" || f.order !== "desc") { add("sort", f.sort); add("order", f.order); }
@@ -177,7 +178,10 @@ function ProductsContent() {
                         sort: ["createdAt", "updatedAt", "name", "featured"].includes(filters.sort) ? filters.sort : "createdAt",
                         order: filters.order,
                     });
-                    if (filters.search) q.append("search", filters.search);
+                    if (filters.search) {
+                        q.append("search", filters.search);
+                        if (searchParams.get("searchScope") === "basic") q.append("searchScope", "basic");
+                    }
                     if (filters.category) q.append("category", filters.category);
                     if (filters.subCategory) q.append("subCategory", filters.subCategory);
                     if (filters.minPrice) q.append("minPrice", filters.minPrice);

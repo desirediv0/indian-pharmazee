@@ -131,7 +131,7 @@ export function Navbar() {
     const timer = setTimeout(async () => {
       try {
         const res = await fetchApi(
-          `/public/products?search=${encodeURIComponent(q)}&limit=6`
+          `/public/products?search=${encodeURIComponent(q)}&limit=6&searchScope=basic`
         );
         if (res?.data?.products) {
           setLiveSearchResults(res.data.products);
@@ -194,7 +194,7 @@ export function Navbar() {
   const handleSearch = (e) => {
     if (e && e.preventDefault) e.preventDefault();
     if (!searchQuery.trim()) return;
-    router.push(`/products?search=${encodeURIComponent(searchQuery.trim())}`);
+    router.push(`/products?search=${encodeURIComponent(searchQuery.trim())}&searchScope=basic`);
     setIsSearchOpen(false);
     setShowLiveDropdown(false);
     setSearchQuery("");
@@ -867,7 +867,7 @@ function SearchDialog({ open, onOpenChange, searchQuery, setSearchQuery, handleS
     const timer = setTimeout(async () => {
       try {
         const res = await fetchApi(
-          `/public/products?search=${encodeURIComponent(q)}&limit=6`
+          `/public/products?search=${encodeURIComponent(q)}&limit=6&searchScope=basic`
         );
         if (res?.data?.products) {
           setDialogResults(res.data.products);

@@ -22,7 +22,10 @@ export const getAllProducts = asyncHandler(async (req, res) => {
     color, // For backward compatibility
     size, // For backward compatibility
     attributeValueIds, // Comma-separated attribute value IDs for filtering
+    searchScope = "full", // "basic" = title + category + subcategory only (used by header search)
   } = req.query;
+
+  const isBasicSearch = searchScope === "basic";
 
   const isPriceSort = sort === "price";
   // The actual sort field for Prisma: price isn't on Product model
@@ -72,47 +75,53 @@ export const getAllProducts = asyncHandler(async (req, res) => {
             },
           },
         },
-        // 4. Search in brand name
-        {
-          brand: {
-            name: { contains: normalizedSearch, mode: "insensitive" },
-          },
-        },
-        // 5. Search in description
-        { description: { contains: normalizedSearch, mode: "insensitive" } },
-        // 6. Search in variant SKU or attribute value (e.g. 500mg, 100ml)
-        {
-          variants: {
-            some: {
-              OR: [
-                { sku: { contains: normalizedSearch, mode: "insensitive" } },
-                {
-                  attributes: {
-                    some: {
-                      attributeValue: {
-                        value: { contains: normalizedSearch, mode: "insensitive" },
+        // 4-7 below only apply to the full-scope search. The header search
+        // passes searchScope=basic so it matches title / category / subcategory only.
+        ...(isBasicSearch
+          ? []
+          : [
+              // 4. Search in brand name
+              {
+                brand: {
+                  name: { contains: normalizedSearch, mode: "insensitive" },
+                },
+              },
+              // 5. Search in description
+              { description: { contains: normalizedSearch, mode: "insensitive" } },
+              // 6. Search in variant SKU or attribute value (e.g. 500mg, 100ml)
+              {
+                variants: {
+                  some: {
+                    OR: [
+                      { sku: { contains: normalizedSearch, mode: "insensitive" } },
+                      {
+                        attributes: {
+                          some: {
+                            attributeValue: {
+                              value: { contains: normalizedSearch, mode: "insensitive" },
+                            },
+                          },
+                        },
                       },
-                    },
+                    ],
                   },
                 },
-              ],
-            },
-          },
-        },
-        // 7. Handle case-insensitive tag array matching
-        {
-          tags: {
-            hasSome: [
-              rawSearch,
-              searchLower,
-              searchUpper,
-              searchCapitalized,
-              ...tagWords,
-              ...tagWords.map((w) => w.toLowerCase()),
-              ...tagWords.map((w) => w.toUpperCase()),
-            ],
-          },
-        },
+              },
+              // 7. Handle case-insensitive tag array matching
+              {
+                tags: {
+                  hasSome: [
+                    rawSearch,
+                    searchLower,
+                    searchUpper,
+                    searchCapitalized,
+                    ...tagWords,
+                    ...tagWords.map((w) => w.toLowerCase()),
+                    ...tagWords.map((w) => w.toUpperCase()),
+                  ],
+                },
+              },
+            ]),
       ],
     }),
     // Filter by category
