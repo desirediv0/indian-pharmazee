@@ -708,6 +708,30 @@ function AccountDropdown({ user, isAuthenticated, activeDropdown, setActiveDropd
   );
 }
 
+/* ── Highlight matched query text ──────────── */
+function HighlightText({ text, query }) {
+  const value = String(text ?? "");
+  const q = String(query ?? "").trim();
+  if (!value || !q) return value;
+
+  // Split on the query, case-insensitive, keeping the matched chunks
+  const escaped = q.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
+  const parts = value.split(new RegExp(`(${escaped})`, "ig"));
+
+  return parts.map((part, i) =>
+    part.toLowerCase() === q.toLowerCase() ? (
+      <mark
+        key={i}
+        className="bg-yellow-200 text-slate-900 rounded-[3px] px-0.5 font-bold"
+      >
+        {part}
+      </mark>
+    ) : (
+      <span key={i}>{part}</span>
+    )
+  );
+}
+
 /* ── Live Search Dropdown Component ────────── */
 function SearchResultsDropdown({
   results,
@@ -769,22 +793,22 @@ function SearchResultsDropdown({
 
                   <div className="flex-1 min-w-0">
                     <h4 className="text-xs font-bold text-slate-800 truncate group-hover:text-[#005EB8] transition-colors">
-                      {product.name}
+                      <HighlightText text={product.name} query={query} />
                     </h4>
                     <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                       {subCategoryName && (
                         <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/70">
-                          {subCategoryName}
+                          <HighlightText text={subCategoryName} query={query} />
                         </span>
                       )}
                       {categoryName && (
                         <span className="text-[10px] text-slate-400 truncate">
-                          {categoryName}
+                          <HighlightText text={categoryName} query={query} />
                         </span>
                       )}
                       {product.brand?.name && !subCategoryName && (
                         <span className="text-[10px] text-slate-400 truncate">
-                          {product.brand.name}
+                          <HighlightText text={product.brand.name} query={query} />
                         </span>
                       )}
                     </div>
@@ -964,22 +988,22 @@ function SearchDialog({ open, onOpenChange, searchQuery, setSearchQuery, handleS
 
                           <div className="flex-1 min-w-0">
                             <h4 className="text-xs font-bold text-slate-800 truncate group-hover:text-[#005EB8] transition-colors">
-                              {product.name}
+                              <HighlightText text={product.name} query={searchQuery} />
                             </h4>
                             <div className="flex items-center gap-1.5 mt-0.5 flex-wrap">
                               {subCategoryName && (
                                 <span className="inline-flex items-center px-1.5 py-0.5 rounded text-[10px] font-semibold bg-emerald-50 text-emerald-700 border border-emerald-200/70">
-                                  {subCategoryName}
+                                  <HighlightText text={subCategoryName} query={searchQuery} />
                                 </span>
                               )}
                               {categoryName && (
                                 <span className="text-[10px] text-slate-400 truncate">
-                                  {categoryName}
+                                  <HighlightText text={categoryName} query={searchQuery} />
                                 </span>
                               )}
                               {product.brand?.name && !subCategoryName && (
                                 <span className="text-[10px] text-slate-400 truncate">
-                                  {product.brand.name}
+                                  <HighlightText text={product.brand.name} query={searchQuery} />
                                 </span>
                               )}
                             </div>
