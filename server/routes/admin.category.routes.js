@@ -204,7 +204,7 @@ router.post(
   upload.single("image"),
   async (req, res) => {
     try {
-      const { name, description, position, metaTitle, metaDescription, keywords } = req.body;
+      const { name, slug: slugInput, description, position, metaTitle, metaDescription, keywords } = req.body;
 
       if (!name) {
         return res.status(400).json({
@@ -213,11 +213,18 @@ router.post(
         });
       }
 
-      // Generate a slug from the name
-      const slug = name
+      // Use the explicit slug if given, otherwise generate one from the name
+      const slug = (
+        slugInput !== undefined && String(slugInput).trim() !== ""
+          ? String(slugInput)
+          : name
+      )
         .toLowerCase()
+        .trim()
         .replace(/\s+/g, "-")
-        .replace(/[^a-z0-9-]/g, "");
+        .replace(/[^a-z0-9-]/g, "")
+        .replace(/-+/g, "-")
+        .replace(/^-|-$/g, "");
 
       // Check if category with the same name or slug exists
       const existingCategory = await prisma.category.findFirst({
@@ -317,7 +324,7 @@ router.patch(
   async (req, res) => {
     try {
       const { id } = req.params;
-      const { name, description, position, metaTitle, metaDescription, keywords } = req.body;
+      const { name, slug: slugInput, description, position, metaTitle, metaDescription, keywords } = req.body;
 
       // Check if category exists
       const existingCategory = await prisma.category.findUnique({
@@ -355,20 +362,40 @@ router.patch(
         updateData.keywords = keywords || null;
       }
 
-      // Update name and slug if provided
-      if (name) {
-        // Generate a new slug
-        const slug = name
+      // Normalize a slug string the same way we generate one from a name
+      const normalizeSlug = (str) =>
+        String(str)
           .toLowerCase()
+          .trim()
           .replace(/\s+/g, "-")
-          .replace(/[^a-z0-9-]/g, "");
+          .replace(/[^a-z0-9-]/g, "")
+          .replace(/-+/g, "-")
+          .replace(/^-|-$/g, "");
 
-        // Check if another category with the same name or slug exists
+      // Update name and/or slug if provided. An explicit slug wins over the
+      // name-derived one so admins can set SEO-friendly URLs independently.
+      const nameChanged = name && name !== existingCategory.name;
+      const explicitSlug =
+        slugInput !== undefined && String(slugInput).trim() !== ""
+          ? normalizeSlug(slugInput)
+          : null;
+
+      if (nameChanged || explicitSlug) {
+        const newSlug = explicitSlug || normalizeSlug(name);
+
+        if (!newSlug) {
+          return res.status(400).json({
+            success: false,
+            message: "Slug cannot be empty after formatting",
+          });
+        }
+
+        // Check if another category already uses this name or slug
         const duplicateCategory = await prisma.category.findFirst({
           where: {
             OR: [
-              { name: { equals: name, mode: "insensitive" } },
-              { slug: { equals: slug, mode: "insensitive" } },
+              ...(name ? [{ name: { equals: name, mode: "insensitive" } }] : []),
+              { slug: { equals: newSlug, mode: "insensitive" } },
             ],
             id: { not: id },
           },
@@ -381,8 +408,8 @@ router.patch(
           });
         }
 
-        updateData.name = name;
-        updateData.slug = slug;
+        if (name) updateData.name = name;
+        updateData.slug = newSlug;
       }
 
       // Update description if provided

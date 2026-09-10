@@ -25,6 +25,20 @@ import {
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
+import { Checkbox } from "@/components/ui/checkbox";
+
+interface ResourceDef {
+  id: string;
+  name: string;
+  actions: string[];
+}
+
+const ACTION_LABELS: Record<string, string> = {
+  read: "👁️ View",
+  create: "➕ Create",
+  update: "✏️ Edit",
+  delete: "🗑️ Delete",
+};
 
 interface Role {
   id: string;
@@ -61,9 +75,62 @@ export default function RoleManagementPage() {
 
   const isSuperAdmin = currentAdmin?.role === "SUPER_ADMIN";
 
+  // Available resources + the permissions selected in the Create dialog
+  const [resources, setResources] = useState<ResourceDef[]>([]);
+  const [createPerms, setCreatePerms] = useState<Record<string, string[]>>({});
+
   useEffect(() => {
     fetchRoles();
+    fetchResources();
   }, []);
+
+  const fetchResources = async () => {
+    try {
+      const res = await fetch(
+        `${import.meta.env.VITE_API_URL}/api/admin/roles/permissions`,
+        { headers: { Authorization: `Bearer ${localStorage.getItem("adminToken")}` } }
+      );
+      const data = await res.json();
+      if (data.success && Array.isArray(data.data?.resources)) {
+        setResources(data.data.resources);
+      }
+    } catch (error) {
+      console.error("Error fetching available permissions:", error);
+    }
+  };
+
+  const toggleCreatePerm = (resource: string, action: string) => {
+    setCreatePerms((prev) => {
+      const current = prev[resource] || [];
+      return {
+        ...prev,
+        [resource]: current.includes(action)
+          ? current.filter((a) => a !== action)
+          : [...current, action],
+      };
+    });
+  };
+
+  const toggleCreateResourceAll = (resource: string, actions: string[]) => {
+    setCreatePerms((prev) => {
+      const current = prev[resource] || [];
+      const hasAll = actions.every((a) => current.includes(a));
+      return { ...prev, [resource]: hasAll ? [] : [...actions] };
+    });
+  };
+
+  const createPermsToApi = () => {
+    const out: Array<{ resource: string; action: string }> = [];
+    Object.entries(createPerms).forEach(([resource, actions]) => {
+      actions.forEach((action) => out.push({ resource, action }));
+    });
+    return out;
+  };
+
+  const createPermCount = Object.values(createPerms).reduce(
+    (sum, a) => sum + a.length,
+    0
+  );
 
   const fetchRoles = async () => {
     try {
@@ -109,7 +176,7 @@ export default function RoleManagementPage() {
           body: JSON.stringify({
             name: formData.name.trim(),
             description: formData.description.trim() || null,
-            permissions: [],
+            permissions: createPermsToApi(),
           }),
         }
       );
@@ -118,6 +185,7 @@ export default function RoleManagementPage() {
         toast.success("Role created successfully");
         setShowCreateDialog(false);
         setFormData({ name: "", description: "" });
+        setCreatePerms({});
         fetchRoles();
       } else {
         toast.error(data.message || "Failed to create role");
@@ -242,6 +310,7 @@ export default function RoleManagementPage() {
         </div>
         <Button onClick={() => {
           setFormData({ name: "", description: "" });
+          setCreatePerms({});
           setShowCreateDialog(true);
         }}>
           <Plus className="mr-2 h-4 w-4" />
@@ -359,7 +428,7 @@ export default function RoleManagementPage() {
 
       {/* Create Role Dialog */}
       <Dialog open={showCreateDialog} onOpenChange={setShowCreateDialog}>
-        <DialogContent>
+        <DialogContent className="max-w-2xl max-h-[85vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>Create New Role</DialogTitle>
           </DialogHeader>
@@ -386,6 +455,79 @@ export default function RoleManagementPage() {
                 placeholder="Brief description of this role"
                 rows={3}
               />
+            </div>
+
+            <div>
+              <div className="flex items-center justify-between mb-2">
+                <Label>Permissions</Label>
+                <span className="text-xs text-muted-foreground">
+                  {createPermCount} selected
+                </span>
+              </div>
+              <div className="space-y-2 border rounded-lg p-3 max-h-[40vh] overflow-y-auto">
+                {resources.length === 0 ? (
+                  <p className="text-sm text-muted-foreground py-2">
+                    Loading permissions…
+                  </p>
+                ) : (
+                  resources.map((resource) => {
+                    const selected = createPerms[resource.id] || [];
+                    const allChecked = resource.actions.every((a) =>
+                      selected.includes(a)
+                    );
+                    return (
+                      <div
+                        key={resource.id}
+                        className="border rounded-md p-2.5 bg-muted/30"
+                      >
+                        <div className="flex items-center gap-2 mb-2">
+                          <Checkbox
+                            id={`new-${resource.id}-all`}
+                            checked={allChecked}
+                            onCheckedChange={() =>
+                              toggleCreateResourceAll(
+                                resource.id,
+                                resource.actions
+                              )
+                            }
+                          />
+                          <Label
+                            htmlFor={`new-${resource.id}-all`}
+                            className="text-sm font-semibold cursor-pointer"
+                          >
+                            {resource.name}
+                          </Label>
+                        </div>
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2 pl-6">
+                          {resource.actions.map((action) => (
+                            <div
+                              key={action}
+                              className="flex items-center gap-1.5"
+                            >
+                              <Checkbox
+                                id={`new-${resource.id}-${action}`}
+                                checked={selected.includes(action)}
+                                onCheckedChange={() =>
+                                  toggleCreatePerm(resource.id, action)
+                                }
+                              />
+                              <Label
+                                htmlFor={`new-${resource.id}-${action}`}
+                                className="text-xs cursor-pointer"
+                              >
+                                {ACTION_LABELS[action] || action}
+                              </Label>
+                            </div>
+                          ))}
+                        </div>
+                      </div>
+                    );
+                  })
+                )}
+              </div>
+              <p className="text-xs text-muted-foreground mt-1.5">
+                You can fine-tune these later from the role's Permissions page.
+              </p>
             </div>
           </div>
           <DialogFooter>

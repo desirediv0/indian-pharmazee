@@ -655,6 +655,7 @@ function CategoryForm({
 
   const [category, setCategory] = useState<any>({
     name: "",
+    slug: "",
     description: "",
     position: "",
     metaTitle: "",
@@ -701,6 +702,7 @@ function CategoryForm({
             const categoryData = response.data.data?.category || {};
             setCategory({
               name: categoryData.name || "",
+              slug: categoryData.slug || "",
               description: categoryData.description || "",
               position: categoryData.position !== undefined ? String(categoryData.position) : "",
               metaTitle: categoryData.metaTitle || "",
@@ -926,6 +928,10 @@ function CategoryForm({
       const formData = new FormData();
       formData.append("name", category.name);
 
+      if (category.slug !== undefined && category.slug.trim() !== "") {
+        formData.append("slug", category.slug.trim());
+      }
+
       if (category.description) {
         formData.append("description", category.description);
       }
@@ -1047,6 +1053,24 @@ function CategoryForm({
                 required
                 className="border-[#E5E7EB] focus:border-primary"
               />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="slug" className="text-sm font-medium text-[#4B5563]">
+                URL Slug (Optional)
+              </Label>
+              <Input
+                id="slug"
+                name="slug"
+                value={category.slug || ""}
+                onChange={handleChange}
+                placeholder="e.g. ivf-medicines  (leave blank to auto-generate from name)"
+                className="border-[#E5E7EB] focus:border-primary"
+              />
+              <p className="text-xs text-[#9CA3AF]">
+                Page URL: <span className="font-mono">/category/{category.slug || "auto-from-name"}</span>.
+                Changing this changes the live URL — set up a redirect from the old one.
+              </p>
             </div>
 
             <div className="space-y-2">

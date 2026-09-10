@@ -17,8 +17,11 @@ export async function generateMetadata({ params }) {
     let image = null;
 
     try {
-        // Fetch category details from API
-        const response = await fetchApi(`/public/categories/${slug}/products?page=1&limit=1`);
+        // Fetch category details from API (no-store so SEO edits in admin reflect immediately)
+        const response = await fetchApi(
+            `/public/categories/${slug}/products?page=1&limit=1`,
+            { cache: "no-store" }
+        );
         const category = response?.data?.category;
 
         if (category) {

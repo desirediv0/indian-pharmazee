@@ -651,14 +651,17 @@ export const getCategoryById = asyncHandler(async (req, res) => {
 
 // Create a new category
 export const createCategory = asyncHandler(async (req, res) => {
-  const { name, description, position, metaTitle, metaDescription, keywords } = req.body;
+  const { name, slug: slugInput, description, position, metaTitle, metaDescription, keywords } = req.body;
 
   if (!name) {
     throw new ApiError(400, "Category name is required");
   }
 
-  // Generate slug from name
-  const slug = createSlug(name);
+  // Use the explicit slug if provided, otherwise generate one from the name
+  const slug =
+    slugInput !== undefined && String(slugInput).trim() !== ""
+      ? createSlug(slugInput)
+      : createSlug(name);
 
   // Check if category with this slug already exists
   const existingCategory = await prisma.category.findUnique({
@@ -726,7 +729,7 @@ export const createCategory = asyncHandler(async (req, res) => {
 // Update category
 export const updateCategory = asyncHandler(async (req, res) => {
   const { categoryId } = req.params;
-  const { name, description, position, metaTitle, metaDescription, keywords } = req.body;
+  const { name, slug: slugInput, description, position, metaTitle, metaDescription, keywords } = req.body;
 
   // Check if category exists
   const category = await prisma.category.findUnique({
@@ -750,9 +753,20 @@ export const updateCategory = asyncHandler(async (req, res) => {
     updateData.keywords = keywords || null;
   }
 
-  // Update slug if name is changed
-  if (name && name !== category.name) {
-    const newSlug = createSlug(name);
+  // Update slug when the name changes or an explicit slug is provided.
+  // An explicit slug takes precedence so admins can set SEO-friendly URLs.
+  const nameChanged = name && name !== category.name;
+  const explicitSlug =
+    slugInput !== undefined && String(slugInput).trim() !== ""
+      ? createSlug(slugInput)
+      : null;
+
+  if (nameChanged || explicitSlug) {
+    const newSlug = explicitSlug || createSlug(name);
+
+    if (!newSlug) {
+      throw new ApiError(400, "Slug cannot be empty after formatting");
+    }
 
     // Check if new slug is already taken
     const existingCategory = await prisma.category.findFirst({
@@ -763,10 +777,10 @@ export const updateCategory = asyncHandler(async (req, res) => {
     });
 
     if (existingCategory) {
-      throw new ApiError(409, "Category with this name already exists");
+      throw new ApiError(409, "Category with this name or slug already exists");
     }
 
-    updateData.name = name;
+    if (name) updateData.name = name;
     updateData.slug = newSlug;
   }
 
