@@ -18,7 +18,10 @@ export const metadata = {
   keywords: "Indian Pharmazee, specialty medicines, oncology medicines, IVF medicines, transplant medicines, temp-controlled delivery, genuine medicines India, pharmaceutical ecommerce",
   authors: [{ name: "Indian Pharmazee" }],
   verification: {
-    google: "AhIUN5UjwjmL_ZHO9jGjCjTdo5fiAY_dBuRHhsFk9qY",
+    google: [
+      "AhIUN5UjwjmL_ZHO9jGjCjTdo5fiAY_dBuRHhsFk9qY",
+      "44F8z-HzptPAQyecFGquUsI0QWGiYukVmQXYoU22Lws",
+    ],
   },
   openGraph: {
     title: "Indian Pharmazee | Trusted Specialty Medicines Across India",
@@ -35,6 +38,7 @@ export default function RootLayout({ children }) {
       <head>
         <link rel="canonical" href="https://www.indianpharmazee.com/" />
         <meta name="google-site-verification" content="AhIUN5UjwjmL_ZHO9jGjCjTdo5fiAY_dBuRHhsFk9qY" />
+        <meta name="google-site-verification" content="44F8z-HzptPAQyecFGquUsI0QWGiYukVmQXYoU22Lws" />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-F2125423JN"
           strategy="afterInteractive"
