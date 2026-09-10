@@ -200,6 +200,19 @@ model Category {
   products        ProductCategory[]
   coupons         CouponCategory[]
   subCategories   SubCategory[]
+  slugHistory     CategorySlugHistory[]
+}
+
+// Tracks previous slugs of a category so old URLs keep resolving to the
+// current category (the API answers with the canonical slug for a 301).
+model CategorySlugHistory {
+  id         String   @id @default(uuid())
+  slug       String   @unique
+  categoryId String
+  category   Category @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  createdAt  DateTime @default(now())
+
+  @@index([categoryId])
 }
 
 model SubCategory {

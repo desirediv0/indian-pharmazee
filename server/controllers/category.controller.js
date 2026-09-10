@@ -101,14 +101,28 @@ export const getProductsByCategory = asyncHandler(async (req, res) => {
   const isPositionSort = sort === "position";
   const effectiveSort = isPriceSort || isPositionSort ? "createdAt" : sort;
 
-  // Find the category by slug
-  const category = await prisma.category.findUnique({
+  // Find the category by its current slug
+  let category = await prisma.category.findUnique({
     where: { slug },
   });
+
+  // Fall back to a historical slug so old URLs keep working after a rename
+  if (!category) {
+    const historical = await prisma.categorySlugHistory.findUnique({
+      where: { slug },
+      include: { category: true },
+    });
+    if (historical?.category) {
+      category = historical.category;
+    }
+  }
 
   if (!category) {
     throw new ApiError(404, "Category not found");
   }
+
+  // Tell the client the canonical slug so it can 301 / set rel=canonical
+  const slugChanged = category.slug !== slug;
 
   // Get category ID
   const categoryIds = [category.id];
@@ -340,6 +354,8 @@ export const getProductsByCategory = asyncHandler(async (req, res) => {
       200,
       {
         category,
+        canonicalSlug: category.slug,
+        slugChanged,
         products: formattedProducts,
         pagination: {
           total: totalProducts,
@@ -809,10 +825,28 @@ export const updateCategory = asyncHandler(async (req, res) => {
     updateData.image = await processAndUploadImage(req.file);
   }
 
+  // If the slug is changing, remember the old one so old URLs keep resolving
+  const slugIsChanging = updateData.slug && updateData.slug !== category.slug;
+
   // Update category
-  const updatedCategory = await prisma.category.update({
-    where: { id: categoryId },
-    data: updateData,
+  const updatedCategory = await prisma.$transaction(async (tx) => {
+    const updated = await tx.category.update({
+      where: { id: categoryId },
+      data: updateData,
+    });
+
+    if (slugIsChanging) {
+      await tx.categorySlugHistory.deleteMany({
+        where: { slug: updateData.slug },
+      });
+      await tx.categorySlugHistory.upsert({
+        where: { slug: category.slug },
+        update: { categoryId },
+        create: { slug: category.slug, categoryId },
+      });
+    }
+
+    return updated;
   });
 
   // Resequence to keep it clean

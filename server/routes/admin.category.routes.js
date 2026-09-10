@@ -452,17 +452,37 @@ router.patch(
         updateData.image = imageKey;
       }
 
+      // If the slug is changing, remember the old one so old URLs keep resolving
+      const slugIsChanging =
+        updateData.slug && updateData.slug !== existingCategory.slug;
+
       // Update category
-      const updatedCategory = await prisma.category.update({
-        where: { id },
-        data: updateData,
-        include: {
-          _count: {
-            select: {
-              products: true,
+      const updatedCategory = await prisma.$transaction(async (tx) => {
+        const updated = await tx.category.update({
+          where: { id },
+          data: updateData,
+          include: {
+            _count: {
+              select: {
+                products: true,
+              },
             },
           },
-        },
+        });
+
+        if (slugIsChanging) {
+          // A slug that is now free to reuse should not redirect anymore
+          await tx.categorySlugHistory.deleteMany({
+            where: { slug: updateData.slug },
+          });
+          await tx.categorySlugHistory.upsert({
+            where: { slug: existingCategory.slug },
+            update: { categoryId: id },
+            create: { slug: existingCategory.slug, categoryId: id },
+          });
+        }
+
+        return updated;
       });
 
       // Resequence to keep it clean
