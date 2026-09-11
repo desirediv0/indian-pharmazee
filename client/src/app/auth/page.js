@@ -121,7 +121,7 @@ function AuthForm() {
                     : { color: "#6b7280" }
                   }
                 >
-                  {tab === "login" ? "Sign In" : "Register"}
+                  {tab === "login" ? "Address for orders" : "Register"}
                 </button>
               ))}
             </div>
@@ -221,7 +221,7 @@ function LoginForm() {
         className="w-full h-12 rounded-xl text-sm font-bold text-white flex items-center justify-center gap-2 transition-all hover:opacity-90 disabled:opacity-60 mt-2"
         style={{ background: "linear-gradient(135deg, #005EB8, #0074e4)" }}
       >
-        {isSubmitting ? <><Loader2 className="h-4 w-4 animate-spin" /> Signing in...</> : <>Sign In <ArrowRight className="h-4 w-4" /></>}
+        {isSubmitting ? <><Loader2 className="h-4 w-4 animate-spin" /> Signing in...</> : <>Address for orders <ArrowRight className="h-4 w-4" /></>}
       </button>
 
       <p className="text-center text-sm text-gray-400">
@@ -341,7 +341,7 @@ function RegisterForm() {
 
       <p className="text-center text-sm text-gray-400">
         Already have an account?{" "}
-        <Link href="/auth?tab=login" className="font-semibold hover:underline" style={{ color: "#005EB8" }}>Sign In</Link>
+        <Link href="/auth?tab=login" className="font-semibold hover:underline" style={{ color: "#005EB8" }}>Address for orders</Link>
       </p>
     </form>
   );
