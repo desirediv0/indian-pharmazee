@@ -86,11 +86,19 @@ export const updateSettings = asyncHandler(async (req, res) => {
     }
 
     if (shippingCharge !== undefined) {
-        updateData.shippingCharge = parseFloat(shippingCharge);
+        const parsed = parseFloat(shippingCharge);
+        if (isNaN(parsed) || parsed < 0) {
+            throw new ApiError(400, "Shipping charge must be a valid non-negative number");
+        }
+        updateData.shippingCharge = parsed;
     }
 
     if (freeShippingThreshold !== undefined) {
-        updateData.freeShippingThreshold = parseFloat(freeShippingThreshold);
+        const parsed = parseFloat(freeShippingThreshold);
+        if (isNaN(parsed) || parsed < 0) {
+            throw new ApiError(400, "Free shipping threshold must be a valid non-negative number");
+        }
+        updateData.freeShippingThreshold = parsed;
     }
 
     updateData.updatedBy = req.admin?.id;

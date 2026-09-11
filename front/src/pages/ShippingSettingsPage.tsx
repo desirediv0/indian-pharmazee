@@ -57,6 +57,13 @@ export default function ShippingSettingsPage() {
 
             if (response.data.success) {
                 toast.success(t("shiprocket_settings.shipping_charges.save_success"));
+                const data = response.data.data?.settings;
+                if (data) {
+                    setShippingCharge(data.shippingCharge ? parseFloat(data.shippingCharge) : 0);
+                    setFreeShippingThreshold(data.freeShippingThreshold ? parseFloat(data.freeShippingThreshold) : 0);
+                }
+            } else {
+                toast.error(response.data.message || t("shiprocket_settings.messages.save_error"));
             }
         } catch (error: any) {
             console.error("Error saving shipping charges:", error);
