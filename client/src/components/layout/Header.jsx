@@ -1120,7 +1120,7 @@ function MobileMenu({ isOpen, onClose, user, isAuthenticated, categories, cartCo
               <div className="flex gap-2">
                 <Link href="/auth" className="flex-1" onClick={onClose}>
                   <Button className="w-full h-9 text-sm font-semibold text-white" style={{ background: "#005EB8" }}>
-                    Sign In
+                    Address for orders
                   </Button>
                 </Link>
                 <Link href="/auth?tab=register" className="flex-1" onClick={onClose}>
