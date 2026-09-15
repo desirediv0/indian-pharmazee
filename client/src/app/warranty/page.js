@@ -4,6 +4,9 @@ import { PageHero } from "@/components/ui/PageHero";
 export const metadata = {
     title: "Return Policy | Indian Pharmazee",
     description: "Learn about our comprehensive 1-year warranty on all products.",
+    alternates: {
+        canonical: "https://www.indianpharmazee.com/warranty",
+    },
 };
 
 const warrantyFeatures = [

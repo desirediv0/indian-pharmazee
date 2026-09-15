@@ -4,6 +4,9 @@ import { Shield, Eye, Lock, CheckCircle } from "lucide-react";
 export const metadata = {
     title: "Privacy Policy | Indian Pharmazee",
     description: "Learn how Indian Pharmazee handles patient health records, prescription uploads, SSL-encrypted transactional data, and cookie compliance in accordance with Razorpay and RBI regulations.",
+    alternates: {
+        canonical: "https://www.indianpharmazee.com/privacy-policy",
+    },
 };
 
 const principles = [

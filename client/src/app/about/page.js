@@ -9,6 +9,9 @@ import { getPharmaIcon } from "@/lib/pharma-icons";
 export const metadata = {
   title: "About Us | Indian Pharmazee — Trusted Specialty Medicines",
   description: "Indian Pharmazee is a trusted platform providing genuine branded medicines and specialty healthcare products across India with temp-controlled delivery support.",
+  alternates: {
+    canonical: "https://www.indianpharmazee.com/about",
+  },
 };
 
 const stats = [

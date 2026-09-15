@@ -4,6 +4,9 @@ import { BadgeAlert, RefreshCw, Landmark } from "lucide-react";
 export const metadata = {
     title: "Return & Cancellation Policy | Indian Pharmazee",
     description: "Review Indian Pharmazee's pharmaceutical return guidelines, temp-controlled safety restrictions, Razorpay refund approvals, and replacement terms.",
+    alternates: {
+        canonical: "https://www.indianpharmazee.com/return-policy",
+    },
 };
 
 const returnSteps = [

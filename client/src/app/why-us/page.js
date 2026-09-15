@@ -9,6 +9,9 @@ import Link from "next/link";
 export const metadata = {
   title: "Why Choose Us | Indian Pharmazee — Trusted Specialty Medicines",
   description: "Discover why patients and doctors across India trust Indian Pharmazee for genuine branded medicines, temp-controlled delivery, IVF, oncology, and specialty healthcare.",
+  alternates: {
+    canonical: "https://www.indianpharmazee.com/why-us",
+  },
 };
 
 const REASONS = [

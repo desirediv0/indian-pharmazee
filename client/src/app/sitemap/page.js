@@ -4,6 +4,9 @@ import { fetchApi } from "@/lib/utils";
 export const metadata = {
   title: "HTML Sitemap | Indian Pharmazee",
   description: "Browse all product categories, specialty medicines, subcategories and pages on Indian Pharmazee.",
+  alternates: {
+    canonical: "https://www.indianpharmazee.com/sitemap",
+  },
 };
 
 export const revalidate = 3600;

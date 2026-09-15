@@ -6,6 +6,9 @@ import { PageHero } from "@/components/ui/PageHero";
 export const metadata = {
     title: "Healthcare Segments | Indian Pharmazee",
     description: "Specialty medicines for IVF, oncology, transplants, sexual wellness, paediatric care, and more across India.",
+    alternates: {
+        canonical: "https://www.indianpharmazee.com/industries",
+    },
 };
 
 const industries = [

@@ -12,6 +12,9 @@ import CategoryGrid from "@/components/sections/CategoryGrid";
 export const metadata = {
   title: "Indian Pharmazee | Trusted Specialty Medicines Across India",
   description: "Genuine branded medicines, oncology care, IVF solutions, chronic care, transplant medicines with temp-controlled delivery across India.",
+  alternates: {
+    canonical: "https://www.indianpharmazee.com/",
+  },
 };
 
 export default function Home() {

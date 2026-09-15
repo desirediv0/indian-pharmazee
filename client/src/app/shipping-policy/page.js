@@ -4,6 +4,9 @@ import Link from "next/link";
 export const metadata = {
   title: "Shipping & Delivery Policy | Indian Pharmazee",
   description: "Learn about Indian Pharmazee's temp-controlled delivery, temperature-controlled shipping, transit protocols, and pan-India coverage for specialty medicines.",
+  alternates: {
+    canonical: "https://www.indianpharmazee.com/shipping-policy",
+  },
 };
 
 const SHIPPING_CARDS = [

@@ -4,6 +4,9 @@ import { Gavel, CheckSquare, ShieldCheck, CreditCard } from "lucide-react";
 export const metadata = {
     title: "Terms & Conditions | Indian Pharmazee",
     description: "Read Indian Pharmazee's Terms of Use, prescription guidelines, medical disclaimer, and patient purchasing agreements in compliance with Razorpay standards.",
+    alternates: {
+        canonical: "https://www.indianpharmazee.com/terms",
+    },
 };
 
 const provisions = [
