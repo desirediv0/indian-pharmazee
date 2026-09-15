@@ -216,9 +216,11 @@ export function WhatsAppSticky() {
 
       {/* whatsapp.png in circle */}
       <div className="w-9 h-9 rounded-full bg-white/20 flex items-center justify-center flex-shrink-0">
-        <img
+        <Image
           src="/whatsapp.png"
           alt="WhatsApp"
+          width={20}
+          height={20}
           className="w-5 h-5 object-contain"
         />
       </div>
