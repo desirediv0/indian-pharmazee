@@ -1,4 +1,4 @@
-// Account pages are private/user-specific — keep them out of Google's index.
+// Private / transactional page — keep it out of Google's index.
 export const metadata = {
   robots: {
     index: false,
@@ -11,6 +11,6 @@ export const metadata = {
   },
 };
 
-export default function AccountLayout({ children }) {
+export default function Layout({ children }) {
   return children;
 }

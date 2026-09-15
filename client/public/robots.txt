@@ -2,3 +2,11 @@ User-agent: *
 Disallow:
 Disallow: /cgi-bin/
 Sitemap: https://www.indianpharmazee.com/sitemap.xml
+
+# Note: /account, /auth, /cart, /checkout, /forgot-password, /profile,
+# /resend-verification, /verify-otp, /wishlist are intentionally NOT
+# disallowed here. They carry a noindex meta tag instead, so Google can
+# still crawl them and drop any already-indexed URLs from search results.
+# Add them here as Disallow only once they're confirmed de-indexed —
+# blocking crawl too early would prevent Google from ever seeing the
+# noindex tag on a URL it already has indexed.
