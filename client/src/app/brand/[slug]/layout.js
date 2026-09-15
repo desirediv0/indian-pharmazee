@@ -8,7 +8,7 @@ export async function generateMetadata({ params }) {
 
     try {
         const response = await fetchApi(
-            `/public/brands/${slug}?page=1&limit=1`,
+            `/public/brand/${slug}?page=1&limit=1`,
             { cache: "no-store" }
         );
         const brand = response?.data?.brand;
