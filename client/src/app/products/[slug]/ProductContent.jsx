@@ -724,7 +724,7 @@ export default function ProductContent({ slug }) {
                       >
                         <div className="relative w-12 h-12 flex-shrink-0 bg-white rounded border border-gray-100 p-0.5 flex items-center justify-center overflow-hidden">
                           {p.image ? (
-                            <img src={p.image} alt={p.name} className="object-contain max-h-full max-w-full" />
+                            <Image src={p.image} alt={p.name} fill className="object-contain p-0.5" sizes="48px" />
                           ) : (
                             <div className="bg-gray-150 w-full h-full flex items-center justify-center text-[10px] text-gray-400">No Image</div>
                           )}
@@ -953,7 +953,7 @@ export default function ProductContent({ slug }) {
               className="w-full h-12 flex items-center justify-center gap-2.5 rounded-xl font-semibold text-sm mb-3 transition-all hover:opacity-90"
               style={{ background: "#25D366", color: "white" }}
             >
-              <img src="/whatsapp.png" alt="WhatsApp" className="h-5 w-5 object-contain" />
+              <Image src="/whatsapp.png" alt="WhatsApp" width={20} height={20} className="h-5 w-5 object-contain" />
               Enquire on WhatsApp
             </a>
 

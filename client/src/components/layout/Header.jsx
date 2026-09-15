@@ -779,12 +779,14 @@ function SearchResultsDropdown({
                   onClick={() => onSelectProduct(product.slug)}
                   className="p-3 hover:bg-blue-50/70 transition-colors flex items-center gap-3 cursor-pointer group"
                 >
-                  <div className="w-10 h-10 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden flex-shrink-0 flex items-center justify-center p-0.5">
+                  <div className="relative w-10 h-10 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden flex-shrink-0 flex items-center justify-center p-0.5">
                     {imgUrl ? (
-                      <img
+                      <Image
                         src={imgUrl}
                         alt={product.name}
-                        className="w-full h-full object-contain"
+                        fill
+                        sizes="40px"
+                        className="object-contain"
                       />
                     ) : (
                       <Pill className="w-5 h-5 text-[#005EB8]" />
@@ -974,12 +976,14 @@ function SearchDialog({ open, onOpenChange, searchQuery, setSearchQuery, handleS
                           }}
                           className="p-3 hover:bg-blue-50/70 transition-colors flex items-center gap-3 cursor-pointer group"
                         >
-                          <div className="w-10 h-10 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden flex-shrink-0 flex items-center justify-center p-0.5">
+                          <div className="relative w-10 h-10 rounded-lg bg-slate-100 border border-slate-200 overflow-hidden flex-shrink-0 flex items-center justify-center p-0.5">
                             {imgUrl ? (
-                              <img
+                              <Image
                                 src={imgUrl}
                                 alt={product.name}
-                                className="w-full h-full object-contain"
+                                fill
+                                sizes="40px"
+                                className="object-contain"
                               />
                             ) : (
                               <Pill className="w-5 h-5 text-[#005EB8]" />
