@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -9,6 +9,14 @@ import { DynamicIcon } from "@/components/dynamic-icon";
 import { fetchApi, formatCurrency, formatDate } from "@/lib/utils";
 
 export default function OrdersPage() {
+    return (
+        <Suspense fallback={<div className="bg-white rounded-lg shadow p-8 flex justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
+            <OrdersPageContent />
+        </Suspense>
+    );
+}
+
+function OrdersPageContent() {
     const { isAuthenticated } = useAuth();
     const router = useRouter();
     const searchParams = useSearchParams();

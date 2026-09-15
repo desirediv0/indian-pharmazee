@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { Suspense, useState, useEffect } from "react";
 import { useAuth } from "@/lib/auth-context";
 import { useRouter, useSearchParams } from "next/navigation";
 import Link from "next/link";
@@ -11,6 +11,14 @@ import { ClientOnly } from "@/components/client-only";
 import { ProtectedRoute } from "@/components/protected-route";
 
 export default function ReturnsPage() {
+    return (
+        <Suspense fallback={<div className="bg-white rounded-lg shadow p-8 flex justify-center"><div className="animate-spin rounded-full h-12 w-12 border-b-2 border-primary"></div></div>}>
+            <ReturnsPageContent />
+        </Suspense>
+    );
+}
+
+function ReturnsPageContent() {
     const { isAuthenticated } = useAuth();
     const router = useRouter();
     const searchParams = useSearchParams();
