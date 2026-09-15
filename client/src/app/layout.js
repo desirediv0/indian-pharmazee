@@ -36,7 +36,6 @@ export default function RootLayout({ children }) {
   return (
     <html lang="en">
       <head>
-        <link rel="canonical" href="https://www.indianpharmazee.com/" />
         <meta name="google-site-verification" content="AhIUN5UjwjmL_ZHO9jGjCjTdo5fiAY_dBuRHhsFk9qY" />
         <meta name="google-site-verification" content="44F8z-HzptPAQyecFGquUsI0QWGiYukVmQXYoU22Lws" />
         <Script
