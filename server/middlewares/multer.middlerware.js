@@ -38,10 +38,49 @@ export const processAndUploadImage = async (file, subfolder = "images") => {
 
     console.log(`🔧 Target filename: ${filename}`);
 
-    // No compression requested: Use the original buffer
-    const processedBuffer = buffer;
+    // Resize to 1254x1254 HD with sharp — quality preserved
+    const TARGET_SIZE = 1254;
+    console.log(`🔧 Resizing image to ${TARGET_SIZE}x${TARGET_SIZE} (HD)...`);
+
+    let processedBuffer;
+    const isGif = fileExtension === "gif";
+    const isPng = fileExtension === "png";
+    const isSvg = fileExtension === "svg";
+
+    if (isSvg) {
+      // SVGs: upload raw, no resize
+      processedBuffer = buffer;
+    } else if (isGif) {
+      // GIFs: resize with sharp, keep animated
+      processedBuffer = await sharp(buffer)
+        .resize(TARGET_SIZE, TARGET_SIZE, {
+          fit: "inside",
+          withoutEnlargement: true,
+        })
+        .gif()
+        .toBuffer();
+    } else if (isPng) {
+      // PNGs: resize with sharp, keep transparency, high quality
+      processedBuffer = await sharp(buffer)
+        .resize(TARGET_SIZE, TARGET_SIZE, {
+          fit: "inside",
+          withoutEnlargement: true,
+        })
+        .png({ quality: 95, compressionLevel: 6 })
+        .toBuffer();
+    } else {
+      // JPEG/WEBP: resize with sharp, high quality
+      processedBuffer = await sharp(buffer)
+        .resize(TARGET_SIZE, TARGET_SIZE, {
+          fit: "inside",
+          withoutEnlargement: true,
+        })
+        .jpeg({ quality: 92, mozjpeg: true })
+        .toBuffer();
+    }
+
     console.log(
-      `🔧 Using original image buffer. Size: ${processedBuffer.length} bytes`
+      `🔧 Resized buffer size: ${processedBuffer.length} bytes (original: ${buffer.length} bytes)`
     );
 
     // Upload to S3 with proper content type
@@ -51,12 +90,13 @@ export const processAndUploadImage = async (file, subfolder = "images") => {
       Key: filename,
       Body: processedBuffer,
       ACL: "public-read",
-      ContentType: `image/${fileExtension === "png"
-        ? "png"
-        : fileExtension === "gif"
-          ? "gif"
-          : "jpeg"
-        }`,
+      ContentType: isSvg
+        ? "image/svg+xml"
+        : isGif
+          ? "image/gif"
+          : isPng
+            ? "image/png"
+            : "image/jpeg",
     });
 
     await s3client.send(putCommand);
