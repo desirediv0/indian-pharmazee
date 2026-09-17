@@ -525,7 +525,7 @@ function BannerForm({
                   <img
                     src={desktopPreview}
                     alt={t("banners.desktop_image.preview_alt")}
-                    className="max-h-80 mx-auto rounded-lg border border-[#E5E7EB] shadow-sm"
+                    className="max-h-80 mx-auto rounded-lg border border-[#E5E7EB] shadow-sm object-contain"
                   />
                   <p className="text-sm text-[#9CA3AF]">
                     {t("banners.desktop_image.replace_hint")}

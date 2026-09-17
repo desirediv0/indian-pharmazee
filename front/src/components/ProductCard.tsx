@@ -238,7 +238,7 @@ export function ProductCard({
           <img
             src={displayImage?.url || "/placeholder-product.jpg"}
             alt={displayImage?.alt || name}
-            className="h-48 w-full object-cover transition-transform group-hover:scale-105"
+            className="h-48 w-full object-contain bg-gray-50 transition-transform group-hover:scale-105"
           />
         </Link>
 

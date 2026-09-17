@@ -3361,7 +3361,7 @@ function ProductsList() {
                         <img
                           src={productImage.url}
                           alt={product.name}
-                          className="h-14 w-14 rounded-lg object-cover border border-[#E5E7EB]"
+                          className="h-14 w-14 rounded-lg object-contain bg-gray-50 border border-[#E5E7EB]"
                         />
                       ) : (
                         <div className="flex h-14 w-14 items-center justify-center rounded-lg bg-[#F3F4F6] border border-[#E5E7EB]">

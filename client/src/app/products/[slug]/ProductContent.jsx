@@ -553,6 +553,7 @@ export default function ProductContent({ slug }) {
                               src={getImageUrl(img.url)}
                               alt={`${product.name} image ${idx + 1}`}
                               fill
+                              quality={90}
                               className="object-contain p-6 transition-transform duration-75 ease-out"
                               priority={idx === 0}
                               sizes="(max-width: 1024px) 95vw, 45vw"
@@ -1151,8 +1152,9 @@ export default function ProductContent({ slug }) {
               <Image
                 src={getImageUrl(images[lightboxIndex]?.url)}
                 alt={product.name}
-                width={1200}
-                height={1200}
+                width={1254}
+                height={1254}
+                quality={90}
                 className="object-contain max-w-full max-h-full"
                 priority
               />

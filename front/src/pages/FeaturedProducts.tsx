@@ -369,7 +369,7 @@ export default function FeaturedProductsPage() {
                                   <img
                                     src={getProductImage(product)}
                                     alt={product.name}
-                                    className="h-10 w-10 rounded-md object-cover"
+                                    className="h-10 w-10 rounded-md object-contain bg-gray-50"
                                   />
                                 ) : (
                                   <div className="h-10 w-10 rounded-md bg-gray-100 flex items-center justify-center">
@@ -469,7 +469,7 @@ export default function FeaturedProductsPage() {
                                   <img
                                     src={getProductImage(product)}
                                     alt={product.name}
-                                    className="h-10 w-10 rounded-md object-cover"
+                                    className="h-10 w-10 rounded-md object-contain bg-gray-50"
                                   />
                                 ) : (
                                   <div className="h-10 w-10 rounded-md bg-gray-100 flex items-center justify-center">

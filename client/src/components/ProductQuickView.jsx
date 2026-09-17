@@ -200,6 +200,7 @@ export default function ProductQuickView({ product, open, onOpenChange }) {
                 src={images[activeImageIdx]}
                 alt={product.name}
                 fill
+                quality={90}
                 className="object-contain p-5 transition-opacity duration-200"
                 sizes="(max-width: 768px) 95vw, 308px"
               />

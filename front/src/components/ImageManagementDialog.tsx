@@ -240,7 +240,7 @@ export default function ImageManagementDialog({
                         <img
                           src={image.url}
                           alt={`Image ${index + 1}`}
-                          className="h-full w-full object-cover"
+                          className="h-full w-full object-contain bg-gray-50"
                           onError={(e) => {
                             const target = e.target as HTMLImageElement;
                             target.style.display = "none";
