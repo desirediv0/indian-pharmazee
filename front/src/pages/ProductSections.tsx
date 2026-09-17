@@ -1053,7 +1053,7 @@ export default function ProductSectionsPage() {
                             <img
                               src={productImage}
                               alt={product.name}
-                              className="h-12 w-12 rounded-lg object-cover border border-[#E5E7EB]"
+                              className="h-12 w-12 rounded-lg object-contain bg-gray-50 border border-[#E5E7EB]"
                             />
                           ) : (
                             <div className="flex h-12 w-12 items-center justify-center rounded-lg bg-[#F3F4F6] border border-[#E5E7EB]">

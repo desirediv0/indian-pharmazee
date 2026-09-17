@@ -20,7 +20,7 @@ export const BlogPostPreview: React.FC<BlogPostPreviewProps> = ({
           <img
             src={getImageUrl(coverImage)}
             alt={title}
-            className="w-full h-full object-cover"
+            className="w-full h-full object-contain bg-gray-50"
           />
         </div>
       )}

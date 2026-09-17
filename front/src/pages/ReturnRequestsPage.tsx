@@ -815,7 +815,7 @@ export default function ReturnRequestsPage() {
                         key={idx}
                         src={img}
                         alt={`${t('return_requests.details.return_image')} ${idx + 1}`}
-                        className="w-full h-40 object-cover rounded-lg border border-[#E5E7EB]"
+                        className="w-full h-40 object-contain bg-gray-50 rounded-lg border border-[#E5E7EB]"
                       />
                     ))}
                   </div>

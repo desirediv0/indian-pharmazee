@@ -1130,7 +1130,7 @@ function CategoryForm({
                     <img
                       src={imagePreview}
                       alt={t("categories.form.preview_alt")}
-                      className="h-full w-full rounded-lg object-cover"
+                      className="h-full w-full rounded-lg object-contain bg-gray-50"
                     />
                   ) : (
                     <ImageIcon className="h-8 w-8 text-[#9CA3AF]" />
@@ -1322,7 +1322,7 @@ function CategoryForm({
                             <img
                               src={subCategory.image}
                               alt={subCategory.name}
-                              className="w-full h-32 object-cover rounded-lg border border-[#E5E7EB]"
+                              className="w-full h-32 object-contain bg-gray-50 rounded-lg border border-[#E5E7EB]"
                             />
                           )}
                           <div>
@@ -1524,7 +1524,7 @@ function CategoryForm({
                     <img
                       src={subCategoryImagePreview}
                       alt={t("categories.subcategories.dialog.preview_alt")}
-                      className="h-full w-full rounded-lg object-cover"
+                      className="h-full w-full rounded-lg object-contain bg-gray-50"
                     />
                   ) : (
                     <ImageIcon className="h-8 w-8 text-[#9CA3AF]" />

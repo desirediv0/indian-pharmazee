@@ -580,7 +580,7 @@ function BannerForm({
                     <img
                       src={mobilePreview}
                       alt={t("banners.mobile_image.preview_alt")}
-                      className="max-h-80 mx-auto rounded-lg border border-[#E5E7EB] shadow-sm"
+                      className="max-h-80 mx-auto rounded-lg border border-[#E5E7EB] shadow-sm object-contain"
                     />
                     <p className="text-sm text-[#9CA3AF]">
                       {t("banners.mobile_image.replace_hint")}
@@ -864,7 +864,7 @@ function BannersList() {
                       <img
                         src={banner.desktopImage}
                         alt={banner.title || "Desktop"}
-                        className="h-24 w-40 object-cover rounded-lg border border-[#E5E7EB]"
+                        className="h-24 w-40 object-contain bg-gray-50 rounded-lg border border-[#E5E7EB]"
                       />
                     </div>
                     <div className="relative group">
@@ -874,7 +874,7 @@ function BannersList() {
                       <img
                         src={banner.mobileImage}
                         alt={banner.title || "Mobile"}
-                        className="h-24 w-16 object-cover rounded-lg border border-[#E5E7EB]"
+                        className="h-24 w-16 object-contain bg-gray-50 rounded-lg border border-[#E5E7EB]"
                       />
                     </div>
                   </div>

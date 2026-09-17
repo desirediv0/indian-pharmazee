@@ -864,7 +864,7 @@ export default function VariantCard({
                   <img
                     src={image.url}
                     alt={`Preview ${imageIndex + 1}`}
-                    className="w-full h-full object-cover"
+                    className="w-full h-full object-contain bg-gray-50"
                     onLoad={() => {
                       console.log(`✅ Preview image loaded: ${image.url}`);
                     }}
@@ -1312,7 +1312,7 @@ export default function VariantCard({
                         <img
                           src={image.url}
                           alt={`Variant image ${imageIndex + 1}`}
-                          className="h-full w-full object-cover"
+                          className="h-full w-full object-contain bg-gray-50"
                           onError={(e) => {
                             console.error(
                               `❌ Failed to load image: ${image.url}`

@@ -570,7 +570,7 @@ const BlogPostForm = ({ postId, isEditing = false }: BlogPostFormProps) => {
                         <img
                           src={imagePreview}
                           alt="Cover preview"
-                          className="rounded-md w-full h-full object-cover"
+                          className="rounded-md w-full h-full object-contain bg-gray-50"
                         />
                         <Button
                           type="button"

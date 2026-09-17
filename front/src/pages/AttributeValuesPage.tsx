@@ -296,7 +296,7 @@ function AttributeValuesList({ attributeId }: { attributeId: string }) {
                         <img
                           src={value.image}
                           alt={value.value}
-                          className="h-12 w-12 object-cover rounded border"
+                          className="h-12 w-12 object-contain bg-gray-50 rounded border"
                         />
                       ) : value.hexCode ? (
                         <div
@@ -768,7 +768,7 @@ function AttributeValueForm({
                   <img
                     src={imagePreview || existingImage || ""}
                     alt="Preview"
-                    className="h-24 w-24 object-cover rounded-md border-2 border-gray-300"
+                    className="h-24 w-24 object-contain bg-gray-50 rounded-md border-2 border-gray-300"
                   />
                   <Button
                     type="button"

@@ -73,7 +73,7 @@ function ImageDropzone({
               <img
                 src={URL.createObjectURL(file)}
                 alt=""
-                className="h-16 w-16 object-cover rounded border"
+                className="h-16 w-16 object-contain bg-gray-50 rounded border"
               />
               <button
                 type="button"
