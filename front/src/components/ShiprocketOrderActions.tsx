@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, type ReactNode } from "react";
 import {
   ExternalLink,
   FileText,
@@ -179,7 +179,7 @@ export default function ShiprocketOrderActions({
     );
   };
 
-  const spinnerOr = (action: ActionKey, icon: JSX.Element) =>
+  const spinnerOr = (action: ActionKey, icon: ReactNode) =>
     busy === action ? <Loader2 className="mr-2 h-4 w-4 animate-spin" /> : icon;
 
   return (

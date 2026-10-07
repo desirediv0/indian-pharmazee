@@ -34,6 +34,8 @@ import {
     TooltipTrigger,
 } from "@/components/ui/tooltip";
 import { useLanguage } from "@/context/LanguageContext";
+import DefaultCourierCard from "@/components/DefaultCourierCard";
+import { getErrorMessage } from "@/lib/openDocument";
 
 interface ShiprocketSettings {
     id: string;
@@ -279,8 +281,8 @@ export default function ShiprocketSettingsPage() {
                 toast.success(response.data.message);
                 setPickupAddresses(response.data.data.addresses || []);
             }
-        } catch (error: any) {
-            toast.error(error.response?.data?.message || "Could not fetch warehouses from Shiprocket");
+        } catch (error) {
+            toast.error(getErrorMessage(error, "Could not fetch warehouses from Shiprocket"));
         } finally {
             setIsImporting(false);
         }
@@ -295,8 +297,8 @@ export default function ShiprocketSettingsPage() {
                 toast.success(response.data.message);
                 fetchPickupAddresses();
             }
-        } catch (error: any) {
-            toast.error(error.response?.data?.message || "Could not link this warehouse to Shiprocket");
+        } catch (error) {
+            toast.error(getErrorMessage(error, "Could not link this warehouse to Shiprocket"));
         } finally {
             setSyncingAddressId(null);
         }
@@ -375,6 +377,8 @@ export default function ShiprocketSettingsPage() {
                 </div>
                 <div className="h-px bg-[#E5E7EB]" />
             </div>
+
+            <DefaultCourierCard />
 
             {/* Enable/Disable Toggle */}
             <Card className="bg-[#FFFFFF] border-[#E5E7EB] shadow-[0_1px_2px_rgba(0,0,0,0.04)] rounded-xl">

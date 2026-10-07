@@ -48,6 +48,7 @@ import MOQSettingsPage from "./pages/MOQSettingsPage";
 import PricingSlabsPage from "./pages/PricingSlabsPage";
 import PaymentGatewaySettingsPage from "./pages/PaymentGatewaySettingsPage";
 import ShiprocketSettingsPage from "./pages/ShiprocketSettingsPage";
+import DelhiverySettingsPage from "./pages/DelhiverySettingsPage";
 import ShippingSettingsPage from "./pages/ShippingSettingsPage";
 import SettingsPage from "./pages/SettingsPage";
 import { LanguageProvider } from "./context/LanguageContext";
@@ -417,6 +418,18 @@ const App = () => {
                   action={Action.UPDATE}
                 >
                   <ShiprocketSettingsPage />
+                </ProtectedRoute>
+              }
+            />
+
+            <Route
+              path="delhivery-settings"
+              element={
+                <ProtectedRoute
+                  resource={Resource.SETTINGS}
+                  action={Action.UPDATE}
+                >
+                  <DelhiverySettingsPage />
                 </ProtectedRoute>
               }
             />

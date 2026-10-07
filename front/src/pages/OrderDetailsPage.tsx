@@ -20,7 +20,7 @@ import { toast } from "sonner";
 import { formatCurrency, debugData, cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/context/LanguageContext";
-import ShiprocketOrderActions from "@/components/ShiprocketOrderActions";
+import ShipmentPanel from "@/components/ShipmentPanel";
 
 export default function OrderDetailsPage() {
   const { id } = useParams<{ id: string }>();
@@ -87,6 +87,17 @@ export default function OrderDetailsPage() {
       awbCode?: string;
       courierName?: string;
       status?: string;
+    };
+    // Works for Shiprocket and Delhivery
+    courier?: {
+      provider: "SHIPROCKET" | "DELHIVERY" | null;
+      status?: string | null;
+      speed?: string | null;
+      warehouseId?: string | null;
+      awbCode?: string | null;
+      courierName?: string | null;
+      trackingUrl?: string | null;
+      bookingFailed?: boolean;
     };
     shippingCost?: string | number;
     total?: string | number;
@@ -1086,67 +1097,80 @@ export default function OrderDetailsPage() {
             </Card>
           ) : null}
 
-          {/* Shiprocket Information */}
+          {/* Shipment (Shiprocket / Delhivery) */}
           {orderDetails.shiprocket && (
             <Card className="bg-[#FFFFFF] border-[#E5E7EB] shadow-[0_1px_2px_rgba(0,0,0,0.04)] rounded-xl">
               <CardHeader className="px-6 pt-6 pb-4">
                 <CardTitle className="text-lg font-semibold text-[#1F2937] flex items-center">
                   <Truck className="mr-2 h-5 w-5 text-[#4CAF50]" />
-                  Shiprocket Information
+                  Shipment
                 </CardTitle>
+                <p className="text-sm text-[#9CA3AF] mt-1">
+                  Courier management &amp; live tracking
+                </p>
               </CardHeader>
               <CardContent className="px-6 pb-6">
-                <div className="space-y-3">
-                  {orderDetails.shiprocket.orderId && (
-                    <div>
-                      <p className="text-xs text-[#9CA3AF] mb-1">Shiprocket Order ID</p>
-                      <p className="font-mono text-sm text-[#1F2937] bg-[#F3F4F6] px-2 py-1 rounded border border-[#E5E7EB]">
-                        {orderDetails.shiprocket.orderId}
-                      </p>
-                    </div>
-                  )}
-                  {orderDetails.shiprocket.shipmentId && (
-                    <div>
-                      <p className="text-xs text-[#9CA3AF] mb-1">Shipment ID</p>
-                      <p className="font-mono text-sm text-[#1F2937] bg-[#F3F4F6] px-2 py-1 rounded border border-[#E5E7EB]">
-                        {orderDetails.shiprocket.shipmentId}
-                      </p>
-                    </div>
-                  )}
-                  {orderDetails.shiprocket.awbCode && (
-                    <div>
-                      <p className="text-xs text-[#9CA3AF] mb-1">AWB Code</p>
-                      <p className="font-mono text-sm text-[#1F2937] bg-[#F3F4F6] px-2 py-1 rounded border border-[#E5E7EB]">
-                        {orderDetails.shiprocket.awbCode}
-                      </p>
-                    </div>
-                  )}
-                  {orderDetails.shiprocket.courierName && (
-                    <div>
-                      <p className="text-xs text-[#9CA3AF] mb-1">Courier</p>
-                      <p className="font-medium text-[#1F2937]">
-                        {orderDetails.shiprocket.courierName}
-                      </p>
-                    </div>
-                  )}
-                  {orderDetails.shiprocket.status && (
-                    <div>
-                      <p className="text-xs text-[#9CA3AF] mb-1">Shiprocket Status</p>
-                      <Badge
-                        className={cn(
-                          "text-xs font-medium border",
-                          getStatusBadgeClass(orderDetails.shiprocket.status)
-                        )}
-                      >
-                        {orderDetails.shiprocket.status}
-                      </Badge>
-                    </div>
-                  )}
-                </div>
+                {(() => {
+                  const courier = orderDetails.courier;
+                  const provider =
+                    courier?.provider ??
+                    (orderDetails.shiprocket.orderId ? "SHIPROCKET" : null);
+                  const awbCode = courier?.awbCode ?? orderDetails.shiprocket.awbCode;
+                  const courierName = courier?.courierName ?? orderDetails.shiprocket.courierName;
+                  const status =
+                    provider === "DELHIVERY"
+                      ? courier?.status
+                      : orderDetails.shiprocket.status;
 
-                <ShiprocketOrderActions
+                  const rows: { label: string; value: string }[] = [];
+                  if (provider) {
+                    rows.push({ label: "Courier", value: courierName || (provider === "DELHIVERY" ? "Delhivery" : "Shiprocket") });
+                  }
+                  if (provider === "SHIPROCKET" && orderDetails.shiprocket.orderId) {
+                    rows.push({ label: "Shiprocket Order ID", value: String(orderDetails.shiprocket.orderId) });
+                  }
+                  if (provider === "SHIPROCKET" && orderDetails.shiprocket.shipmentId) {
+                    rows.push({ label: "Shipment ID", value: String(orderDetails.shiprocket.shipmentId) });
+                  }
+                  if (awbCode) {
+                    rows.push({ label: provider === "DELHIVERY" ? "Waybill" : "AWB Code", value: awbCode });
+                  }
+                  if (provider === "DELHIVERY" && courier?.speed) {
+                    rows.push({ label: "Delivery speed", value: courier.speed === "EXPRESS" ? "Express" : "Surface" });
+                  }
+
+                  return (
+                    <div className="space-y-3">
+                      {rows.map((row) => (
+                        <div key={row.label}>
+                          <p className="text-xs text-[#9CA3AF] mb-1">{row.label}</p>
+                          <p className="font-mono text-sm text-[#1F2937] bg-[#F3F4F6] px-2 py-1 rounded border border-[#E5E7EB]">
+                            {row.value}
+                          </p>
+                        </div>
+                      ))}
+                      {status && (
+                        <div>
+                          <p className="text-xs text-[#9CA3AF] mb-1">Courier Status</p>
+                          <Badge
+                            className={cn(
+                              "text-xs font-medium border",
+                              getStatusBadgeClass(status)
+                            )}
+                          >
+                            {status}
+                          </Badge>
+                        </div>
+                      )}
+                    </div>
+                  );
+                })()}
+
+                <ShipmentPanel
                   orderId={orderDetails.id}
+                  postalCode={orderDetails.shippingAddress?.postalCode}
                   shiprocket={orderDetails.shiprocket}
+                  courier={orderDetails.courier}
                   onChanged={() => fetchOrderDetails(true)}
                 />
               </CardContent>
