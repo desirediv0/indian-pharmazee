@@ -4,6 +4,23 @@ import { asyncHandler } from "../utils/asyncHandler.js";
 import { prisma } from "../config/db.js";
 import { razorpay } from "../app.js";
 import { cancelShiprocketOrder, getShiprocketSettings } from "../utils/shiprocket.js";
+import { buildCourierTrackingUrl, cancelDelhiveryForOrder } from "../utils/courier.js";
+
+// Courier summary for the admin order page (works for Shiprocket and Delhivery)
+const courierSummary = (order) => {
+  const provider =
+    order.courierProvider || (order.shiprocketOrderId ? "SHIPROCKET" : null);
+  return {
+    provider,
+    status: provider === "DELHIVERY" ? order.courierStatus : order.shiprocketStatus,
+    speed: order.courierSpeed || null,
+    warehouseId: order.courierWarehouseId || null,
+    awbCode: order.awbCode || null,
+    courierName: order.courierName || null,
+    trackingUrl: buildCourierTrackingUrl(order),
+    bookingFailed: order.courierStatus === "BOOKING_FAILED",
+  };
+};
 
 // Get all orders with pagination, filtering, and sorting
 export const getOrders = asyncHandler(async (req, res, next) => {
@@ -156,6 +173,7 @@ export const getOrders = asyncHandler(async (req, res, next) => {
       courierName: order.courierName,
       status: order.shiprocketStatus,
     },
+    courier: courierSummary(order),
   }));
 
   res.status(200).json(
@@ -329,6 +347,7 @@ export const getOrderById = asyncHandler(async (req, res, next) => {
       courierName: order.courierName,
       status: order.shiprocketStatus,
     },
+    courier: courierSummary(order),
   };
 
   res
@@ -405,6 +424,11 @@ export const updateOrderStatus = asyncHandler(async (req, res, next) => {
           // Continue with order cancellation even if Shiprocket fails
         }
       }
+
+      // Cancel the Delhivery shipment too (best effort)
+      if (order.courierProvider === "DELHIVERY" && (await cancelDelhiveryForOrder(order))) {
+        orderData.courierStatus = "CANCELLED";
+      }
     }
 
     // If shipping, create or update tracking
@@ -436,8 +460,8 @@ export const updateOrderStatus = asyncHandler(async (req, res, next) => {
         await tx.tracking.create({
           data: {
             orderId,
-            trackingNumber: req.body.trackingNumber || `SHP${Date.now()}`,
-            carrier: req.body.carrier || "Default Carrier",
+            trackingNumber: req.body.trackingNumber || order.awbCode || `SHP${Date.now()}`,
+            carrier: req.body.carrier || order.courierName || "Default Carrier",
             status: "SHIPPED",
             shippedAt: new Date(),
             updates: {

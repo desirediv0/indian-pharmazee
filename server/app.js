@@ -38,6 +38,10 @@ import adminReturnRoutes from "./routes/admin.return.routes.js";
 import adminMOQRoutes from "./routes/admin.moq.routes.js";
 import adminPaymentGatewayRoutes from "./routes/admin.payment-gateway.routes.js";
 import adminShiprocketRoutes from "./routes/admin.shiprocket.routes.js";
+import shippingWebhookRoutes from "./routes/shipping.webhook.routes.js";
+import adminDelhiveryRoutes from "./routes/admin.delhivery.routes.js";
+import adminCourierRoutes from "./routes/admin.courier.routes.js";
+import delhiveryWebhookRoutes from "./routes/delhivery.webhook.routes.js";
 import adminPrescriptionRoutes from "./routes/admin.prescription.routes.js";
 
 
@@ -162,11 +166,18 @@ app.use("/api/admin/returns", adminReturnRoutes);
 app.use("/api/admin", adminMOQRoutes);
 app.use("/api/admin", adminPaymentGatewayRoutes);
 app.use("/api/admin/shiprocket", adminShiprocketRoutes);
+app.use("/api/admin/delhivery", adminDelhiveryRoutes);
+app.use("/api/admin/couriers", adminCourierRoutes);
 app.use("/api/admin/prescriptions", adminPrescriptionRoutes);
 
 
-// Shiprocket webhook (public endpoint)
-app.use("/api/webhooks/shiprocket", adminShiprocketRoutes);
+// Courier tracking webhook (public endpoint). Register the neutral URL in
+// Shiprocket: it rejects webhook URLs that contain "shiprocket". The old path
+// keeps working but now exposes only the webhook, not the admin routes.
+app.use("/api/webhooks/shipping-updates", shippingWebhookRoutes);
+app.use("/api/webhooks/shiprocket", shippingWebhookRoutes);
+// Delhivery scan updates
+app.use("/api/webhooks/delhivery", delhiveryWebhookRoutes);
 
 /* -------------------- HEALTH CHECK -------------------- */
 

@@ -9,7 +9,48 @@ import { getOrderConfirmationTemplate } from "../email/temp/EmailTemplate.js";
 import { getFileUrl } from "../utils/deleteFromS3.js";
 import { processReferralReward } from "./referral.controller.js";
 import { decrypt } from "../utils/encryption.js";
-import { processOrderForShipping } from "../utils/shiprocket.js";
+import {
+  autoShipOrder,
+  buildCourierTrackingUrl,
+  cancelDelhiveryForOrder,
+} from "../utils/courier.js";
+
+// What the customer sees for shipment tracking. Falls back to the Shiprocket AWB
+// when no Tracking record exists yet, and always carries the public tracking link.
+function formatTrackingForCustomer(order, { includeUpdates = false } = {}) {
+  const trackingUrl = buildCourierTrackingUrl(order);
+
+  if (order.tracking) {
+    return {
+      carrier: order.tracking.carrier,
+      trackingNumber: order.tracking.trackingNumber,
+      status: order.tracking.status,
+      estimatedDelivery: order.tracking.estimatedDelivery,
+      trackingUrl,
+      ...(includeUpdates && {
+        updates: (order.tracking.updates || []).map((update) => ({
+          status: update.status,
+          timestamp: update.timestamp,
+          location: update.location,
+          description: update.description,
+        })),
+      }),
+    };
+  }
+
+  if (order.awbCode) {
+    return {
+      carrier: order.courierName || "Courier",
+      trackingNumber: order.awbCode,
+      status: order.status === "DELIVERED" ? "DELIVERED" : order.status === "SHIPPED" ? "SHIPPED" : "PROCESSING",
+      estimatedDelivery: null,
+      trackingUrl,
+      ...(includeUpdates && { updates: [] }),
+    };
+  }
+
+  return null;
+}
 
 
 async function getPaymentGatewayConfig(userId = null, gateway = "RAZORPAY") {
@@ -776,11 +817,11 @@ export const paymentVerification = asyncHandler(async (req, res) => {
       console.error("Referral reward processing error:", err);
     });
 
-    // Process Shiprocket shipping (outside transaction, non-blocking)
-    // This creates the order in Shiprocket and assigns AWB if enabled
-    processOrderForShipping(result.order.id).catch((err) => {
-      console.error("Shiprocket order processing error:", err);
-      // Non-critical - admin can manually sync later
+    // Send the order to the default courier (Shiprocket or Delhivery),
+    // outside the transaction and non-blocking
+    autoShipOrder(result.order.id).catch((err) => {
+      console.error("Courier order processing error:", err.message);
+      // Non-critical - admin can manually book it from the order page
     });
 
     // Send order confirmation email
@@ -1039,14 +1080,7 @@ export const getOrderHistory = asyncHandler(async (req, res) => {
           }
           : null,
       })),
-      tracking: order.tracking
-        ? {
-          carrier: order.tracking.carrier,
-          trackingNumber: order.tracking.trackingNumber,
-          status: order.tracking.status,
-          estimatedDelivery: order.tracking.estimatedDelivery,
-        }
-        : null,
+      tracking: formatTrackingForCustomer(order),
     };
   });
 
@@ -1205,20 +1239,7 @@ export const getOrderDetails = asyncHandler(async (req, res) => {
     billingAddress: order.billingAddressSameAsShipping
       ? order.shippingAddress
       : order.billingAddress,
-    tracking: order.tracking
-      ? {
-        carrier: order.tracking.carrier,
-        trackingNumber: order.tracking.trackingNumber,
-        status: order.tracking.status,
-        estimatedDelivery: order.tracking.estimatedDelivery,
-        updates: order.tracking.updates.map((update) => ({
-          status: update.status,
-          timestamp: update.timestamp,
-          location: update.location,
-          description: update.description,
-        })),
-      }
-      : null,
+    tracking: formatTrackingForCustomer(order, { includeUpdates: true }),
   };
 
   res
@@ -1335,6 +1356,14 @@ export const cancelOrder = asyncHandler(async (req, res) => {
       console.error("Failed to cancel Shiprocket order:", error.message);
       // Non-critical - order is already cancelled in our system
     }
+  }
+
+  // Cancel the Delhivery shipment too (non-blocking)
+  if (order.courierProvider === "DELHIVERY" && (await cancelDelhiveryForOrder(order))) {
+    await prisma.order.update({
+      where: { id: orderId },
+      data: { courierStatus: "CANCELLED" },
+    });
   }
 
   res
@@ -1833,9 +1862,9 @@ export const createCashOrder = asyncHandler(async (req, res) => {
       console.error("Referral reward processing error:", err);
     });
 
-    // Process Shiprocket shipping (outside transaction, non-blocking)
-    processOrderForShipping(result.order.id).catch((err) => {
-      console.error("Shiprocket order processing error:", err);
+    // Send the order to the default courier (outside the transaction, non-blocking)
+    autoShipOrder(result.order.id).catch((err) => {
+      console.error("Courier order processing error:", err.message);
     });
 
     // Send order confirmation email

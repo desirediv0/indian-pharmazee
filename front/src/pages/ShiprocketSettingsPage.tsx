@@ -71,6 +71,8 @@ export default function ShiprocketSettingsPage() {
     const [isSaving, setIsSaving] = useState(false);
     const [isSavingDimensions, setIsSavingDimensions] = useState(false);
     const [isTesting, setIsTesting] = useState(false);
+    const [isImporting, setIsImporting] = useState(false);
+    const [syncingAddressId, setSyncingAddressId] = useState<string | null>(null);
     const [showPassword, setShowPassword] = useState(false);
     const [isAddressDialogOpen, setIsAddressDialogOpen] = useState(false);
     const [editingAddress, setEditingAddress] = useState<PickupAddress | null>(null);
@@ -247,6 +249,13 @@ export default function ShiprocketSettingsPage() {
                 const response = await api.post("/api/admin/shiprocket/pickup-addresses", addressForm);
                 if (response.data.success) {
                     toast.success(t("shiprocket_settings.messages.address_created"));
+                    const syncWarning = response.data.data?.syncWarning;
+                    if (syncWarning) {
+                        toast.warning(
+                            "Saved, but not linked to Shiprocket yet: " + syncWarning,
+                            { duration: 10000 }
+                        );
+                    }
                 }
             }
 
@@ -258,6 +267,38 @@ export default function ShiprocketSettingsPage() {
             toast.error(error.response?.data?.message || t("shiprocket_settings.messages.address_error"));
         } finally {
             setIsSaving(false);
+        }
+    };
+
+    // Pull the warehouses that already exist in the Shiprocket account
+    const handleImportFromShiprocket = async () => {
+        try {
+            setIsImporting(true);
+            const response = await api.post("/api/admin/shiprocket/pickup-addresses/import");
+            if (response.data.success) {
+                toast.success(response.data.message);
+                setPickupAddresses(response.data.data.addresses || []);
+            }
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || "Could not fetch warehouses from Shiprocket");
+        } finally {
+            setIsImporting(false);
+        }
+    };
+
+    // Link one saved address to the Shiprocket account
+    const handleSyncAddress = async (id: string) => {
+        try {
+            setSyncingAddressId(id);
+            const response = await api.post(`/api/admin/shiprocket/pickup-addresses/${id}/sync`);
+            if (response.data.success) {
+                toast.success(response.data.message);
+                fetchPickupAddresses();
+            }
+        } catch (error: any) {
+            toast.error(error.response?.data?.message || "Could not link this warehouse to Shiprocket");
+        } finally {
+            setSyncingAddressId(null);
         }
     };
 
@@ -666,6 +707,24 @@ export default function ShiprocketSettingsPage() {
                     </div>
                 </CardHeader>
                 <CardContent className="px-6 pb-6">
+                    <div className="mb-4 flex flex-col gap-2 rounded-lg bg-[#F9FAFB] p-3 sm:flex-row sm:items-center sm:justify-between">
+                        <p className="text-xs text-[#6B7280]">
+                            Already have warehouses in your Shiprocket account? Pull them in instead of typing them again.
+                        </p>
+                        <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={handleImportFromShiprocket}
+                            disabled={isImporting}
+                        >
+                            {isImporting ? (
+                                <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                            ) : (
+                                <RefreshCw className="h-4 w-4 mr-1" />
+                            )}
+                            Fetch from Shiprocket
+                        </Button>
+                    </div>
                     {pickupAddresses.length === 0 ? (
                         <div className="text-center py-8 text-[#9CA3AF]">
                             <MapPin className="h-12 w-12 mx-auto mb-3 opacity-50" />
@@ -691,6 +750,15 @@ export default function ShiprocketSettingsPage() {
                                                         {t("shiprocket_settings.pickup_addresses.default_badge")}
                                                     </span>
                                                 )}
+                                                {address.shiprocketPickupId ? (
+                                                    <span className="text-xs bg-[#EFF6FF] text-[#3B82F6] px-2 py-0.5 rounded-full">
+                                                        Linked to Shiprocket
+                                                    </span>
+                                                ) : (
+                                                    <span className="text-xs bg-[#FFFBEB] text-[#B45309] px-2 py-0.5 rounded-full">
+                                                        Not in Shiprocket yet
+                                                    </span>
+                                                )}
                                             </div>
                                             <p className="text-sm text-[#6B7280] mt-1">
                                                 {address.name} • {address.phone}
@@ -701,6 +769,21 @@ export default function ShiprocketSettingsPage() {
                                         </div>
                                     </div>
                                     <div className="flex items-center gap-2">
+                                        {!address.shiprocketPickupId && (
+                                            <Button
+                                                variant="outline"
+                                                size="sm"
+                                                onClick={() => handleSyncAddress(address.id)}
+                                                disabled={syncingAddressId === address.id}
+                                            >
+                                                {syncingAddressId === address.id ? (
+                                                    <Loader2 className="h-4 w-4 mr-1 animate-spin" />
+                                                ) : (
+                                                    <RefreshCw className="h-4 w-4 mr-1" />
+                                                )}
+                                                Sync
+                                            </Button>
+                                        )}
                                         <Button
                                             variant="ghost"
                                             size="sm"

@@ -249,6 +249,17 @@ export default function OrderDetailPage() {
                                         <p className="text-sm text-gray-500">Tracking #: {order.tracking.trackingNumber}</p>
                                     </div>
                                 </div>
+                                {order.tracking.trackingUrl && (
+                                    <a
+                                        href={order.tracking.trackingUrl}
+                                        target="_blank"
+                                        rel="noopener noreferrer"
+                                        className="inline-flex items-center gap-2 mb-4 px-4 py-2 rounded-lg bg-primary text-white text-sm font-semibold hover:opacity-90 transition-opacity"
+                                    >
+                                        <DynamicIcon name="MapPin" className="h-4 w-4" />
+                                        Track your order
+                                    </a>
+                                )}
                                 {order.tracking.estimatedDelivery && (
                                     <p className="text-sm text-gray-600 mb-4">
                                         <span className="font-medium">Estimated Delivery:</span> {formatDate(order.tracking.estimatedDelivery)}
@@ -263,7 +274,8 @@ export default function OrderDetailPage() {
                                                     <div className="w-2 h-2 mt-2 rounded-full bg-primary flex-shrink-0"></div>
                                                     <div>
                                                         <p className="text-sm font-medium">{update.status}</p>
-                                                        <p className="text-xs text-gray-500">{formatDate(update.createdAt)}</p>
+                                                        <p className="text-xs text-gray-500">{formatDate(update.timestamp || update.createdAt)}</p>
+                                                        {update.description && <p className="text-xs text-gray-600">{update.description}</p>}
                                                         {update.location && <p className="text-xs text-gray-500">{update.location}</p>}
                                                     </div>
                                                 </div>

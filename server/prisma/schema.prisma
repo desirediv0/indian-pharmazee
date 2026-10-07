@@ -442,6 +442,11 @@ model Order {
   awbCode                      String?
   courierName                  String?
   shiprocketStatus             String?
+  // Courier chosen for this order (works for Shiprocket and Delhivery)
+  courierProvider              String? // SHIPROCKET | DELHIVERY
+  courierStatus                String? // latest status key reported by the courier (Delhivery)
+  courierSpeed                 String? // SURFACE | EXPRESS
+  courierWarehouseId           String? // ShiprocketPickupAddress id the order ships from
   shippingAddress              Address?             @relation(fields: [shippingAddressId], references: [id])
   user                         User                 @relation(fields: [userId], references: [id])
   items                        OrderItem[]
@@ -1189,6 +1194,9 @@ model ShiprocketSettings {
   shippingCharge        Decimal @default(0) @db.Decimal(10, 2)
   freeShippingThreshold Decimal @default(0) @db.Decimal(10, 2)
 
+  // Which courier new orders are sent to automatically
+  defaultCourier String @default("SHIPROCKET") // SHIPROCKET | DELHIVERY
+
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   updatedBy String?
@@ -1210,6 +1218,7 @@ model ShiprocketPickupAddress {
   pincode            String
   isDefault          Boolean  @default(true)
   shiprocketPickupId Int? // Shiprocket's pickup location ID after sync
+  delhiverySynced    Boolean  @default(false) // registered as a Delhivery warehouse
   createdAt          DateTime @default(now())
   updatedAt          DateTime @updatedAt
 
@@ -1234,3 +1243,26 @@ model Prescription {
   @@index([createdAt])
 }
 
+// Delhivery Integration
+// -----------------------
+model DelhiverySettings {
+  id             String  @id @default(uuid())
+  isEnabled      Boolean @default(false)
+  clientName     String?
+  apiToken       String? // Encrypted
+  sellerGstTin   String?
+  defaultHsnCode String?
+
+  // Default shipping dimensions (fallback values)
+  defaultLength  Float @default(10) // cm
+  defaultBreadth Float @default(10) // cm
+  defaultHeight  Float @default(10) // cm
+  defaultWeight  Float @default(0.5) // kg
+
+  bookingMode   String @default("AUTO") // AUTO | MANUAL
+  shippingSpeed String @default("SURFACE") // SURFACE | EXPRESS
+
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  updatedBy String?
+}

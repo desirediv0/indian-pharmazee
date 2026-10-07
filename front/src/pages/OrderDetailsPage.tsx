@@ -20,6 +20,7 @@ import { toast } from "sonner";
 import { formatCurrency, debugData, cn } from "@/lib/utils";
 import { Badge } from "@/components/ui/badge";
 import { useLanguage } from "@/context/LanguageContext";
+import ShiprocketOrderActions from "@/components/ShiprocketOrderActions";
 
 export default function OrderDetailsPage() {
   const { id } = useParams<{ id: string }>();
@@ -145,11 +146,11 @@ export default function OrderDetailsPage() {
   }
 
   // Define fetchOrderDetails outside of useEffect so it can be reused
-  const fetchOrderDetails = useCallback(async () => {
+  const fetchOrderDetails = useCallback(async (silent = false) => {
     if (!id) return;
 
     try {
-      setIsLoading(true);
+      if (!silent) setIsLoading(true);
       const response = await orders.getOrderById(id);
 
       // Use the debug utility
@@ -1142,6 +1143,12 @@ export default function OrderDetailsPage() {
                     </div>
                   )}
                 </div>
+
+                <ShiprocketOrderActions
+                  orderId={orderDetails.id}
+                  shiprocket={orderDetails.shiprocket}
+                  onChanged={() => fetchOrderDetails(true)}
+                />
               </CardContent>
             </Card>
           )}
