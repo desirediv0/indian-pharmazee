@@ -8,6 +8,7 @@ import {
   ColdChainBanner,
 } from "@/components/sections/PharmaHomeSections";
 import CategoryGrid from "@/components/sections/CategoryGrid";
+import PageFaqs from "@/components/sections/PageFaqs";
 
 export const metadata = {
   title: "Indian Pharmazee | Trusted Specialty Medicines Across India",
@@ -16,6 +17,9 @@ export const metadata = {
     canonical: "https://www.indianpharmazee.com/",
   },
 };
+
+// Re-generate at most once a minute so FAQ edits in the admin show up quickly
+export const revalidate = 60;
 
 export default function Home() {
   return (
@@ -40,6 +44,9 @@ export default function Home() {
 
         {/* Why Choose Us */}
         <WhyBuySection />
+
+        {/* FAQs chosen for the home page in the admin panel */}
+        <PageFaqs type="home" />
       </main>
     </>
   );

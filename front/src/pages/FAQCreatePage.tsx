@@ -1,6 +1,11 @@
 import { useState } from "react";
 import { useNavigate, useLocation } from "react-router-dom";
-import { createFaq } from "@/api/faqService";
+import {
+  createFaq,
+  DEFAULT_FAQ_PLACEMENT,
+  FaqPlacement,
+} from "@/api/faqService";
+import FaqPlacementFields from "@/components/FaqPlacementFields";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -23,12 +28,15 @@ export default function FAQCreatePage() {
   const { t } = useLanguage();
   const navigate = useNavigate();
   const location = useLocation();
-  const initialData = location.state?.formData || {
-    question: "",
-    answer: "",
-    category: "",
-    order: 0,
-    isPublished: true,
+  const initialData = {
+    ...DEFAULT_FAQ_PLACEMENT,
+    ...(location.state?.formData || {
+      question: "",
+      answer: "",
+      category: "",
+      order: 0,
+      isPublished: true,
+    }),
   };
 
   const [formData, setFormData] = useState(initialData);
@@ -42,6 +50,10 @@ export default function FAQCreatePage() {
       ...formData,
       [name]: value,
     });
+  };
+
+  const handlePlacementChange = (patch: Partial<FaqPlacement>) => {
+    setFormData((prev: any) => ({ ...prev, ...patch }));
   };
 
   const handleSwitchChange = (checked: boolean) => {
@@ -155,6 +167,11 @@ export default function FAQCreatePage() {
                 {t("faq_management.form.publish_immediate")} ({formData.isPublished ? t("faq_management.form.yes") : t("faq_management.form.no")})
               </Label>
             </div>
+
+            <FaqPlacementFields
+              value={formData}
+              onChange={handlePlacementChange}
+            />
           </CardContent>
           <CardFooter className="flex justify-between">
             <Button

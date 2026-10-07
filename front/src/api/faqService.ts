@@ -1,7 +1,27 @@
 import api from "./api";
 
 // Types
-export interface FAQ {
+// Where a FAQ is displayed on the storefront. Optional on FAQ because older
+// API responses (before the page-targeting migration) do not include them.
+export interface FaqPlacement {
+  showOnFaqPage: boolean;
+  showOnHome: boolean;
+  showOnAllCategories: boolean;
+  showOnAllProducts: boolean;
+  categoryIds: string[];
+  productIds: string[];
+}
+
+export const DEFAULT_FAQ_PLACEMENT: FaqPlacement = {
+  showOnFaqPage: true,
+  showOnHome: false,
+  showOnAllCategories: false,
+  showOnAllProducts: false,
+  categoryIds: [],
+  productIds: [],
+};
+
+export interface FAQ extends Partial<FaqPlacement> {
   id: string;
   question: string;
   answer: string;
@@ -11,6 +31,32 @@ export interface FAQ {
   createdAt: string;
   updatedAt: string;
 }
+
+export interface FaqTarget {
+  id: string;
+  name: string;
+  slug: string;
+}
+
+// Categories that a FAQ can be attached to
+export const getFaqTargetCategories = async (): Promise<FaqTarget[]> => {
+  const response = await api.get("/api/admin/faqs/targets/categories");
+  return response.data?.data?.categories ?? [];
+};
+
+// Products by name search (min 2 chars) or by a list of ids
+export const getFaqTargetProducts = async (params: {
+  search?: string;
+  ids?: string[];
+}): Promise<FaqTarget[]> => {
+  const response = await api.get("/api/admin/faqs/targets/products", {
+    params: {
+      ...(params.search ? { search: params.search } : {}),
+      ...(params.ids?.length ? { ids: params.ids.join(",") } : {}),
+    },
+  });
+  return response.data?.data?.products ?? [];
+};
 
 // Get all FAQs (admin)
 export const getAllFaqs = async () => {

@@ -1,6 +1,7 @@
 import { permanentRedirect } from "next/navigation";
 import { fetchApi } from "@/lib/utils";
 import CategoryContent from "./CategoryContent";
+import PageFaqs from "@/components/sections/PageFaqs";
 
 // Helper function to format image URLs correctly
 const getImageUrl = (image) => {
@@ -79,5 +80,10 @@ export default async function CategoryPage({ params }) {
         permanentRedirect(`/category/${data.canonicalSlug}`);
     }
 
-    return <CategoryContent />;
+    return (
+        <>
+            <CategoryContent />
+            <PageFaqs type="category" slug={slug} />
+        </>
+    );
 }

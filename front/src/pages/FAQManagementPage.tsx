@@ -1,6 +1,14 @@
 import { useState, useEffect, useCallback } from "react";
 import { useNavigate } from "react-router-dom";
-import { getAllFaqs, deleteFaq, updateFaq, FAQ } from "@/api/faqService";
+import {
+  getAllFaqs,
+  deleteFaq,
+  updateFaq,
+  FAQ,
+  DEFAULT_FAQ_PLACEMENT,
+  FaqPlacement,
+} from "@/api/faqService";
+import FaqPlacementFields from "@/components/FaqPlacementFields";
 import { Button } from "@/components/ui/button";
 import {
   Card,
@@ -55,6 +63,7 @@ export default function FAQManagementPage() {
     category: "",
     order: 0,
     isPublished: true,
+    ...DEFAULT_FAQ_PLACEMENT,
   });
 
   // Using useCallback to memoize these functions
@@ -99,6 +108,7 @@ export default function FAQManagementPage() {
       category: "",
       order: faqs.length,
       isPublished: true,
+      ...DEFAULT_FAQ_PLACEMENT,
     });
     setIsEditDialogOpen(true);
   };
@@ -111,6 +121,12 @@ export default function FAQManagementPage() {
       category: faq.category || "",
       order: faq.order,
       isPublished: faq.isPublished,
+      showOnFaqPage: faq.showOnFaqPage ?? DEFAULT_FAQ_PLACEMENT.showOnFaqPage,
+      showOnHome: faq.showOnHome ?? false,
+      showOnAllCategories: faq.showOnAllCategories ?? false,
+      showOnAllProducts: faq.showOnAllProducts ?? false,
+      categoryIds: faq.categoryIds ?? [],
+      productIds: faq.productIds ?? [],
     });
     setIsEditDialogOpen(true);
   };
@@ -123,6 +139,10 @@ export default function FAQManagementPage() {
       ...formData,
       [name]: value,
     });
+  };
+
+  const handlePlacementChange = (patch: Partial<FaqPlacement>) => {
+    setFormData((prev) => ({ ...prev, ...patch }));
   };
 
   const handleSwitchChange = (checked: boolean) => {
@@ -320,6 +340,34 @@ export default function FAQManagementPage() {
                             >
                               {faq.isPublished ? t("faq_management.status_published") : t("faq_management.status_draft")}
                             </Badge>
+                            {faq.showOnFaqPage !== false && (
+                              <Badge variant="outline" className="text-xs font-normal">
+                                FAQ page
+                              </Badge>
+                            )}
+                            {faq.showOnHome && (
+                              <Badge variant="outline" className="text-xs font-normal">
+                                Home
+                              </Badge>
+                            )}
+                            {faq.showOnAllCategories ? (
+                              <Badge variant="outline" className="text-xs font-normal">
+                                All categories
+                              </Badge>
+                            ) : (faq.categoryIds?.length ?? 0) > 0 ? (
+                              <Badge variant="outline" className="text-xs font-normal">
+                                {faq.categoryIds!.length} categories
+                              </Badge>
+                            ) : null}
+                            {faq.showOnAllProducts ? (
+                              <Badge variant="outline" className="text-xs font-normal">
+                                All products
+                              </Badge>
+                            ) : (faq.productIds?.length ?? 0) > 0 ? (
+                              <Badge variant="outline" className="text-xs font-normal">
+                                {faq.productIds!.length} products
+                              </Badge>
+                            ) : null}
                           </div>
                         </div>
                       </div>
@@ -389,7 +437,7 @@ export default function FAQManagementPage() {
 
       {/* Edit Dialog */}
       <Dialog open={isEditDialogOpen} onOpenChange={setIsEditDialogOpen}>
-        <DialogContent className="sm:max-w-[625px]">
+        <DialogContent className="sm:max-w-[625px] max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle>
               {editingFaq ? t("faq_management.edit_title") : t("faq_management.create_title")}
@@ -455,6 +503,10 @@ export default function FAQManagementPage() {
                 </span>
               </div>
             </div>
+            <FaqPlacementFields
+              value={formData}
+              onChange={handlePlacementChange}
+            />
           </div>
           <DialogFooter>
             <Button

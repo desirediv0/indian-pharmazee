@@ -1,5 +1,9 @@
 import { fetchApi } from "@/lib/utils";
 import ProductContent from "./ProductContent";
+import PageFaqs from "@/components/sections/PageFaqs";
+
+// Re-generate at most once a minute so product/FAQ edits show up quickly
+export const revalidate = 60;
 
 // Helper function to format image URLs correctly
 const getImageUrl = (image) => {
@@ -50,5 +54,10 @@ export async function generateMetadata({ params }) {
 }
 
 export default function ProductDetailPage({ params }) {
-    return <ProductContent slug={params.slug} />;
+    return (
+        <>
+            <ProductContent slug={params.slug} />
+            <PageFaqs type="product" slug={params.slug} />
+        </>
+    );
 }

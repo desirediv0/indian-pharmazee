@@ -758,6 +758,16 @@ model FAQ {
   category    String?
   order       Int      @default(0)
   isPublished Boolean  @default(true)
+
+  // Where this FAQ is displayed. Defaults keep every existing FAQ exactly
+  // where it is today (only on the /faqs page).
+  showOnFaqPage       Boolean  @default(true)
+  showOnHome          Boolean  @default(false)
+  showOnAllCategories Boolean  @default(false)
+  showOnAllProducts   Boolean  @default(false)
+  categoryIds         String[] @default([])
+  productIds          String[] @default([])
+
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
 }
