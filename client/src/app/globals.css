@@ -2,8 +2,6 @@
 @tailwind components;
 @tailwind utilities;
 
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Outfit:wght@500;600;700;800&display=swap');
-
 @layer base {
   :root {
     /* Indian Pharmazee — Medical Premium Theme */
@@ -57,10 +55,10 @@
 /* Premium Typography */
 @layer utilities {
   .font-display {
-    font-family: 'Outfit', sans-serif;
+    font-family: var(--font-outfit), 'Outfit', sans-serif;
   }
   .font-sans {
-    font-family: 'Inter', sans-serif;
+    font-family: var(--font-inter), 'Inter', sans-serif;
   }
   .text-balance {
     text-wrap: balance;

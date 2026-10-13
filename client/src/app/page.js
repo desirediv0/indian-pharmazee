@@ -9,6 +9,7 @@ import {
 } from "@/components/sections/PharmaHomeSections";
 import CategoryGrid from "@/components/sections/CategoryGrid";
 import PageFaqs from "@/components/sections/PageFaqs";
+import { getServerJson } from "@/lib/server-api";
 
 export const metadata = {
   title: "Indian Pharmazee | Trusted Specialty Medicines Across India",
@@ -18,15 +19,41 @@ export const metadata = {
   },
 };
 
-// Re-generate at most once a minute so FAQ edits in the admin show up quickly
+// Re-generate at most once a minute so admin edits (banners, products, FAQs…)
+// show up quickly. The data below is fetched here, on the server, so the
+// hero image, categories and products are already in the HTML instead of
+// being fetched in the browser after the page has loaded.
 export const revalidate = 60;
 
-export default function Home() {
+const PRODUCT_LISTS = ["featured", "latest", "bestseller", "trending", "new"];
+const BRAND_TAGS = ["HOT", "TOP", "NEW"];
+
+export default async function Home() {
+  const [banners, categories, ...rest] = await Promise.all([
+    getServerJson("/public/banners"),
+    getServerJson("/public/categories"),
+    ...PRODUCT_LISTS.map((type) => getServerJson(`/public/products/type/${type}?limit=12`)),
+    ...BRAND_TAGS.map((tag) => getServerJson(`/public/brands-by-tag?tag=${tag}`)),
+  ]);
+
+  // Only pass what loaded: a part that failed is simply fetched in the browser
+  const initialProducts = {};
+  PRODUCT_LISTS.forEach((type, index) => {
+    const products = rest[index]?.data?.products;
+    if (Array.isArray(products)) initialProducts[type] = products;
+  });
+
+  const initialBrands = {};
+  BRAND_TAGS.forEach((tag, index) => {
+    const brands = rest[PRODUCT_LISTS.length + index]?.data?.brands;
+    if (Array.isArray(brands)) initialBrands[tag] = brands;
+  });
+
   return (
     <>
       <main>
         {/* Hero */}
-        <HeroSection />
+        <HeroSection initialBanners={banners?.data?.banners ?? null} />
 
 
 
@@ -34,10 +61,10 @@ export default function Home() {
         <AnnouncementBanner />
         {/* Featured Healthcare Offers */}
         {/* <FeaturedOffers /> */}
-        <CategoryGrid />
+        <CategoryGrid initialCategories={categories?.data?.categories ?? null} />
 
         {/* Dynamic product sections */}
-        <HomePageContent />
+        <HomePageContent initialProducts={initialProducts} initialBrands={initialBrands} />
 
         {/* Cold chain delivery banner */}
         <ColdChainBanner />

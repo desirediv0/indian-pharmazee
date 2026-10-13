@@ -6,7 +6,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useCart } from "@/lib/cart-context";
 import { useState, useEffect, useRef } from "react";
 import { useRouter, usePathname } from "next/navigation";
-import { fetchApi, cn, sortCategories } from "@/lib/utils";
+import { fetchApi, cn, sortCategories, runWhenIdle } from "@/lib/utils";
 import { ClientOnly } from "@/components/client-only";
 import { Button } from "@/components/ui/button";
 import { Dialog, DialogContent, DialogHeader, DialogTitle } from "@/components/ui/dialog";
@@ -185,10 +185,22 @@ export function Navbar() {
     if (isSearchOpen) setTimeout(() => searchInputRef.current?.focus(), 100);
   }, [isSearchOpen]);
 
+  // The menus need this, but not before the page content: load it when idle
   useEffect(() => {
-    fetchApi("/public/categories-with-subcategories")
-      .then((res) => setCategories(sortCategories(res.data?.categories || [])))
-      .catch(console.error);
+    let cancelled = false;
+
+    const cancelIdle = runWhenIdle(() => {
+      fetchApi("/public/categories-with-subcategories")
+        .then((res) => {
+          if (!cancelled) setCategories(sortCategories(res.data?.categories || []));
+        })
+        .catch(console.error);
+    });
+
+    return () => {
+      cancelled = true;
+      cancelIdle();
+    };
   }, []);
 
   const handleSearch = (e) => {

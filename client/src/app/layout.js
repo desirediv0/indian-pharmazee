@@ -1,5 +1,6 @@
 import "./globals.css";
 import Script from "next/script";
+import { Inter, Outfit } from "next/font/google";
 import { Navbar } from "@/components/layout/Header";
 import { Footer } from "@/components/layout/Footer";
 import { CartProvider } from "@/lib/cart-context";
@@ -7,6 +8,10 @@ import { AuthProvider } from "@/lib/auth-context";
 import FloatingWhatsApp from "@/components/ui/FloatingWhatsApp";
 import FloatingPrescriptionModal from "@/components/ui/FloatingPrescriptionModal";
 
+// Fonts are downloaded at build time and served from our own domain: no extra
+// connection to Google Fonts and no render-blocking @import in the CSS.
+const inter = Inter({ subsets: ["latin"], weight: ["400", "500", "600", "700"], display: "swap", variable: "--font-inter" });
+const outfit = Outfit({ subsets: ["latin"], weight: ["500", "600", "700", "800"], display: "swap", variable: "--font-outfit" });
 
 export const metadata = {
   metadataBase: new URL("https://www.indianpharmazee.com"),
@@ -34,15 +39,15 @@ export const metadata = {
 
 export default function RootLayout({ children }) {
   return (
-    <html lang="en">
+    <html lang="en" className={`${inter.variable} ${outfit.variable}`}>
       <head>
         <meta name="google-site-verification" content="AhIUN5UjwjmL_ZHO9jGjCjTdo5fiAY_dBuRHhsFk9qY" />
         <meta name="google-site-verification" content="44F8z-HzptPAQyecFGquUsI0QWGiYukVmQXYoU22Lws" />
         <Script
           src="https://www.googletagmanager.com/gtag/js?id=G-F2125423JN"
-          strategy="afterInteractive"
+          strategy="lazyOnload"
         />
-        <Script id="google-analytics" strategy="afterInteractive">
+        <Script id="google-analytics" strategy="lazyOnload">
           {`
             window.dataLayer = window.dataLayer || [];
             function gtag(){dataLayer.push(arguments);}

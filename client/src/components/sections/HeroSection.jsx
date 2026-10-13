@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import Image from "next/image";
+import { getImageProps } from "next/image";
 import { useRouter } from "next/navigation";
 import { fetchApi } from "@/lib/utils";
 
@@ -12,8 +12,6 @@ import {
   CarouselNext,
   CarouselPrevious,
 } from "@/components/ui/carousel";
-
-
 
 const FALLBACK_SLIDES = [
   {
@@ -26,82 +24,77 @@ const FALLBACK_SLIDES = [
     smimg: "/fallback-2.jpeg",
     ctaLink: "/products",
   },
-
 ];
 
-export default function HeroSection() {
+const toSlide = (banner) => ({
+  img: banner.desktopImage,
+  smimg: banner.mobileImage || banner.desktopImage,
+  ctaLink: banner.link || "/products",
+  showOnMobile: banner.showOnMobile !== false,
+});
+
+// Turn the banners from the API into the main slides + the two side banners
+function parseBanners(banners) {
+  const list = Array.isArray(banners) ? banners : [];
+
+  const main = list.filter((b) => b.type === "MAIN" || !b.type);
+  const side1 = list.find((b) => b.type === "SIDE_1");
+  const side2 = list.find((b) => b.type === "SIDE_2");
+
+  return {
+    slides: main.length > 0 ? main.map(toSlide) : FALLBACK_SLIDES,
+    side1: side1 ? toSlide(side1) : null,
+    side2: side2 ? toSlide(side2) : null,
+  };
+}
+
+/**
+ * One banner with a separate image for phones and for larger screens.
+ * A <picture> lets the browser pick the right file straight from the HTML,
+ * so a phone never downloads the desktop image first (and the image can
+ * start loading before any JavaScript has run).
+ */
+function BannerPicture({ desktopSrc, mobileSrc, alt, sizes, priority = false, className }) {
+  const options = { alt, fill: true, sizes, priority };
+  const { props: desktop } = getImageProps({ ...options, src: desktopSrc });
+  const { props: mobile } = getImageProps({ ...options, src: mobileSrc });
+  const { srcSet: mobileSrcSet, ...imgProps } = mobile;
+
+  return (
+    <picture>
+      <source media="(min-width: 768px)" srcSet={desktop.srcSet} />
+      <source media="(max-width: 767px)" srcSet={mobileSrcSet} />
+      {/* eslint-disable-next-line @next/next/no-img-element */}
+      <img {...imgProps} alt={alt} className={className} />
+    </picture>
+  );
+}
+
+export default function HeroSection({ initialBanners = null }) {
   const router = useRouter();
 
   const [api, setApi] = useState(null);
   const [currentSlide, setCurrentSlide] = useState(0);
-  const [slides, setSlides] = useState(FALLBACK_SLIDES);
-  const [side1, setSide1] = useState(null);
-  const [side2, setSide2] = useState(null);
-  const [isLoading, setIsLoading] = useState(true);
-  const [isMobile, setIsMobile] = useState(false);
-  const [autoplay, setAutoplay] = useState(true);
+  const [banners, setBanners] = useState(() =>
+    initialBanners
+      ? parseBanners(initialBanners)
+      : { slides: FALLBACK_SLIDES, side1: null, side2: null }
+  );
+  // The server already supplied the banners: nothing to wait for
+  const [isLoading, setIsLoading] = useState(!initialBanners);
+  const [autoplay] = useState(true);
 
+  const { slides, side1, side2 } = banners;
+
+  // Only needed when the server could not load the banners
   useEffect(() => {
-    const checkScreen = () => {
-      setIsMobile(window.innerWidth < 768);
-    };
+    if (initialBanners) return;
 
-    checkScreen();
-
-    window.addEventListener("resize", checkScreen);
-
-    return () => {
-      window.removeEventListener("resize", checkScreen);
-    };
-  }, []);
-
-  useEffect(() => {
     const fetchBanners = async () => {
       try {
         const response = await fetchApi("/public/banners");
-
-        const banners = response?.data?.banners;
-
-        if (Array.isArray(banners)) {
-          // Filter main banners
-          const mainBanners = banners.filter(b => b.type === "MAIN" || !b.type);
-          if (mainBanners.length > 0) {
-            setSlides(
-              mainBanners.map((banner) => ({
-                img: banner.desktopImage,
-                smimg: banner.mobileImage || banner.desktopImage,
-                ctaLink: banner.link || "/products",
-              }))
-            );
-          } else {
-            setSlides(FALLBACK_SLIDES);
-          }
-
-          // Find side_1 and side_2
-          const side1Banner = banners.find(b => b.type === "SIDE_1");
-          const side2Banner = banners.find(b => b.type === "SIDE_2");
-
-          if (side1Banner) {
-            setSide1({
-              img: side1Banner.desktopImage,
-              smimg: side1Banner.mobileImage || side1Banner.desktopImage,
-              ctaLink: side1Banner.link || "/products",
-              showOnMobile: side1Banner.showOnMobile !== false,
-            });
-          } else {
-            setSide1(null);
-          }
-
-          if (side2Banner) {
-            setSide2({
-              img: side2Banner.desktopImage,
-              smimg: side2Banner.mobileImage || side2Banner.desktopImage,
-              ctaLink: side2Banner.link || "/products",
-              showOnMobile: side2Banner.showOnMobile !== false,
-            });
-          } else {
-            setSide2(null);
-          }
+        if (Array.isArray(response?.data?.banners)) {
+          setBanners(parseBanners(response.data.banners));
         }
       } catch (error) {
         console.error(error);
@@ -111,7 +104,7 @@ export default function HeroSection() {
     };
 
     fetchBanners();
-  }, []);
+  }, [initialBanners]);
 
   useEffect(() => {
     if (!api || !autoplay) return;
@@ -181,28 +174,28 @@ export default function HeroSection() {
               {/* LEFT STATIC BANNERS */}
               <div className="lg:col-span-4 flex flex-col gap-4">
 
-                <div 
+                <div
                   className={`relative aspect-[16/9] w-full overflow-hidden rounded-2xl ${side1 ? 'cursor-pointer' : ''} ${(!side1 || !side1.showOnMobile) ? 'hidden lg:block' : ''}`}
                   onClick={() => side1 && handleBannerClick(side1.ctaLink)}
                 >
-                  <Image
-                    src={side1 ? (isMobile ? side1.smimg : side1.img) : "/left-banner-1.jpeg"}
+                  <BannerPicture
+                    desktopSrc={side1 ? side1.img : "/left-banner-1.jpeg"}
+                    mobileSrc={side1 ? side1.smimg : "/left-banner-1.jpeg"}
                     alt="Medicine Banner"
-                    fill
-                    priority
+                    sizes="(min-width: 1024px) 33vw, 100vw"
                     className="object-fill"
                   />
                 </div>
 
-                <div 
+                <div
                   className={`relative aspect-[16/9] w-full overflow-hidden rounded-2xl ${side2 ? 'cursor-pointer' : ''} ${(!side2 || !side2.showOnMobile) ? 'hidden lg:block' : ''}`}
                   onClick={() => side2 && handleBannerClick(side2.ctaLink)}
                 >
-                  <Image
-                    src={side2 ? (isMobile ? side2.smimg : side2.img) : "/left-banner-2.jpeg"}
+                  <BannerPicture
+                    desktopSrc={side2 ? side2.img : "/left-banner-2.jpeg"}
+                    mobileSrc={side2 ? side2.smimg : "/left-banner-2.jpeg"}
                     alt="Quality Banner"
-                    fill
-                    priority
+                    sizes="(min-width: 1024px) 33vw, 100vw"
                     className="object-fill"
                   />
                 </div>
@@ -235,16 +228,14 @@ export default function HeroSection() {
                     cursor-pointer
                   "
                         >
-                          <Image
-                            src={
-                              isMobile
-                                ? slide.smimg
-                                : slide.img
-                            }
+                          {/* Only the first slide is on screen at load: it is the page's
+                              main image, so it is fetched with high priority. */}
+                          <BannerPicture
+                            desktopSrc={slide.img}
+                            mobileSrc={slide.smimg}
                             alt={`Banner ${index + 1}`}
-                            fill
+                            sizes="(min-width: 1024px) 66vw, 100vw"
                             priority={index === 0}
-                            sizes="100vw"
                             className="object-fill"
                           />
                         </div>
@@ -280,6 +271,7 @@ export default function HeroSection() {
                     {slides.map((_, index) => (
                       <button
                         key={index}
+                        aria-label={`Go to banner ${index + 1}`}
                         onClick={() =>
                           api?.scrollTo(index)
                         }

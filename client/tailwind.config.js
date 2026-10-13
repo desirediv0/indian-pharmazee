@@ -9,8 +9,8 @@ module.exports = {
 	theme: {
 		extend: {
 			fontFamily: {
-				sans: ['Inter', 'sans-serif'],
-				display: ['Outfit', 'sans-serif'],
+				sans: ['var(--font-inter)', 'Inter', 'sans-serif'],
+				display: ['var(--font-outfit)', 'Outfit', 'sans-serif'],
 			},
 			colors: {
 				background: 'hsl(var(--background))',

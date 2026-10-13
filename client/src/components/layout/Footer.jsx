@@ -7,7 +7,7 @@ import {
   Mail, Phone, MapPin, Instagram, Facebook, Youtube,
   ArrowUpRight, Thermometer, ShieldCheck, Truck, BadgeCheck, Clock,
 } from "lucide-react";
-import { fetchApi } from "@/lib/utils";
+import { fetchApi, sortCategories, runWhenIdle } from "@/lib/utils";
 
 const WA = "919560247619";
 
@@ -51,10 +51,24 @@ const TRUST = [
 export const Footer = () => {
   const [categories, setCategories] = useState([]);
 
+  // Footer is below the fold: load its categories when the browser is idle
   useEffect(() => {
-    fetchApi("/public/categories")
-      .then((res) => setCategories(sortCategories(res.data?.categories || []).slice(0, 7)))
-      .catch(console.error);
+    let cancelled = false;
+
+    const cancelIdle = runWhenIdle(() => {
+      fetchApi("/public/categories")
+        .then((res) => {
+          if (!cancelled) {
+            setCategories(sortCategories(res.data?.categories || []).slice(0, 7));
+          }
+        })
+        .catch(console.error);
+    });
+
+    return () => {
+      cancelled = true;
+      cancelIdle();
+    };
   }, []);
 
   return (

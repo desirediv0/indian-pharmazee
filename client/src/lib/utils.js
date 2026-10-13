@@ -253,3 +253,20 @@ export function sortCategories(categoriesList) {
     return cat;
   });
 }
+
+/**
+ * Run `callback` when the browser is idle (or after `timeout` ms at the
+ * latest), so non-urgent work such as menu data does not compete with the
+ * content the visitor is waiting to see. Returns a function that cancels it.
+ */
+export function runWhenIdle(callback, timeout = 2000) {
+  if (typeof window === "undefined") return () => {};
+
+  if ("requestIdleCallback" in window) {
+    const id = window.requestIdleCallback(callback, { timeout });
+    return () => window.cancelIdleCallback(id);
+  }
+
+  const id = setTimeout(callback, 300);
+  return () => clearTimeout(id);
+}

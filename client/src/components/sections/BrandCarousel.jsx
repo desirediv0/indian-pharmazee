@@ -13,12 +13,15 @@ import { fetchApi } from "@/lib/utils";
 import Image from "next/image";
 import Headtext from "../ui/headtext";
 
-export default function BrandCarousel({ tag, title }) {
-  const [brands, setBrands] = useState([]);
-  const [loading, setLoading] = useState(true);
+// initialBrands: loaded on the server; the browser only fetches when it is missing
+export default function BrandCarousel({ tag, title, initialBrands = null }) {
+  const [brands, setBrands] = useState(Array.isArray(initialBrands) ? initialBrands : []);
+  const [loading, setLoading] = useState(!Array.isArray(initialBrands));
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    if (Array.isArray(initialBrands)) return;
+
     const fetchBrands = async () => {
       setLoading(true);
       try {
@@ -32,7 +35,7 @@ export default function BrandCarousel({ tag, title }) {
       }
     };
     fetchBrands();
-  }, [tag]);
+  }, [tag, initialBrands]);
 
   if (loading) {
     return <div className="py-8 text-center">Loading {title}...</div>;

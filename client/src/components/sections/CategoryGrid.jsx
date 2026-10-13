@@ -139,12 +139,18 @@ const SkeletonLoader = () => (
 );
 
 /* ─── main ────────────────────────────────────────────────────────────── */
-const CategoryGrid = () => {
-  const [categories, setCategories] = useState([]);
-  const [loading, setLoading] = useState(true);
+// initialCategories: loaded on the server, so the grid is already in the HTML
+const CategoryGrid = ({ initialCategories = null }) => {
+  const [categories, setCategories] = useState(() =>
+    Array.isArray(initialCategories) ? sortCategories(initialCategories) : []
+  );
+  const [loading, setLoading] = useState(!Array.isArray(initialCategories));
   const [error, setError] = useState(null);
 
   useEffect(() => {
+    // Only fetch in the browser when the server could not supply the data
+    if (Array.isArray(initialCategories)) return;
+
     const loadCategories = async () => {
       try {
         setLoading(true);
@@ -164,7 +170,7 @@ const CategoryGrid = () => {
       }
     };
     loadCategories();
-  }, []);
+  }, [initialCategories]);
 
   const handleRetry = () => {
     setError(null);

@@ -78,8 +78,19 @@ function FeaturedProductsCarousel({ products, isLoading }) {
 /* ─────────────────────────────────────
    MAIN COMPONENT
 ───────────────────────────────────── */
-export default function HomePageContent() {
-  const [loading, setLoading] = useState(true);
+const PRODUCT_ENDPOINTS = [
+  { key: "featured", url: "/public/products/type/featured?limit=12" },
+  { key: "latest", url: "/public/products/type/latest?limit=12" },
+  { key: "bestseller", url: "/public/products/type/bestseller?limit=12" },
+  { key: "trending", url: "/public/products/type/trending?limit=12" },
+  { key: "new", url: "/public/products/type/new?limit=12" },
+];
+
+// initialProducts / initialBrands come from the server so the sections are
+// already in the HTML. Anything missing is fetched in the browser instead.
+export default function HomePageContent({ initialProducts = {}, initialBrands = {} }) {
+  const missingEndpoints = PRODUCT_ENDPOINTS.filter(({ key }) => !(key in initialProducts));
+  const [loading, setLoading] = useState(missingEndpoints.length > 0);
   const [products, setProducts] = useState({
     featured: [],
     latest: [],
@@ -98,32 +109,29 @@ export default function HomePageContent() {
     drink: [],
     combo: [],
     elite: [],
+    ...initialProducts,
   });
 
   useEffect(() => {
+    if (missingEndpoints.length === 0) return;
+
     const fetchAll = async () => {
       setLoading(true);
       try {
-        const endpoints = [
-          { key: "featured", url: "/public/products/type/featured?limit=12" },
-          { key: "latest", url: "/public/products/type/latest?limit=12" },
-          { key: "bestseller", url: "/public/products/type/bestseller?limit=12" },
-          { key: "trending", url: "/public/products/type/trending?limit=12" },
-          { key: "new", url: "/public/products/type/new?limit=12" },
-        ];
+        const endpoints = missingEndpoints;
 
         const results = await Promise.allSettled(
           endpoints.map(({ url }) => fetchApi(url))
         );
 
-        const updated = { ...products };
+        const updated = {};
         results.forEach((result, index) => {
           const key = endpoints[index].key;
           if (result.status === "fulfilled") {
             updated[key] = result.value?.data?.products || [];
           }
         });
-        setProducts(updated);
+        setProducts((previous) => ({ ...previous, ...updated }));
       } catch (err) {
         console.error("Error fetching home products:", err);
       } finally {
@@ -158,7 +166,7 @@ export default function HomePageContent() {
     <>
 
       {/* BRANDS */}
-      <BrandCarousel tag="HOT" title="TRUSTED BRANDS" />
+      <BrandCarousel tag="HOT" title="TRUSTED BRANDS" initialBrands={initialBrands.HOT} />
 
 
       {/* FEATURED MEDICINES */}
@@ -180,10 +188,10 @@ export default function HomePageContent() {
       )}
 
       {/* NEW BRANDS */}
-      <BrandCarousel tag="TOP" title="TOP BRANDS" />
+      <BrandCarousel tag="TOP" title="TOP BRANDS" initialBrands={initialBrands.TOP} />
 
       {/* NEW BRANDS */}
-      <BrandCarousel tag="NEW" title="NEW BRANDS" />
+      <BrandCarousel tag="NEW" title="NEW BRANDS" initialBrands={initialBrands.NEW} />
 
 
 
