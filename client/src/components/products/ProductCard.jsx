@@ -291,7 +291,7 @@ export const ProductCard = ({ product, viewMode = "grid" }) => {
           fill
           quality={75}
           className="object-contain p-5 transition-transform duration-500 group-hover:scale-[1.07]"
-          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 25vw"
+          sizes="(max-width: 640px) 50vw, (max-width: 1024px) 33vw, 20vw"
         />
 
         {/* Subtle drop shadow under product */}
