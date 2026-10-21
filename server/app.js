@@ -141,13 +141,15 @@ app.use("/api/admin/partners", adminPartnerRoutes);
 app.use("/api/admin", adminRoutes);
 app.use("/api/admin", adminProductRoutes);
 app.use("/api/admin", adminOrderRoutes);
+// Must stay above the general "/api/admin" routers: the older content router also
+// defines /faqs and would otherwise answer first (and ignore the page-targeting fields)
+app.use("/api/admin/faqs", adminFaqRoutes);
 app.use("/api/admin", adminCategoryRoutes);
 app.use("/api/admin", adminAttributeRoutes);
 app.use("/api/admin", adminAttributeValueRoutes);
 app.use("/api/admin", adminCouponRoutes);
 app.use("/api/admin", adminContentRoutes);
 app.use("/api/admin", adminReviewRoutes);
-app.use("/api/admin/faqs", adminFaqRoutes);
 app.use("/api/cart", cartRoutes);
 app.use("/api/payment", paymentRoutes);
 app.use("/api/public", publicRoutes);
