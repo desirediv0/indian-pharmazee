@@ -18,9 +18,18 @@ import {
   bulkVariantOperations,
 } from "../controllers/admin.product.controller.js";
 import {
+  exportProducts,
+  getProductExportOptions,
+} from "../controllers/admin.product.export.controller.js";
+import {
   verifyAdminJWT,
   hasPermission,
 } from "../middlewares/admin.middleware.js";
+import {
+  downloadImportTemplate,
+  importProducts,
+  uploadImportFile,
+} from "../controllers/admin.product.import.controller.js";
 import { uploadFiles } from "../middlewares/multer.middlerware.js";
 
 const router = express.Router();
@@ -31,6 +40,36 @@ router.get(
   verifyAdminJWT,
   hasPermission("products", "read"),
   getProducts
+);
+
+// Export routes must stay above "/products/:productId"
+router.get(
+  "/products/export/options",
+  verifyAdminJWT,
+  hasPermission("products", "read"),
+  getProductExportOptions
+);
+
+router.get(
+  "/products/export",
+  verifyAdminJWT,
+  hasPermission("products", "read"),
+  exportProducts
+);
+
+router.get(
+  "/products/import/template",
+  verifyAdminJWT,
+  hasPermission("products", "create"),
+  downloadImportTemplate
+);
+
+router.post(
+  "/products/import",
+  verifyAdminJWT,
+  hasPermission("products", "create"),
+  uploadImportFile,
+  importProducts
 );
 
 router.get(

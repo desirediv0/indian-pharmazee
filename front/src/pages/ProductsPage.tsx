@@ -22,6 +22,8 @@ import { Card } from "@/components/ui/card";
 import { SafeRender } from "@/components/SafeRender";
 import {
   Package,
+  Download,
+  Upload,
   Search,
   Plus,
   Edit,
@@ -45,6 +47,8 @@ import { Badge } from "@/components/ui/badge";
 import { v4 as uuidv4 } from "uuid";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Switch } from "@/components/ui/switch";
+import { ProductImportDialog } from "@/components/ProductImportDialog";
+import { ProductExportDialog } from "@/components/ProductExportDialog";
 import { DeleteProductDialog } from "@/components/DeleteProductDialog";
 import VariantCard from "@/components/VariantCard";
 import { useDebounce } from "@/utils/debounce";
@@ -2846,6 +2850,9 @@ function ProductsList() {
   const [categoriesList, setCategoriesList] = useState<any[]>([]);
 
   // States for delete dialog
+  const [isExportOpen, setIsExportOpen] = useState(false);
+  const [isImportOpen, setIsImportOpen] = useState(false);
+  const [listRefresh, setListRefresh] = useState(0);
   const [isDeleteDialogOpen, setIsDeleteDialogOpen] = useState(false);
   const [isForceDeleteDialogOpen, setIsForceDeleteDialogOpen] = useState(false);
   const [productToDelete, setProductToDelete] = useState<string | null>(null);
@@ -2882,7 +2889,7 @@ function ProductsList() {
     };
 
     fetchProducts();
-  }, [currentPage, debouncedSearchQuery, selectedCategory]);
+  }, [currentPage, debouncedSearchQuery, selectedCategory, listRefresh]);
 
   // Fetch categories for filter
   useEffect(() => {
@@ -3207,6 +3214,22 @@ function ProductsList() {
         }}
       />
 
+      <ProductImportDialog
+        open={isImportOpen}
+        setOpen={setIsImportOpen}
+        onImported={() => {
+          setCurrentPage(1);
+          setListRefresh((n) => n + 1);
+        }}
+      />
+
+      <ProductExportDialog
+        open={isExportOpen}
+        setOpen={setIsExportOpen}
+        search={searchQuery}
+        category={selectedCategory}
+      />
+
       {/* Premium Page Header */}
       <div className="space-y-4">
         <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
@@ -3230,6 +3253,16 @@ function ProductsList() {
                 onKeyPress={(e) => e.key === "Enter" && handleSearch(e)}
               />
             </div>
+            {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("products:create")) && (
+              <Button variant="outline" onClick={() => setIsImportOpen(true)}>
+                <Upload className="mr-2 h-4 w-4" />
+                Import
+              </Button>
+            )}
+            <Button variant="outline" onClick={() => setIsExportOpen(true)}>
+              <Download className="mr-2 h-4 w-4" />
+              Export
+            </Button>
             {(admin?.role === "SUPER_ADMIN" || admin?.permissions?.includes("products:create")) && (
               <Button
                 asChild
