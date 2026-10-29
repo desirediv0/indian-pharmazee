@@ -1436,8 +1436,8 @@ function CategoryForm({
         onOpenChange={setShowSubCategoryDialog}
       >
         <DialogContent className="bg-[#FFFFFF] border-[#E5E7EB] w-[calc(100%-2rem)] max-w-2xl max-h-[calc(100dvh-2rem)] overflow-hidden flex flex-col p-4 sm:p-6">
-          <DialogHeader>
-            <DialogTitle className="text-xl font-semibold text-[#1F2937]">
+          <DialogHeader className="shrink-0">
+            <DialogTitle className="pr-8 text-xl font-semibold text-[#1F2937]">
               {editingSubCategory ? t("categories.subcategories.dialog.edit_title") : t("categories.subcategories.dialog.add_title")}
             </DialogTitle>
             <DialogDescription className="text-[#9CA3AF]">
@@ -1610,7 +1610,7 @@ function CategoryForm({
               </div>
             </div>
           </div>
-          <DialogFooter className="gap-2 sm:gap-0 sm:space-x-2">
+          <DialogFooter className="shrink-0 gap-2 sm:gap-0 sm:space-x-2">
             <Button
               variant="outline"
               className="w-full border-[#E5E7EB] hover:bg-[#F3F7F6] sm:w-auto"
