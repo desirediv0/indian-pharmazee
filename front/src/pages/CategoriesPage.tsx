@@ -1435,7 +1435,7 @@ function CategoryForm({
         open={showSubCategoryDialog}
         onOpenChange={setShowSubCategoryDialog}
       >
-        <DialogContent className="bg-[#FFFFFF] border-[#E5E7EB] max-w-2xl">
+        <DialogContent className="bg-[#FFFFFF] border-[#E5E7EB] w-[calc(100%-2rem)] max-w-2xl max-h-[calc(100dvh-2rem)] overflow-hidden flex flex-col p-4 sm:p-6">
           <DialogHeader>
             <DialogTitle className="text-xl font-semibold text-[#1F2937]">
               {editingSubCategory ? t("categories.subcategories.dialog.edit_title") : t("categories.subcategories.dialog.add_title")}
@@ -1446,7 +1446,7 @@ function CategoryForm({
                 : t("categories.subcategories.dialog.add_desc")}
             </DialogDescription>
           </DialogHeader>
-          <div className="space-y-5 py-4">
+          <div className="min-h-0 flex-1 space-y-5 overflow-y-auto overscroll-contain px-1 py-4">
             <div className="space-y-2">
               <Label
                 htmlFor="subCategoryName"
@@ -1518,14 +1518,14 @@ function CategoryForm({
               >
                 {t("categories.subcategories.dialog.image_label")}
               </Label>
-              <div className="flex items-start gap-4">
-                <div className="flex-1">
+              <div className="flex flex-col items-start gap-4 sm:flex-row">
+                <div className="w-full min-w-0 flex-1">
                   <Input
                     id="subCategoryImage"
                     type="file"
                     accept="image/*"
                     onChange={handleSubCategoryImageChange}
-                    className="cursor-pointer border-[#E5E7EB] focus:border-primary"
+                    className="w-full min-w-0 cursor-pointer border-[#E5E7EB] focus:border-primary"
                   />
                   <p className="mt-1 text-xs text-[#9CA3AF]">
                     {t("categories.subcategories.dialog.image_recommendation")}
@@ -1610,10 +1610,10 @@ function CategoryForm({
               </div>
             </div>
           </div>
-          <DialogFooter className="gap-3">
+          <DialogFooter className="gap-2 sm:gap-0 sm:space-x-2">
             <Button
               variant="outline"
-              className="border-[#E5E7EB] hover:bg-[#F3F7F6]"
+              className="w-full border-[#E5E7EB] hover:bg-[#F3F7F6] sm:w-auto"
               onClick={() => {
                 setShowSubCategoryDialog(false);
                 resetSubCategoryForm();
@@ -1622,7 +1622,7 @@ function CategoryForm({
               {t("categories.subcategories.dialog.cancel")}
             </Button>
             <Button
-              className=""
+              className="w-full sm:w-auto"
               onClick={handleSubCategorySubmit}
               disabled={isLoading}
             >
