@@ -188,7 +188,7 @@ export const getSubCategoryById = asyncHandler(async (req, res, next) => {
 // Create sub-category
 export const createSubCategory = asyncHandler(async (req, res, next) => {
   const { categoryId } = req.params;
-  const { name, description, position } = req.body;
+  const { name, description, position, metaTitle, metaDescription, keywords } = req.body;
 
   if (!name) {
     throw new ApiError(400, "Name is required");
@@ -252,6 +252,9 @@ export const createSubCategory = asyncHandler(async (req, res, next) => {
       slug,
       image: imageUrl,
       position: targetPosition,
+      ...(metaTitle !== undefined && { metaTitle }),
+      ...(metaDescription !== undefined && { metaDescription }),
+      ...(keywords !== undefined && { keywords }),
     },
     include: {
       category: true,
@@ -287,7 +290,7 @@ export const createSubCategory = asyncHandler(async (req, res, next) => {
 // Update sub-category
 export const updateSubCategory = asyncHandler(async (req, res, next) => {
   const { id } = req.params;
-  const { name, description, isActive, position } = req.body;
+  const { name, description, isActive, position, metaTitle, metaDescription, keywords } = req.body;
 
   const existingSubCategory = await prisma.subCategory.findUnique({
     where: { id },
@@ -339,6 +342,9 @@ export const updateSubCategory = asyncHandler(async (req, res, next) => {
     ...(slug && { slug }),
     ...(isActive !== undefined && { isActive }),
     ...(imageUrl !== null && { image: imageUrl }),
+    ...(metaTitle !== undefined && { metaTitle }),
+    ...(metaDescription !== undefined && { metaDescription }),
+    ...(keywords !== undefined && { keywords }),
   };
 
   // Handle position change

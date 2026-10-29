@@ -216,18 +216,21 @@ model CategorySlugHistory {
 }
 
 model SubCategory {
-  id          String               @id @default(uuid())
-  categoryId  String
-  name        String
-  description String?
-  image       String?
-  slug        String
-  position    Int                  @default(0)
-  isActive    Boolean              @default(true)
-  createdAt   DateTime             @default(now())
-  updatedAt   DateTime             @updatedAt
-  category    Category             @relation(fields: [categoryId], references: [id], onDelete: Cascade)
-  products    ProductSubCategory[]
+  id              String               @id @default(uuid())
+  categoryId      String
+  name            String
+  description     String?
+  image           String?
+  slug            String
+  position        Int                  @default(0)
+  isActive        Boolean              @default(true)
+  metaTitle       String?
+  metaDescription String?
+  keywords        String?
+  createdAt       DateTime             @default(now())
+  updatedAt       DateTime             @updatedAt
+  category        Category             @relation(fields: [categoryId], references: [id], onDelete: Cascade)
+  products        ProductSubCategory[]
 
   @@unique([categoryId, slug])
   @@index([categoryId])

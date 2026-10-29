@@ -676,6 +676,9 @@ function CategoryForm({
     name: "",
     description: "",
     position: "",
+    metaTitle: "",
+    metaDescription: "",
+    keywords: "",
   });
   const [subCategoryImageFile, setSubCategoryImageFile] = useState<File | null>(
     null
@@ -775,11 +778,14 @@ function CategoryForm({
         name: subCategoryItem.name || "",
         description: subCategoryItem.description || "",
         position: subCategoryItem.position !== undefined ? String(subCategoryItem.position) : "",
+        metaTitle: subCategoryItem.metaTitle || "",
+        metaDescription: subCategoryItem.metaDescription || "",
+        keywords: subCategoryItem.keywords || "",
       });
       setSubCategoryImagePreview(subCategoryItem.image || null);
     } else {
       setEditingSubCategory(null);
-      setSubCategoryForm({ name: "", description: "", position: "" });
+      setSubCategoryForm({ name: "", description: "", position: "", metaTitle: "", metaDescription: "", keywords: "" });
       setSubCategoryImagePreview(null);
     }
     setShowSubCategoryDialog(true);
@@ -821,6 +827,9 @@ function CategoryForm({
             description: subCategoryForm.description,
             image: subCategoryImageFile || undefined,
             position: positionVal,
+            metaTitle: subCategoryForm.metaTitle,
+            metaDescription: subCategoryForm.metaDescription,
+            keywords: subCategoryForm.keywords,
           }
         );
         if (response.data?.success) {
@@ -836,6 +845,9 @@ function CategoryForm({
           description: subCategoryForm.description,
           image: subCategoryImageFile || undefined,
           position: positionVal,
+          metaTitle: subCategoryForm.metaTitle,
+          metaDescription: subCategoryForm.metaDescription,
+          keywords: subCategoryForm.keywords,
         });
         if (response.data?.success) {
           toast.success(t("categories.messages.subcategory_create_success"));
@@ -907,7 +919,7 @@ function CategoryForm({
   };
 
   const resetSubCategoryForm = () => {
-    setSubCategoryForm({ name: "", description: "", position: "" });
+    setSubCategoryForm({ name: "", description: "", position: "", metaTitle: "", metaDescription: "", keywords: "" });
     setSubCategoryImageFile(null);
     setSubCategoryImagePreview(null);
     setEditingSubCategory(null);
@@ -1530,6 +1542,71 @@ function CategoryForm({
                     <ImageIcon className="h-8 w-8 text-[#9CA3AF]" />
                   )}
                 </div>
+              </div>
+            </div>
+            {/* SEO Section */}
+            <div className="pt-4 border-t border-[#E5E7EB] space-y-4">
+              <div>
+                <h3 className="text-sm font-semibold text-[#1F2937] flex items-center gap-2">
+                  <Tags className="w-4 h-4 text-primary" />
+                  Search Engine Optimization (SEO)
+                </h3>
+                <p className="text-xs text-[#9CA3AF] mt-0.5">
+                  Optimize this sub-category for search engines.
+                </p>
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="subCategoryMetaTitle" className="text-sm font-medium text-[#4B5563]">
+                  Meta Title
+                </Label>
+                <Input
+                  id="subCategoryMetaTitle"
+                  value={subCategoryForm.metaTitle}
+                  onChange={(e) =>
+                    setSubCategoryForm({
+                      ...subCategoryForm,
+                      metaTitle: e.target.value,
+                    })
+                  }
+                  placeholder="e.g. Buy Recombinant FSH Medicines Online | Indian Pharmazee"
+                  className="border-[#E5E7EB] focus:border-primary"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="subCategoryMetaDescription" className="text-sm font-medium text-[#4B5563]">
+                  Meta Description
+                </Label>
+                <Textarea
+                  id="subCategoryMetaDescription"
+                  value={subCategoryForm.metaDescription}
+                  onChange={(e) =>
+                    setSubCategoryForm({
+                      ...subCategoryForm,
+                      metaDescription: e.target.value,
+                    })
+                  }
+                  placeholder="e.g. Browse recombinant FSH and urofollitropin medicines at Indian Pharmazee with fast delivery across India."
+                  rows={3}
+                  className="border-[#E5E7EB] focus:border-primary"
+                />
+              </div>
+              <div className="space-y-2">
+                <Label htmlFor="subCategoryKeywords" className="text-sm font-medium text-[#4B5563]">
+                  Meta Keywords
+                </Label>
+                <Input
+                  id="subCategoryKeywords"
+                  value={subCategoryForm.keywords}
+                  onChange={(e) =>
+                    setSubCategoryForm({
+                      ...subCategoryForm,
+                      keywords: e.target.value,
+                    })
+                  }
+                  placeholder="e.g. FSH medicines, recombinant FSH, urofollitropin, fertility drugs"
+                  className="border-[#E5E7EB] focus:border-primary"
+                />
+                <p className="text-xs text-[#9CA3AF]">Separate keywords with commas.</p>
               </div>
             </div>
           </div>

@@ -1005,13 +1005,16 @@ export const subCategories = {
   },
   createSubCategory: (
     categoryId: string,
-    data: { name: string; description?: string; image?: File; position?: number }
+    data: { name: string; description?: string; image?: File; position?: number; metaTitle?: string; metaDescription?: string; keywords?: string }
   ) => {
     const formData = new FormData();
     formData.append("name", data.name);
     if (data.description) formData.append("description", data.description);
     if (data.image) formData.append("image", data.image);
     if (data.position !== undefined) formData.append("position", data.position.toString());
+    if (data.metaTitle !== undefined) formData.append("metaTitle", data.metaTitle);
+    if (data.metaDescription !== undefined) formData.append("metaDescription", data.metaDescription);
+    if (data.keywords !== undefined) formData.append("keywords", data.keywords);
 
     return api.post(
       `/api/admin/categories/${categoryId}/sub-categories`,
@@ -1025,7 +1028,7 @@ export const subCategories = {
   },
   updateSubCategory: (
     subCategoryId: string,
-    data: { name?: string; description?: string; image?: File; isActive?: boolean; position?: number }
+    data: { name?: string; description?: string; image?: File; isActive?: boolean; position?: number; metaTitle?: string; metaDescription?: string; keywords?: string }
   ) => {
     const formData = new FormData();
     if (data.name) formData.append("name", data.name);
@@ -1036,6 +1039,9 @@ export const subCategories = {
       formData.append("isActive", data.isActive.toString());
     if (data.position !== undefined)
       formData.append("position", data.position.toString());
+    if (data.metaTitle !== undefined) formData.append("metaTitle", data.metaTitle);
+    if (data.metaDescription !== undefined) formData.append("metaDescription", data.metaDescription);
+    if (data.keywords !== undefined) formData.append("keywords", data.keywords);
 
     return api.put(`/api/admin/sub-categories/${subCategoryId}`, formData, {
       headers: {
